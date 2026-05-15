@@ -1,0 +1,26 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import Hero from "../components/Hero.astro";
+import Features from "../components/Features.astro";
+import GallerySection from "../components/GallerySection.astro";
+import Shortcuts from "../components/Shortcuts.astro";
+import Install from "../components/Install.astro";
+import FAQ from "../components/FAQ.astro";
+import Footer from "../components/Footer.astro";
+import StickyCTA from "../components/StickyCTA.astro";
+---
+
+<Layout includeAppSchema>
+  <Navbar />
+  <main id="main">
+    <Hero />
+    <Features />
+    <GallerySection />
+    <Shortcuts />
+    <Install />
+    <FAQ />
+  </main>
+  <Footer />
+  <StickyCTA />
+</Layout>

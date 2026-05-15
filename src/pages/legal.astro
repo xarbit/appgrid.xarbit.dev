@@ -1,0 +1,151 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
+import { primary, repoUrl } from "../config/repo";
+
+const lastUpdated = "2026-05-15";
+---
+
+<Layout
+  title="Legal &amp; Trademarks — AppGrid for Plasma"
+  description="Trademark notices and legal information for the AppGrid project."
+>
+  <Navbar />
+
+  <main id="main" class="max-w-3xl mx-auto px-6 py-16 md:py-24">
+    <article>
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-2">
+        Legal &amp; Trademarks
+      </h1>
+      <p class="text-sm text-[var(--fg-muted)] mb-10">Last updated: {lastUpdated}</p>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold mb-3">Project status</h2>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          AppGrid is a non-commercial, community-developed Free and Open Source Software
+          project. It is licensed under
+          <strong>GPL-2.0-or-later</strong>. Source code:
+          <a
+            href={repoUrl(primary)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[#3daee9] hover:underline">{repoUrl(primary)}</a
+          >.
+        </p>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          AppGrid is an <strong>independent third-party project</strong>. It is <strong
+            >not affiliated with, endorsed by, or sponsored by KDE e.V.</strong
+          >, The Qt Company, or any of the trademark holders listed below.
+        </p>
+      </section>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold mb-3">Trademark notices</h2>
+
+        <div class="space-y-4 text-[var(--fg-body)] leading-relaxed">
+          <p>
+            <strong>KDE®</strong>, <strong>K Desktop Environment®</strong>,
+            <strong>Plasma™</strong>, <strong>Kickoff</strong>, <strong>Kicker</strong>,
+            <strong>KRunner</strong>, and the associated logos are trademarks of
+            <a
+              href="https://ev.kde.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-[#3daee9] hover:underline">KDE e.V.</a
+            >, registered in Germany and other countries. Use on this site is purely
+            nominative — to describe technical compatibility — in accordance with the
+            <a
+              href="https://kde.org/trademarks/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-[#3daee9] hover:underline">KDE Trademark Policy</a
+            >. No KDE logo files are reproduced on this site.
+          </p>
+
+          <p>
+            <strong>Qt®</strong> is a registered trademark of The Qt Company Ltd. and/or
+            its subsidiaries.
+          </p>
+
+          <p>
+            <strong>Linux®</strong> is the registered trademark of Linus Torvalds in the
+            United States and other countries.
+          </p>
+
+          <p>
+            <strong>Arch Linux™</strong>, <strong>Fedora™</strong>, <strong>Ubuntu®</strong>,
+            <strong>Debian®</strong>, <strong>openSUSE®</strong>, <strong>EndeavourOS</strong>,
+            <strong>CachyOS</strong>, <strong>Manjaro</strong>, and <strong>Garuda Linux</strong>
+            are trademarks or registered trademarks of their respective owners. References on
+            this site indicate packaging availability only and imply no endorsement.
+          </p>
+
+          <p>
+            <strong>macOS®</strong> and <strong>Launchpad®</strong> are trademarks of Apple
+            Inc.
+          </p>
+
+          <p>
+            <strong>GitHub®</strong> is a trademark of GitHub, Inc.
+            <strong>Codeberg</strong> is a trademark of Codeberg e.V.
+          </p>
+
+          <p>
+            All other product names, logos, and brands are property of their respective
+            owners. All company, product, and service names used on this site are for
+            identification purposes only. Use of these names, logos, and brands does not
+            imply endorsement.
+          </p>
+        </div>
+      </section>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold mb-3">Screenshots</h2>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Screenshots on this site may incidentally display application icons, logos, and
+          interface elements belonging to third-party software. These appear only to
+          illustrate AppGrid functionality and remain the property of their respective
+          rights holders.
+        </p>
+      </section>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold mb-3">License</h2>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          The AppGrid source code is licensed under the
+          <a
+            href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[#3daee9] hover:underline">GNU General Public License v2.0 or later</a
+          >. The content of this website (text, layout, styles) is also released under
+          the same license unless otherwise noted.
+        </p>
+      </section>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold mb-3">Reporting trademark issues</h2>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          If you are a rights holder and believe content on this site infringes your
+          trademark or other rights, please open an issue on
+          <a
+            href={repoUrl(primary)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-[#3daee9] hover:underline">{primary.label}</a
+          > or contact the author through that platform. Concerns will be addressed in good
+          faith and promptly.
+        </p>
+      </section>
+
+      <p class="mt-12">
+        <a href="/" class="text-sm text-[var(--fg-muted)] hover:text-[var(--fg)]"
+          >← Back to home</a
+        >
+      </p>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>

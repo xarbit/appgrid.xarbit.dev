@@ -1,0 +1,47 @@
+---
+---
+
+<a
+  id="sticky-cta"
+  href="#install"
+  class="fixed bottom-6 right-6 z-40 btn-primary text-sm py-2.5 px-4 shadow-lg shadow-black/30 opacity-0 translate-y-3 pointer-events-none transition-all duration-300"
+  aria-label="Install AppGrid"
+>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+    <polyline points="7 10 12 15 17 10"></polyline>
+    <line x1="12" y1="15" x2="12" y2="3"></line>
+  </svg>
+  Install
+</a>
+
+<script is:inline>
+  (function () {
+    var cta = document.getElementById("sticky-cta");
+    if (!cta) return;
+
+    function update() {
+      var show = window.scrollY > window.innerHeight * 0.8;
+      var nearInstall = false;
+      var installSection = document.getElementById("install");
+      if (installSection) {
+        var rect = installSection.getBoundingClientRect();
+        nearInstall = rect.top < window.innerHeight && rect.bottom > 0;
+      }
+      var visible = show && !nearInstall;
+      if (visible) {
+        cta.style.opacity = "1";
+        cta.style.transform = "translateY(0)";
+        cta.style.pointerEvents = "auto";
+      } else {
+        cta.style.opacity = "0";
+        cta.style.transform = "translateY(0.75rem)";
+        cta.style.pointerEvents = "none";
+      }
+    }
+
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+  })();
+</script>

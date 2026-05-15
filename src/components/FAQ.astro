@@ -1,0 +1,117 @@
+---
+import { primary, issuesUrl } from "../config/repo";
+
+const faqs = [
+  {
+    q: "Is AppGrid free?",
+    a: "Yes. AppGrid is Free and Open Source Software released under the GPL-2.0-or-later license. No ads, no telemetry, no donations required.",
+  },
+  {
+    q: "Does AppGrid replace Kickoff or Kicker?",
+    a: "Yes. Right-click your existing panel launcher → Show Alternatives → AppGrid. You can also add it as a new widget without removing the others.",
+  },
+  {
+    q: "Center variant vs. Panel variant — which should I pick?",
+    a: "AppGrid (Center) is a standalone window that opens centered on screen with its own blur, opacity, and corner radius settings. AppGrid (Panel) is a native Plasma popup anchored to the panel icon, like Kickoff — same grid, same search, no separate window settings. Pick whichever fits your workflow; both ship in the same package.",
+  },
+  {
+    q: "Does it work on Wayland and X11?",
+    a: "AppGrid is Wayland-first and primarily tested there. X11 is supported but less polished — the Center variant uses frameless window flags and manual positioning on X11 instead of LayerShellQt. The Panel variant uses Plasma's native popup and works equally on both.",
+  },
+  {
+    q: "Does it work on KDE Plasma 5?",
+    a: "No. AppGrid targets KDE Plasma 6.0 and later. Plasma 5 uses Qt 5 / KF5 APIs that AppGrid no longer supports.",
+  },
+  {
+    q: "Why is there no .plasmoid file on the KDE Store?",
+    a: "AppGrid uses a C++ backend for app discovery, window management, blur effects, and session actions. The .plasmoid format only supports pure-QML plasmoids — it has no way to install the compiled plugin (.so) to the system plugin path Plasma expects. That's why AppGrid ships as distro packages (Arch, Fedora, Ubuntu, Debian) and via the OBS community build for openSUSE.",
+  },
+  {
+    q: "How do I reorder my favorites?",
+    a: "Open the Favorites tab, click the pencil icon in the bottom-right corner — icons start wiggling. Click an icon to select it, then click another to swap their positions. You can also remove a favorite via the remove button on its icon. Click the checkmark when done; order saves automatically.",
+  },
+  {
+    q: "How does \"Recently Used\" work?",
+    a: "Where the section appears depends on your settings. Start with Favorites OFF: shown in the All tab (Alphabetical sort only). Start with Favorites ON: shown in the Favorites tab. By Category sort: shown at the top of the category view. Turning the setting off clears the recent list; turning it back on starts fresh.",
+  },
+  {
+    q: "What are the two category modes?",
+    a: "By default AppGrid uses a simplified built-in mapping (Development, Graphics, Internet, Multimedia, Office, System, Utilities). Enable \"Use system categories\" in settings to read categories directly from KDE — changes you make in KDE Menu Editor (rename, reorganize, create custom categories) are reflected automatically. Right-click any category to open the Menu Editor.",
+  },
+  {
+    q: "Does AppGrid collect any data?",
+    a: "No. AppGrid runs locally on your machine. No telemetry, no analytics, no network calls. The website itself uses no cookies, no tracking, and no third-party scripts — see the privacy notice for hosting details.",
+  },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: f.a,
+    },
+  })),
+};
+---
+
+<section id="faq" class="py-20 md:py-28 border-t border-[var(--border)]/50">
+  <div class="max-w-3xl mx-auto px-6">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">
+        Frequently asked questions
+      </h2>
+      <p class="text-lg text-[var(--fg-muted)]">
+        Quick answers. <a
+          href={issuesUrl(primary)}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[#3daee9] hover:underline"
+        >Open an issue on {primary.label}</a> if you don't see yours.
+      </p>
+    </div>
+
+    <div class="space-y-3">
+      {
+        faqs.map((f) => (
+          <details class="breeze-card group">
+            <summary class="cursor-pointer p-5 flex items-center justify-between gap-4 font-medium text-base select-none list-none">
+              <span>{f.q}</span>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="text-[var(--fg-muted)] flex-shrink-0 transition-transform duration-200 group-open:rotate-180"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </summary>
+            <div class="px-5 pb-5 text-[var(--fg-body)] text-sm leading-relaxed">
+              {f.a}
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+
+  <script
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(faqSchema)}
+  />
+</section>
+
+<style>
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+</style>

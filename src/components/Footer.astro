@@ -1,0 +1,112 @@
+---
+import {
+  primary,
+  mirrors,
+  repoUrl,
+  issuesUrl,
+  releasesUrl,
+} from "../config/repo";
+
+const year = new Date().getFullYear();
+const allRepos = [primary, ...mirrors];
+---
+
+<footer class="border-t border-[var(--border)]/50 py-12 mt-10">
+  <div class="max-w-6xl mx-auto px-6 grid gap-8 md:grid-cols-3">
+    <div>
+      <div class="font-semibold text-lg mb-2 tracking-tight">
+        AppGrid <span class="text-[var(--fg-muted)] font-normal">for Plasma</span>
+      </div>
+      <p class="text-sm text-[var(--fg-muted)] leading-relaxed">
+        A modern application launcher for KDE Plasma 6.
+      </p>
+    </div>
+
+    <div>
+      <h4 class="text-sm font-semibold mb-3">Project</h4>
+      <ul class="space-y-2 text-sm text-[var(--fg-muted)]">
+        {
+          allRepos.map((r) => (
+            <li>
+              <a
+                href={repoUrl(r)}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:text-[var(--fg)]"
+              >
+                {r.label}
+              </a>
+            </li>
+          ))
+        }
+        <li>
+          <a
+            href={issuesUrl(primary)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-[var(--fg)]">Issues</a
+          >
+        </li>
+        <li>
+          <a
+            href={releasesUrl(primary)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-[var(--fg)]">Releases</a
+          >
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 class="text-sm font-semibold mb-3">Author</h4>
+      <ul class="space-y-2 text-sm text-[var(--fg-muted)]">
+        <li>Jason Scurtu</li>
+        <li>
+          <a
+            href={`https://${primary.platform === "github" ? "github.com" : "codeberg.org"}/${primary.owner}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-[var(--fg)]">@{primary.owner}</a
+          >
+        </li>
+        <li>GPL-2.0-or-later</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-6 mt-10 pt-6 border-t border-[var(--border)]/30 text-xs text-[var(--fg-muted)] flex flex-wrap gap-x-4 gap-y-2 justify-between items-center">
+    <span class="flex items-center gap-1.5 flex-wrap">
+      © {year} Jason Scurtu · Non-commercial open-source project · made with
+      <svg
+        width="13"
+        height="13"
+        viewBox="0 0 24 24"
+        fill="#e74c3c"
+        aria-label="love"
+        class="inline-block animate-pulse"
+      >
+        <path
+          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+        />
+      </svg>
+    </span>
+    <div class="flex flex-wrap gap-x-4 gap-y-1">
+      <a href="/datenschutz" class="hover:text-[var(--fg)]">Datenschutz</a>
+      <a href="/legal" class="hover:text-[var(--fg)]">Legal &amp; Trademarks</a>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-6 mt-4 text-[11px] text-[var(--fg-subtle)] leading-relaxed">
+    <p>
+      KDE® and the K Desktop Environment® logo are registered trademarks of <a
+        href="https://ev.kde.org"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="underline hover:text-[var(--fg)]">KDE e.V.</a
+      > AppGrid is an independent, community-developed third-party application and is <strong
+        class="text-[var(--fg-muted)]">not affiliated with, endorsed by, or sponsored by KDE e.V.</strong
+      > All other trademarks are the property of their respective owners.
+    </p>
+  </div>
+</footer>

@@ -1,0 +1,33 @@
+---
+import InstallTabs from "./InstallTabs";
+import BuildFromSource from "./BuildFromSource";
+import DistroStrip from "./DistroStrip.astro";
+import { primary, repoUrl, releasesUrl } from "../config/repo";
+---
+
+<section id="install" class="py-20 md:py-28 border-t border-[var(--border)]/50">
+  <div class="max-w-4xl mx-auto px-6">
+    <div class="text-center mb-10">
+      <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">
+        Install AppGrid
+      </h2>
+      <p class="text-lg text-[var(--fg-muted)]">
+        Pre-built packages for the major distros. Or build from source.
+      </p>
+    </div>
+
+    <DistroStrip />
+
+    <InstallTabs
+      client:visible
+      releasesUrl={releasesUrl(primary)}
+    />
+
+    <BuildFromSource client:visible cloneUrl={`${repoUrl(primary)}.git`} />
+
+    <p class="text-center text-sm text-[var(--fg-muted)] mt-6">
+      After installing, right-click your panel launcher → <span class="text-[var(--fg)] font-medium">Show Alternatives</span>
+      → <span class="text-[var(--fg)] font-medium">AppGrid</span>.
+    </p>
+  </div>
+</section>

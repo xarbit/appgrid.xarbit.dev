@@ -1,0 +1,178 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
+import { primary, repoUrl, issuesUrl } from "../config/repo";
+
+const lastUpdated = "2026-05-15";
+---
+
+<Layout
+  title="Datenschutzerklärung — AppGrid for Plasma"
+  description="Datenschutzerklärung für appgrid.xarbit.dev"
+  lang="de"
+>
+  <Navbar />
+
+  <main id="main" class="max-w-3xl mx-auto px-6 py-16 md:py-24">
+    <article class="prose prose-invert prose-headings:text-[var(--fg)] prose-headings:font-bold prose-a:text-[#3daee9] prose-strong:text-[var(--fg)]">
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-2">
+        Datenschutzerklärung
+      </h1>
+      <p class="text-sm text-[var(--fg-muted)] mb-10">
+        Stand: {lastUpdated}
+      </p>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold">1. Verantwortlich für diesen Auftritt</h2>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Diese Website ist ein nicht-kommerzielles, privates Open-Source-Projekt. Es werden
+          keine Dienstleistungen angeboten, keine Spenden entgegengenommen und keine Werbung
+          geschaltet. Kontakt erfolgt ausschließlich über das öffentliche Issue-Tracking auf
+          <a href={issuesUrl(primary)} target="_blank" rel="noopener noreferrer"
+            >{primary.label}</a
+          >.
+        </p>
+      </section>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold">2. Hosting durch GitHub Pages</h2>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Diese Website wird über <strong>GitHub Pages</strong> bereitgestellt, einen Dienst
+          der GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA
+          (Tochterunternehmen der Microsoft Corporation).
+        </p>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Beim Aufruf der Website werden durch GitHub automatisch sogenannte Server-Logfiles
+          erhoben, die ihr Browser an GitHubs Server übermittelt. Dies sind:
+        </p>
+        <ul class="list-disc pl-6 text-[var(--fg-body)] space-y-1">
+          <li>IP-Adresse</li>
+          <li>Datum und Uhrzeit der Anfrage</li>
+          <li>Zeitzonendifferenz zur Greenwich Mean Time (GMT)</li>
+          <li>Inhalt der Anforderung (konkrete Seite)</li>
+          <li>HTTP-Statuscode</li>
+          <li>Übertragene Datenmenge</li>
+          <li>Referrer-URL</li>
+          <li>Browser- und Betriebssystemkennung</li>
+        </ul>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Diese Daten werden zur Anzeige der Website und aus Sicherheitsgründen verarbeitet
+          (Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO — berechtigtes Interesse an einer
+          technisch fehlerfreien Bereitstellung). Wir haben keinen Einfluss auf Umfang und
+          Speicherdauer dieser Logs durch GitHub.
+        </p>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          <strong>Datentransfer in die USA:</strong> Durch das Hosting bei GitHub werden
+          personenbezogene Daten (insbesondere IP-Adressen) in die USA übertragen. GitHub /
+          Microsoft sind unter dem EU-U.S. Data Privacy Framework (DPF, Angemessenheitsbeschluss
+          der EU-Kommission vom 10.07.2023) zertifiziert. Datenschutzerklärung von GitHub:
+          <a
+            href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement"
+            target="_blank"
+            rel="noopener noreferrer"
+            >docs.github.com/site-policy/privacy-policies/github-privacy-statement</a
+          >.
+        </p>
+      </section>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold">3. Kein Tracking, keine Cookies, kein Analytics</h2>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Diese Website verwendet <strong>keine Cookies</strong>, kein Analytics-Tool, kein
+          Tracking, keine Werbung und keine Drittanbieter-Skripte. Es werden keine Daten zur
+          Profilbildung gesammelt.
+        </p>
+      </section>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold">4. Eingebundene Schriftarten</h2>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Die verwendeten Schriftarten <strong>Noto Sans</strong> und <strong>JetBrains Mono</strong>
+          werden lokal vom Server dieser Website ausgeliefert. Es findet <em>keine</em> Verbindung
+          zu Google Fonts oder anderen Drittanbietern statt.
+        </p>
+      </section>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold">5. Externe Links</h2>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Diese Website enthält Links zu externen Diensten (z.&nbsp;B. <a
+            href={repoUrl(primary)}
+            target="_blank"
+            rel="noopener noreferrer">{primary.label}</a
+          >, AUR, OBS). Beim Klick auf einen solchen Link verlassen Sie diese Seite. Für die
+          Datenverarbeitung auf den verlinkten Seiten sind die jeweiligen Anbieter verantwortlich.
+        </p>
+      </section>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold">6. Ihre Rechte</h2>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Sie haben gegenüber dem Verantwortlichen die folgenden Rechte hinsichtlich Ihrer
+          personenbezogenen Daten:
+        </p>
+        <ul class="list-disc pl-6 text-[var(--fg-body)] space-y-1">
+          <li>Recht auf Auskunft (Art. 15 DSGVO)</li>
+          <li>Recht auf Berichtigung (Art. 16 DSGVO)</li>
+          <li>Recht auf Löschung (Art. 17 DSGVO)</li>
+          <li>Recht auf Einschränkung der Verarbeitung (Art. 18 DSGVO)</li>
+          <li>Recht auf Datenübertragbarkeit (Art. 20 DSGVO)</li>
+          <li>Widerspruchsrecht (Art. 21 DSGVO)</li>
+          <li>
+            Beschwerderecht bei einer Aufsichtsbehörde (Art. 77 DSGVO) — zuständig ist die
+            Datenschutzbehörde Ihres Wohnsitzes
+          </li>
+        </ul>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Da diese Website selbst keine personenbezogenen Daten erhebt, speichert oder
+          verarbeitet, können Auskunfts- und Löschanfragen bzgl. Server-Logs ausschließlich
+          direkt an GitHub gerichtet werden.
+        </p>
+      </section>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold">7. Markenrechtliche Hinweise</h2>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          <strong>KDE®</strong> und das <strong>K Desktop Environment®</strong>-Logo sind
+          eingetragene Marken der <a
+            href="https://ev.kde.org"
+            target="_blank"
+            rel="noopener noreferrer">KDE&nbsp;e.V.</a
+          > <strong>Plasma™</strong>, <strong>Kickoff</strong>, <strong>Kicker</strong> und
+          <strong>KRunner</strong> sind Marken der KDE&nbsp;e.V. Die Verwendung auf dieser
+          Website erfolgt rein beschreibend zur Bezeichnung technischer Kompatibilität im
+          Sinne der <a
+            href="https://kde.org/trademarks/"
+            target="_blank"
+            rel="noopener noreferrer">KDE Trademark Policy</a
+          >. AppGrid ist ein unabhängiges Drittanbieter-Projekt und steht in keinerlei
+          Verbindung zu, wird nicht unterstützt von und wird nicht gesponsert durch die
+          KDE&nbsp;e.V. Eine vollständige Übersicht der Markenhinweise findet sich auf der
+          Seite <a href="/legal" class="text-[#3daee9] hover:underline">Legal &amp; Trademarks</a>.
+        </p>
+      </section>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold">8. Änderungen dieser Datenschutzerklärung</h2>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Diese Datenschutzerklärung kann angepasst werden, wenn sich technische Gegebenheiten
+          oder rechtliche Rahmenbedingungen ändern. Die jeweils aktuelle Version finden Sie
+          stets auf dieser Seite.
+        </p>
+      </section>
+
+      <p class="mt-12">
+        <a href="/" class="text-sm text-[var(--fg-muted)] hover:text-[var(--fg)]">← Zurück zur Startseite</a>
+      </p>
+    </article>
+  </main>
+
+  <Footer />
+</Layout>
+
+<style>
+  article :global(p) {
+    margin-bottom: 0.75rem;
+  }
+</style>

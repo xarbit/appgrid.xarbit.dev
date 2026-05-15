@@ -1,0 +1,139 @@
+---
+import "@fontsource/noto-sans/400.css";
+import "@fontsource/noto-sans/500.css";
+import "@fontsource/noto-sans/600.css";
+import "@fontsource/noto-sans/700.css";
+import "@fontsource/jetbrains-mono/400.css";
+import "@fontsource/jetbrains-mono/500.css";
+import "../styles/global.css";
+import { getImage } from "astro:assets";
+import ogSource from "../assets/screenshots/launcher-center-default.png";
+import { primary, repoUrl } from "../config/repo";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** ISO language code applied to <html lang>. Defaults to "en". */
+  lang?: string;
+  /** Page type for og:type. "website" (default) or "article". */
+  type?: "website" | "article";
+  /** Set true on the homepage to inject SoftwareApplication JSON-LD. */
+  includeAppSchema?: boolean;
+}
+
+const {
+  title = "AppGrid — Modern Application Launcher for KDE Plasma 6",
+  description = "A modern alternative to Kickoff and Kicker. A grid application launcher for KDE Plasma 6 with unified search, KRunner integration, and animations.",
+  lang = "en",
+  type = "website",
+  includeAppSchema = false,
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const ogImage = await getImage({
+  src: ogSource,
+  width: 1200,
+  height: 630,
+  format: "png",
+  fit: "cover",
+  position: "center",
+});
+const ogImageUrl = new URL(ogImage.src, Astro.site).toString();
+
+const softwareSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "AppGrid",
+  alternateName: "AppGrid for Plasma",
+  applicationCategory: "DesktopApplication",
+  applicationSubCategory: "Launcher",
+  operatingSystem: "Linux (KDE Plasma 6)",
+  description,
+  url: canonicalURL.toString(),
+  image: ogImageUrl,
+  softwareVersion: "1.8.0",
+  license: "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "EUR",
+  },
+  author: {
+    "@type": "Person",
+    name: "Jason Scurtu",
+    url: `https://${primary.platform === "github" ? "github.com" : "codeberg.org"}/${primary.owner}`,
+  },
+  downloadUrl: `${repoUrl(primary)}/releases`,
+  codeRepository: repoUrl(primary),
+  programmingLanguage: ["C++", "QML"],
+  keywords:
+    "KDE Plasma 6, application launcher, Linux, plasmoid, Kickoff alternative, Kicker alternative, KRunner, app grid",
+};
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#1b1e20" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fcfcfc" media="(prefers-color-scheme: light)" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="Jason Scurtu" />
+    <meta
+      name="keywords"
+      content="KDE Plasma 6, application launcher, plasmoid, AppGrid, Kickoff alternative, Kicker alternative, KRunner, Linux launcher, Plasma applet, Arch, Fedora, Ubuntu, openSUSE"
+    />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="alternate" type="application/rss+xml" title="AppGrid releases" href={`${repoUrl(primary)}/releases.atom`} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content="AppGrid for Plasma" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="AppGrid launcher on KDE Plasma 6 desktop" />
+    <meta property="og:locale" content={lang === "de" ? "de_DE" : "en_US"} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content="AppGrid launcher on KDE Plasma 6 desktop" />
+
+    {
+      includeAppSchema && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(softwareSchema)}
+        />
+      )
+    }
+
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          if (stored === "light" || stored === "dark") {
+            document.documentElement.setAttribute("data-theme", stored);
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <slot />
+  </body>
+</html>

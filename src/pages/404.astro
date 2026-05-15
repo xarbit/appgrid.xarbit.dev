@@ -1,0 +1,37 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<Layout
+  title="404 — Page not found · AppGrid for Plasma"
+  description="The page you're looking for doesn't exist."
+>
+  <Navbar />
+
+  <main id="main" class="min-h-[60vh] grid place-items-center px-6 py-20">
+    <div class="text-center max-w-md">
+      <div class="text-7xl md:text-8xl font-bold tracking-tight bg-gradient-to-r from-[#3daee9] to-[#9b59b6] bg-clip-text text-transparent mb-4">
+        404
+      </div>
+      <h1 class="text-2xl md:text-3xl font-bold mb-3">Page not found</h1>
+      <p class="text-[var(--fg-muted)] mb-8 leading-relaxed">
+        The page you're looking for doesn't exist or has moved. Try heading back home or
+        installing AppGrid.
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <a href="/" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+          Back home
+        </a>
+        <a href="/#install" class="btn-secondary">Install</a>
+        <a href="/#faq" class="btn-secondary">FAQ</a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://appgrid.xarbit.dev/sitemap-index.xml

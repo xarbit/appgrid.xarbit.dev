@@ -1,0 +1,36 @@
+---
+const distros = [
+  { name: "Arch Linux", short: "Arch", color: "#1793d1" },
+  { name: "Fedora", short: "Fedora", color: "#3c6eb4" },
+  { name: "Ubuntu", short: "Ubuntu", color: "#e95420" },
+  { name: "Debian", short: "Debian", color: "#a81d33" },
+  { name: "openSUSE", short: "openSUSE", color: "#73ba25" },
+  { name: "Gentoo", short: "Gentoo", color: "#54487a" },
+  { name: "EndeavourOS", short: "EndeavourOS", color: "#7f3fbf" },
+  { name: "CachyOS", short: "CachyOS", color: "#00aaff" },
+  { name: "Manjaro", short: "Manjaro", color: "#34be5b" },
+];
+---
+
+<div class="mb-10">
+  <p class="text-center text-xs uppercase tracking-widest text-[var(--fg-muted)] mb-5">
+    Available on
+  </p>
+  <div class="flex flex-wrap items-center justify-center gap-2 md:gap-3">
+    {
+      distros.map((d) => (
+        <span
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[var(--border)] bg-[var(--card)] text-sm text-[var(--fg-body)]"
+          title={d.name}
+        >
+          <span
+            class="w-2 h-2 rounded-full flex-shrink-0"
+            style={`background: ${d.color};`}
+            aria-hidden="true"
+          />
+          {d.short}
+        </span>
+      ))
+    }
+  </div>
+</div>

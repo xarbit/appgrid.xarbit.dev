@@ -1,0 +1,125 @@
+---
+const features = [
+  {
+    title: "Unified search",
+    desc: "App results and KRunner results merged into one list with Alt+1–9 shortcuts.",
+    icon: "search",
+  },
+  {
+    title: "Two variants",
+    desc: "Standalone centered popup or native Plasma panel popup. Pick what fits your workflow.",
+    icon: "layout",
+  },
+  {
+    title: "Favorites & categories",
+    desc: "Reorderable favorites with edit mode. Categories with Alt+key mnemonics or KDE Menu Editor.",
+    icon: "star",
+  },
+  {
+    title: "Quick commands",
+    desc: "Terminal (t:), shell (:), file browser (/), system info (i:), hidden apps (h:), help (?).",
+    icon: "terminal",
+  },
+  {
+    title: "Smart ranking",
+    desc: "Name prefix > substring > generic name > keyword. Search keywords like \"browser\" find Firefox.",
+    icon: "sparkles",
+  },
+  {
+    title: "Install source detection",
+    desc: "Search by \"flatpak\", \"snap\", or \"web app\". Source badges in results and tooltips.",
+    icon: "package",
+  },
+  {
+    title: "Application actions",
+    desc: "Right-click any app for jumplist actions (e.g., New Private Window).",
+    icon: "mouse",
+  },
+  {
+    title: "Animations",
+    desc: "Open/close: Fade, Scale, Pop, Slide, Glide, Buzz, Twist, Slam. Icon: shake, grow, bounce, spin.",
+    icon: "play",
+  },
+  {
+    title: "Multi-monitor",
+    desc: "Open on active screen or panel screen. LayerShellQt 6.6+ for best results.",
+    icon: "monitor",
+  },
+  {
+    title: "Customizable",
+    desc: "Grid size, icon size, blur, opacity, corner radius, dividers, session buttons.",
+    icon: "sliders",
+  },
+  {
+    title: "Plasma-native",
+    desc: "Respects system animation speed, font size, and Plasma theme corner radius.",
+    icon: "paintbrush",
+  },
+  {
+    title: "Drop-in replacement",
+    desc: "Replace Kickoff or Kicker via Plasma's Show Alternatives. Session management included.",
+    icon: "replace",
+  },
+];
+
+const icons: Record<string, string> = {
+  search:
+    '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  layout:
+    '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
+  star: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  terminal: '<polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>',
+  sparkles:
+    '<path d="M12 3l1.9 5.8L19.5 10l-5.6 1.5L12 17l-1.9-5.5L4.5 10l5.6-1.2L12 3z"/>',
+  package:
+    '<path d="M16.5 9.4 7.5 4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+  mouse: '<rect x="6" y="3" width="12" height="18" rx="6"/><line x1="12" y1="7" x2="12" y2="11"/>',
+  play: '<polygon points="5 3 19 12 5 21 5 3"/>',
+  monitor:
+    '<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>',
+  sliders:
+    '<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>',
+  paintbrush:
+    '<path d="M18.37 2.63 14 7l-3-3 4.37-4.37a2 2 0 0 1 2.83 0l.17.17a2 2 0 0 1 0 2.83z"/><path d="M9 8l-7 7v5h5l7-7"/>',
+  replace:
+    '<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+};
+---
+
+<section id="features" class="py-20 md:py-28">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-14 max-w-2xl mx-auto">
+      <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">
+        Everything you need.
+        <span class="text-[var(--fg-muted)] font-medium">Nothing you don't.</span>
+      </h2>
+      <p class="text-lg text-[var(--fg-muted)]">
+        Polished, fast, and respectful of your Plasma theme. AppGrid feels native because it is.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {
+        features.map((f) => (
+          <div class="breeze-card p-6">
+            <div class="w-10 h-10 rounded-lg bg-[#3daee9]/15 border border-[#3daee9]/30 grid place-items-center text-[#3daee9] mb-4">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                set:html={icons[f.icon]}
+              />
+            </div>
+            <h3 class="text-lg font-semibold mb-1.5">{f.title}</h3>
+            <p class="text-sm text-[var(--fg-muted)] leading-relaxed">{f.desc}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
