@@ -6,6 +6,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 6 * * *"
+  # Fired by the AppGrid repo's "Notify website of release" workflow when
+  # a new release is published, so the site rebuilds with the new version
+  # data immediately instead of waiting up to 24h for the cron.
+  repository_dispatch:
+    types: [appgrid-release]
 
 permissions:
   contents: read
