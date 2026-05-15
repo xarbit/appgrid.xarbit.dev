@@ -55,6 +55,7 @@ export default function InstallTabs({
     {
       id: "fedora",
       label: "Fedora",
+      badge: "CI",
       commands: [
         {
           label: fedoraAssetName ? `Download + install (Fedora x86_64)` : "Download .rpm from Releases",
@@ -68,6 +69,7 @@ export default function InstallTabs({
     {
       id: "ubuntu",
       label: "Ubuntu",
+      badge: "CI",
       commands: [
         {
           label: ubuntuAssetName ? `Download + install (Ubuntu 25.04+ amd64)` : "Download .deb from Releases",
@@ -81,6 +83,7 @@ export default function InstallTabs({
     {
       id: "debian",
       label: "Debian",
+      badge: "CI",
       commands: [
         {
           label: debianAssetName ? `Download + install (Debian 13+ amd64)` : "Download .deb from Releases",
@@ -156,8 +159,15 @@ export default function InstallTabs({
                   className={`px-1.5 py-0.5 text-[10px] rounded uppercase tracking-wide ${
                     t.badge === "Official"
                       ? "bg-[#27ae60]/20 text-[#5fd48a] border border-[#27ae60]/40"
-                      : "bg-[#9b59b6]/20 text-[#c084d6] border border-[#9b59b6]/40"
+                      : t.badge === "CI"
+                        ? "bg-[#f1c40f]/15 text-[#f4d03f] border border-[#f1c40f]/40"
+                        : "bg-[#9b59b6]/20 text-[#c084d6] border border-[#9b59b6]/40"
                   }`}
+                  title={
+                    t.badge === "CI"
+                      ? "Auto-built in CI from GitHub Releases. Provided as-is."
+                      : undefined
+                  }
                 >
                   {t.badge}
                 </span>
