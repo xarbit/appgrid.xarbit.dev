@@ -6,6 +6,7 @@ import {
   issuesUrl,
   releasesUrl,
 } from "../config/repo";
+import Logo from "./Logo.astro";
 
 const year = new Date().getFullYear();
 const allRepos = [primary, ...mirrors];
@@ -14,8 +15,9 @@ const allRepos = [primary, ...mirrors];
 <footer class="border-t border-[var(--border)]/50 py-12 mt-10">
   <div class="max-w-6xl mx-auto px-6 grid gap-8 md:grid-cols-3">
     <div>
-      <div class="font-semibold text-lg mb-2 tracking-tight">
-        AppGrid <span class="text-[var(--fg-muted)] font-normal">for Plasma</span>
+      <div class="flex items-center gap-2.5 font-semibold text-lg mb-2 tracking-tight">
+        <Logo size={28} />
+        <span>AppGrid <span class="text-[var(--fg-muted)] font-normal">for Plasma</span></span>
       </div>
       <p class="text-sm text-[var(--fg-muted)] leading-relaxed">
         A modern application launcher for KDE Plasma 6.

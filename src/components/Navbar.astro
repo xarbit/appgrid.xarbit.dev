@@ -1,6 +1,7 @@
 ---
 import { primary, repoUrl, fetchStars, formatStars } from "../config/repo";
 import ThemeToggle from "./ThemeToggle.astro";
+import Logo from "./Logo.astro";
 
 const links = [
   { href: "#features", label: "Features" },
@@ -17,8 +18,9 @@ const stars = starsCount !== null ? formatStars(starsCount) : null;
 
 <nav class="sticky top-0 z-50 backdrop-blur-md nav-bg border-b border-border-soft">
   <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
-    <a href="/" class="font-semibold text-lg tracking-tight text-fg">
-      AppGrid <span class="text-fg-muted font-normal">for Plasma</span>
+    <a href="/" class="flex items-center gap-2.5 font-semibold text-lg tracking-tight text-fg">
+      <Logo size={28} />
+      <span>AppGrid <span class="text-fg-muted font-normal">for Plasma</span></span>
     </a>
 
     <div class="hidden md:flex items-center gap-7 text-sm text-fg-muted">
