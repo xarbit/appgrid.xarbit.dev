@@ -2,7 +2,9 @@
 import { Image } from "astro:assets";
 import heroLight from "../assets/screenshots/launcher-main.png";
 import heroDark from "../assets/screenshots/launcher-main-dark.png";
-import { primary, mirrors, repoUrl } from "../config/repo";
+import { primary, mirrors, repoUrl, fetchLatestVersion } from "../config/repo";
+
+const version = await fetchLatestVersion(primary);
 ---
 
 <section class="relative overflow-hidden">
@@ -12,7 +14,7 @@ import { primary, mirrors, repoUrl } from "../config/repo";
         class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3daee9]/10 border border-[#3daee9]/30 text-[#93cee9] text-xs font-medium mb-6"
       >
         <span class="w-2 h-2 rounded-full bg-[#3daee9] animate-pulse"></span>
-        KDE Plasma 6 · v1.8.0
+        KDE Plasma 6{version && ` · v${version}`}
       </div>
 
       <h1

@@ -8,7 +8,7 @@ import "@fontsource/jetbrains-mono/500.css";
 import "../styles/global.css";
 import { getImage } from "astro:assets";
 import ogSource from "../assets/screenshots/launcher-center-default.png";
-import { primary, repoUrl } from "../config/repo";
+import { primary, repoUrl, fetchLatestVersion } from "../config/repo";
 
 interface Props {
   title?: string;
@@ -41,6 +41,8 @@ const ogImage = await getImage({
 });
 const ogImageUrl = new URL(ogImage.src, Astro.site).toString();
 
+const latestVersion = await fetchLatestVersion(primary);
+
 const softwareSchema = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -52,7 +54,7 @@ const softwareSchema = {
   description,
   url: canonicalURL.toString(),
   image: ogImageUrl,
-  softwareVersion: "1.8.0",
+  softwareVersion: latestVersion ?? undefined,
   license: "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html",
   offers: {
     "@type": "Offer",

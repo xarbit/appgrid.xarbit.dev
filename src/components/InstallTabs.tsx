@@ -10,9 +10,37 @@ interface Tab {
 
 interface Props {
   releasesUrl: string;
+  releaseHtmlUrl: string;
+  fedoraAssetUrl: string | null;
+  fedoraAssetName: string | null;
+  ubuntuAssetUrl: string | null;
+  ubuntuAssetName: string | null;
+  debianAssetUrl: string | null;
+  debianAssetName: string | null;
 }
 
-export default function InstallTabs({ releasesUrl }: Props) {
+export default function InstallTabs({
+  releasesUrl,
+  releaseHtmlUrl,
+  fedoraAssetUrl,
+  fedoraAssetName,
+  ubuntuAssetUrl,
+  ubuntuAssetName,
+  debianAssetUrl,
+  debianAssetName,
+}: Props) {
+  const fedoraCmd = fedoraAssetUrl && fedoraAssetName
+    ? `curl -LO ${fedoraAssetUrl}\nsudo dnf install ./${fedoraAssetName}`
+    : `# Grab latest .rpm from:\n# ${releasesUrl}\nsudo dnf install ./plasma-applet-appgrid-*.rpm`;
+
+  const ubuntuCmd = ubuntuAssetUrl && ubuntuAssetName
+    ? `curl -LO ${ubuntuAssetUrl}\nsudo apt install ./${ubuntuAssetName}`
+    : `# Grab latest .deb from:\n# ${releasesUrl}\nsudo apt install ./plasma-applet-appgrid_*.deb`;
+
+  const debianCmd = debianAssetUrl && debianAssetName
+    ? `curl -LO ${debianAssetUrl}\nsudo apt install ./${debianAssetName}`
+    : `# Grab latest .deb from:\n# ${releasesUrl}\nsudo apt install ./plasma-applet-appgrid_*.deb`;
+
   const tabs: Tab[] = [
     {
       id: "arch",
@@ -29,20 +57,39 @@ export default function InstallTabs({ releasesUrl }: Props) {
       label: "Fedora",
       commands: [
         {
-          label: "Download .rpm from Releases",
-          code: `# Grab latest from:\n# ${releasesUrl}\nsudo dnf install ./plasma6-applets-appgrid-*.rpm`,
+          label: fedoraAssetName ? `Download + install (Fedora x86_64)` : "Download .rpm from Releases",
+          code: fedoraCmd,
         },
       ],
+      note: fedoraAssetUrl
+        ? `Need aarch64 or a different Fedora version? See all assets on the release page.`
+        : undefined,
     },
     {
       id: "ubuntu",
-      label: "Ubuntu / Debian",
+      label: "Ubuntu",
       commands: [
         {
-          label: "Ubuntu 25.04+ / Debian 13+",
-          code: `# Grab latest .deb from:\n# ${releasesUrl}\nsudo apt install ./plasma6-applets-appgrid_*.deb`,
+          label: ubuntuAssetName ? `Download + install (Ubuntu 25.04+ amd64)` : "Download .deb from Releases",
+          code: ubuntuCmd,
         },
       ],
+      note: ubuntuAssetUrl
+        ? `Need arm64 or Ubuntu 25.10? See all assets on the release page.`
+        : undefined,
+    },
+    {
+      id: "debian",
+      label: "Debian",
+      commands: [
+        {
+          label: debianAssetName ? `Download + install (Debian 13+ amd64)` : "Download .deb from Releases",
+          code: debianCmd,
+        },
+      ],
+      note: debianAssetUrl
+        ? `Need arm64? See all assets on the release page.`
+        : undefined,
     },
     {
       id: "opensuse",
@@ -164,7 +211,21 @@ export default function InstallTabs({ releasesUrl }: Props) {
               <line x1="12" y1="16" x2="12" y2="12" />
               <line x1="12" y1="8" x2="12.01" y2="8" />
             </svg>
-            {current.note}
+            <span>
+              {current.note}{" "}
+              {(current.id === "fedora" ||
+                current.id === "ubuntu" ||
+                current.id === "debian") && (
+                <a
+                  href={releaseHtmlUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--color-breeze-blue)] hover:underline"
+                >
+                  All assets →
+                </a>
+              )}
+            </span>
           </p>
         )}
       </div>

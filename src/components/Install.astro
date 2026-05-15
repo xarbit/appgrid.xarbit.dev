@@ -2,7 +2,20 @@
 import InstallTabs from "./InstallTabs";
 import BuildFromSource from "./BuildFromSource";
 import DistroStrip from "./DistroStrip.astro";
-import { primary, repoUrl, releasesUrl } from "../config/repo";
+import { primary, repoUrl, releasesUrl, fetchLatestRelease, pickAsset } from "../config/repo";
+
+const release = await fetchLatestRelease(primary);
+
+// Asset URL builders — fall back to the release page when an asset isn't found.
+const fallbackUrl = release?.htmlUrl ?? releasesUrl(primary);
+
+const fedoraAsset = release ? pickAsset(release.assets, /fc\d+\.x86_64\.rpm$/) : null;
+const ubuntuAsset = release
+  ? pickAsset(release.assets, /ubuntu[\d.]+_[a-z]+_amd64\.deb$/)
+  : null;
+const debianAsset = release
+  ? pickAsset(release.assets, /debian[\d.]+_[a-z]+_amd64\.deb$/)
+  : null;
 ---
 
 <section id="install" class="py-20 md:py-28 border-t border-[var(--border)]/50">
@@ -14,13 +27,37 @@ import { primary, repoUrl, releasesUrl } from "../config/repo";
       <p class="text-lg text-[var(--fg-muted)]">
         Pre-built packages for the major distros. Or build from source.
       </p>
+      {
+        release && (
+          <a
+            href={release.htmlUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 mt-4 px-3 py-1 rounded-full bg-[var(--color-breeze-blue)]/10 border border-[var(--color-breeze-blue)]/30 text-[var(--color-breeze-blue)] text-xs font-medium hover:bg-[var(--color-breeze-blue)]/15 transition-colors"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Latest release · v{release.tag}
+          </a>
+        )
+      }
     </div>
 
     <DistroStrip />
 
     <InstallTabs
       client:visible
-      releasesUrl={releasesUrl(primary)}
+      releasesUrl={fallbackUrl}
+      fedoraAssetUrl={fedoraAsset?.url ?? null}
+      fedoraAssetName={fedoraAsset?.name ?? null}
+      ubuntuAssetUrl={ubuntuAsset?.url ?? null}
+      ubuntuAssetName={ubuntuAsset?.name ?? null}
+      debianAssetUrl={debianAsset?.url ?? null}
+      debianAssetName={debianAsset?.name ?? null}
+      releaseHtmlUrl={release?.htmlUrl ?? fallbackUrl}
     />
 
     <BuildFromSource client:visible cloneUrl={`${repoUrl(primary)}.git`} />
