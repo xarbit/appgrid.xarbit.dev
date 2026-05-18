@@ -61,12 +61,12 @@ export default function InstallChannel({ stable, prerelease, releasesUrl, releas
       aria-disabled={!stable}
       disabled={!stable}
       onClick={() => stable && setChannel("stable")}
-      className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+      className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
         !stable
           ? "text-[var(--fg-subtle)] border border-transparent opacity-50 cursor-not-allowed"
           : channel === "stable"
-            ? "bg-[var(--color-breeze-blue)]/15 text-[#3daee9] border border-[var(--color-breeze-blue)]/30"
-            : "text-[var(--fg-muted)] hover:text-[var(--fg)] border border-transparent"
+            ? "bg-[var(--color-breeze-blue)]/15 text-[#3daee9] border border-[var(--color-breeze-blue)]/30 shadow-sm shadow-[#3daee9]/15 cursor-pointer"
+            : "text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[var(--color-breeze-blue)]/5 border border-transparent cursor-pointer active:scale-[0.97]"
       }`}
       title={!stable ? "No stable release published yet" : undefined}
     >
@@ -94,12 +94,12 @@ export default function InstallChannel({ stable, prerelease, releasesUrl, releas
       aria-disabled={!prerelease}
       disabled={!prerelease}
       onClick={() => prerelease && setChannel("prerelease")}
-      className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+      className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
         !prerelease
           ? "text-[var(--fg-subtle)] border border-transparent opacity-50 cursor-not-allowed"
           : channel === "prerelease"
-            ? "bg-[#e67e22]/15 text-[#f5a35e] border border-[#e67e22]/40"
-            : "text-[var(--fg-muted)] hover:text-[var(--fg)] border border-transparent"
+            ? "bg-[#e67e22]/15 text-[#f5a35e] border border-[#e67e22]/40 shadow-sm shadow-[#e67e22]/15 cursor-pointer"
+            : "text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[#e67e22]/5 border border-transparent cursor-pointer active:scale-[0.97]"
       }`}
       title={!prerelease ? "No pre-release available right now" : undefined}
     >
@@ -127,6 +127,11 @@ export default function InstallChannel({ stable, prerelease, releasesUrl, releas
   return (
     <>
       <div className="max-w-2xl mx-auto mb-6">
+        <div className="text-center mb-2">
+          <p className="text-xs uppercase tracking-wider text-[var(--fg-muted)] font-semibold">
+            Select release channel
+          </p>
+        </div>
         <div
           role="tablist"
           aria-label="Release channel"
@@ -140,57 +145,74 @@ export default function InstallChannel({ stable, prerelease, releasesUrl, releas
         </p>
       </div>
 
-      <div className="mb-3 flex items-baseline gap-3">
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] uppercase tracking-wider rounded bg-[var(--color-breeze-blue)]/15 text-[#3daee9] border border-[var(--color-breeze-blue)]/30 font-semibold">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M16.5 9.4 7.5 4.21" />
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-          </svg>
-          System package
-        </span>
-        <span className="text-xs text-[var(--fg-muted)]">
-          Installed system-wide via your package manager
-        </span>
+      {/* Key on the active tag so React remounts this subtree when the
+          channel switches, re-triggering the fade-in animation. */}
+      <div key={active.tag} className="install-channel-fade">
+        <div className="mb-3 flex items-baseline gap-3">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] uppercase tracking-wider rounded bg-[var(--color-breeze-blue)]/15 text-[#3daee9] border border-[var(--color-breeze-blue)]/30 font-semibold">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M16.5 9.4 7.5 4.21" />
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+            </svg>
+            System package
+          </span>
+          <span className="text-xs text-[var(--fg-muted)]">
+            Installed system-wide via your package manager
+          </span>
+        </div>
+
+        <InstallTabs
+          releasesUrl={releasesUrl}
+          releaseHtmlUrl={fallbackUrl}
+          arch={active.arch}
+          fedora={active.fedora}
+          ubuntu={active.ubuntu}
+          debian={active.debian}
+          channelTag={active.tag}
+          releaseDownloadBase={releaseDownloadBase}
+        />
+
+        <div className="my-10 flex items-center gap-4">
+          <span className="flex-1 h-px bg-[var(--border)]" />
+          <span className="text-xs uppercase tracking-wider text-[var(--fg-subtle)] font-medium">
+            or
+          </span>
+          <span className="flex-1 h-px bg-[var(--border)]" />
+        </div>
+
+        <div className="mb-3 flex items-baseline gap-3">
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] uppercase tracking-wider rounded bg-[#e67e22]/15 text-[#f5a35e] border border-[#e67e22]/40 font-semibold">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M12 2l9 4v6c0 5-3.5 9.5-9 10-5.5-.5-9-5-9-10V6l9-4z" />
+            </svg>
+            User-local install
+          </span>
+          <span className="text-xs text-[var(--fg-muted)]">
+            Drops into <code className="px-1 rounded bg-[var(--canvas-deep)] border border-[var(--border)] text-[var(--fg)]">~/.local/</code> — no root, no repo
+          </span>
+        </div>
+
+        <UniversalInstall
+          releasesUrl={releasesUrl}
+          releaseHtmlUrl={fallbackUrl}
+          universal={active.universal}
+          channelTag={active.tag}
+          releaseDownloadBase={releaseDownloadBase}
+        />
       </div>
 
-      <InstallTabs
-        releasesUrl={releasesUrl}
-        releaseHtmlUrl={fallbackUrl}
-        arch={active.arch}
-        fedora={active.fedora}
-        ubuntu={active.ubuntu}
-        debian={active.debian}
-        channelTag={active.tag}
-        releaseDownloadBase={releaseDownloadBase}
-      />
-
-      <div className="my-10 flex items-center gap-4">
-        <span className="flex-1 h-px bg-[var(--border)]" />
-        <span className="text-xs uppercase tracking-wider text-[var(--fg-subtle)] font-medium">
-          or
-        </span>
-        <span className="flex-1 h-px bg-[var(--border)]" />
-      </div>
-
-      <div className="mb-3 flex items-baseline gap-3">
-        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] uppercase tracking-wider rounded bg-[#e67e22]/15 text-[#f5a35e] border border-[#e67e22]/40 font-semibold">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M12 2l9 4v6c0 5-3.5 9.5-9 10-5.5-.5-9-5-9-10V6l9-4z" />
-          </svg>
-          User-local install
-        </span>
-        <span className="text-xs text-[var(--fg-muted)]">
-          Drops into <code className="px-1 rounded bg-[var(--canvas-deep)] border border-[var(--border)] text-[var(--fg)]">~/.local/</code> — no root, no repo
-        </span>
-      </div>
-
-      <UniversalInstall
-        releasesUrl={releasesUrl}
-        releaseHtmlUrl={fallbackUrl}
-        universal={active.universal}
-        channelTag={active.tag}
-        releaseDownloadBase={releaseDownloadBase}
-      />
+      <style>{`
+        .install-channel-fade {
+          animation: channelFadeIn 280ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes channelFadeIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .install-channel-fade { animation: none; }
+        }
+      `}</style>
     </>
   );
 }
