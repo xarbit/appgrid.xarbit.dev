@@ -224,13 +224,19 @@ export default function UniversalInstall({
           )}
         </div>
 
-        <div className="flex items-center gap-3 text-xs uppercase tracking-wider text-[var(--fg-subtle)]">
-          <span className="flex-1 h-px bg-[var(--border)]" />
-          <span>Or step-by-step in the terminal ({arch})</span>
-          <span className="flex-1 h-px bg-[var(--border)]" />
-        </div>
+        {/* Divider + step-by-step only when a real tarball exists for the
+            active arch. Skipping the mock keeps stable channels (where
+            universal isn't published) from showing a misleading wall of
+            curl/tar commands pointing at non-existent files. */}
+        {activeAsset && (
+          <div className="flex items-center gap-3 text-xs uppercase tracking-wider text-[var(--fg-subtle)]">
+            <span className="flex-1 h-px bg-[var(--border)]" />
+            <span>Or step-by-step in the terminal ({arch})</span>
+            <span className="flex-1 h-px bg-[var(--border)]" />
+          </div>
+        )}
 
-        {steps.map((step, i) => {
+        {activeAsset && steps.map((step, i) => {
           const key = `universal-${arch}-${i}`;
           return (
             <div key={key}>

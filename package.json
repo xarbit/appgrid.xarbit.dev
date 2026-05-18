@@ -15,7 +15,8 @@
   "scripts": {
     "dev": "astro dev",
     "build:og": "bun run scripts/generate-og.mjs",
-    "build": "bun run scripts/generate-og.mjs && astro build",
+    "build:favicons": "bun run scripts/generate-favicons.mjs",
+    "build": "bun run scripts/generate-og.mjs && bun run scripts/generate-favicons.mjs && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },

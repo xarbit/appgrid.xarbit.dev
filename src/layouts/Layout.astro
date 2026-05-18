@@ -90,7 +90,14 @@ const softwareSchema = {
       content="KDE Plasma 6, application launcher, plasmoid, AppGrid, Kickoff alternative, Kicker alternative, KRunner, Linux launcher, Plasma applet, Arch Linux, Fedora, Ubuntu, Debian, openSUSE, KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, SteamOS, immutable Linux, universal package, ~/.local install"
     />
 
+    <!-- Favicon stack: raster first for crawlers that don't reliably
+         parse SVG (e.g. Google Search results), then SVG for browser
+         tabs / sharp scaling, then .ico for legacy clients. -->
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="canonical" href={canonicalURL} />
     <link rel="alternate" type="application/rss+xml" title="AppGrid releases" href={`${repoUrl(primary)}/releases.atom`} />
 
