@@ -72,7 +72,16 @@ interface Props {
 
 // Mock realistic release asset URLs when CI hasn't published the matching
 // arch yet (so the terminal steps always read like real commands). Names
-// follow what CI emits — see .github/workflows/build.yml.
+// follow what CI emits — see .github/workflows/build.yml +
+// .github/workflows/release.yml.
+
+// Convert a release tag (e.g. "1.8.0-rc.1") into the version segment CI
+// uses inside .rpm / .deb filenames. RPM forbids "-" in Version: and
+// rpmbuild + dpkg-deb end up with "." (e.g. 1.8.0.rc.1). Stable tags pass
+// through unchanged ("1.8.0" -> "1.8.0").
+function debRpmVersion(tag: string): string {
+  return tag.replace(/-/g, ".").replace(/\+.*/, "");
+}
 
 function verifyStep(stepIndex: number, asset: ArchAsset | null, name: string): TerminalStep {
   const hash = asset?.sha256 ?? "<sha256-from-release-page>";
@@ -88,7 +97,7 @@ function fedoraSteps(
   tag: string,
   base: string,
 ): TerminalStep[] {
-  const mockName = `plasma-applet-appgrid-${tag}-1.fc44.${arch}.rpm`;
+  const mockName = `plasma-applet-appgrid-${debRpmVersion(tag)}-1.fc44.${arch}.rpm`;
   const name = asset?.name ?? mockName;
   const url = asset?.url ?? `${base}/v${tag}/${mockName}`;
   return [
@@ -106,10 +115,11 @@ function debSteps(family: "ubuntu" | "debian") {
     base: string,
   ): TerminalStep[] => {
     const debArch = arch === "x86_64" ? "amd64" : "arm64";
+    const v = debRpmVersion(tag);
     const mockName =
       family === "ubuntu"
-        ? `plasma-applet-appgrid_${tag}-1ubuntu25.04_plucky_${debArch}.deb`
-        : `plasma-applet-appgrid_${tag}-1debian13_trixie_${debArch}.deb`;
+        ? `plasma-applet-appgrid_${v}-1ubuntu25.04_plucky_${debArch}.deb`
+        : `plasma-applet-appgrid_${v}-1debian13_trixie_${debArch}.deb`;
     const name = asset?.name ?? mockName;
     const url = asset?.url ?? `${base}/v${tag}/${mockName}`;
     return [

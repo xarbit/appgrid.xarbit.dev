@@ -31,7 +31,9 @@ async function bundleFor(release: LatestRelease | null): Promise<ChannelBundle |
     tag: release.tag,
     htmlUrl: release.htmlUrl,
     arch: {
-      x86_64: await archAsset(release.assets, /^plasma6-applets-appgrid-.*-x86_64\.pkg\.tar\.zst$/),
+      // Exclude -debug- variant; pacman emits it as a sibling .pkg.tar.zst
+      // and pickAsset would catch it if it sorted ahead of the main package.
+      x86_64: await archAsset(release.assets, /^plasma6-applets-appgrid-(?!debug-)[\d._]+-1-x86_64\.pkg\.tar\.zst$/),
       aarch64: null,
     },
     fedora: {
