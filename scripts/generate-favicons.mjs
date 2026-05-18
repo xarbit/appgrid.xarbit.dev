@@ -24,9 +24,19 @@ const svgPath = resolve(publicDir, "favicon.svg");
 const svg = await readFile(svgPath, "utf8");
 
 const sizes = [
+  // Modern browsers (still useful as low-DPI tab icons).
   { name: "favicon-48.png", width: 48 },
+  // Higher-DPI fallback for Google snippets + retina tabs.
   { name: "favicon-96.png", width: 96 },
+  // iOS home-screen + macOS Safari bookmarks / pinned tabs.
   { name: "apple-touch-icon.png", width: 180 },
+  // favicon.ico — historically a multi-size ICO container, but every
+  // modern browser also accepts a PNG with the .ico extension. Astro's
+  // template ships an "A"-logo PNG-in-.ico, and many browsers prefer
+  // /favicon.ico over /favicon.svg even when the SVG link comes first
+  // in <head>. Overwriting with our own 32×32 PNG kills the leftover
+  // Astro A that desktop browsers were still pulling.
+  { name: "favicon.ico", width: 32 },
 ];
 
 for (const { name, width } of sizes) {
