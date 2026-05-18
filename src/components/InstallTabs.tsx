@@ -86,8 +86,8 @@ function debRpmVersion(tag: string): string {
 function verifyStep(stepIndex: number, asset: ArchAsset | null, name: string): TerminalStep {
   const hash = asset?.sha256 ?? "<sha256-from-release-page>";
   return {
-    label: `${stepIndex} — Verify checksum`,
-    code: `echo "${hash}  ${name}" | sha256sum -c -`,
+    label: `${stepIndex} — Verify checksum (optional)`,
+    code: `# Optional integrity check — skip if you trust the source.\necho "${hash}  ${name}" | sha256sum -c -`,
   };
 }
 
@@ -162,8 +162,8 @@ export default function InstallTabs({
         return [
           { label: "1 — Download", code: `curl -LO ${url}` },
           {
-            label: "2 — Verify checksum",
-            code: `echo "${hash}  ${name}" | sha256sum -c -`,
+            label: "2 — Verify checksum (optional)",
+            code: `# Optional integrity check — skip if you trust the source.\necho "${hash}  ${name}" | sha256sum -c -`,
           },
           { label: "3 — Install with pacman", code: `sudo pacman -U ./${name}` },
         ];

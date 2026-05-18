@@ -41,8 +41,8 @@ function buildSteps(
   return [
     { label: "1 — Download", code: `curl -LO ${url}` },
     {
-      label: "2 — Verify checksum",
-      code: `echo "${hash}  ${name}" | sha256sum -c -`,
+      label: "2 — Verify checksum (optional)",
+      code: `# Optional integrity check — skip if you trust the source.\necho "${hash}  ${name}" | sha256sum -c -`,
     },
     { label: "3 — Extract", code: `tar -xzf ${name}` },
     { label: "4 — Run installer", code: `cd ${dir}\n./install.sh` },
