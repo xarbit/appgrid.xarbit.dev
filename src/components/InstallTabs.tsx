@@ -290,54 +290,46 @@ export default function InstallTabs({
 
   return (
     <div className="breeze-card overflow-hidden">
-      <div className="flex flex-wrap border-b border-[var(--border)]">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setActive(t.id)}
-            className={`px-4 md:px-5 py-3 text-sm font-medium transition-colors relative ${
-              active === t.id
-                ? "text-[var(--fg)]"
-                : "text-[var(--fg-muted)] hover:text-[var(--fg)]"
-            }`}
-          >
-            <span className="flex items-center gap-2">
-              <span
-                className="flex-shrink-0"
-                style={{ color: t.color }}
-                aria-hidden="true"
-              >
+      {/* Tab strip: 6 equal-width tabs in one row. Active tab gets a
+          brand-colored bottom bar + faint brand-colored background tint
+          for immediate scannability. Badges (Official / CI / Community)
+          are intentionally dropped from the tab labels — the same info
+          surfaces inside each tab body via the topWarning callout and the
+          AUR tab's "Recommended" pill above the primary steps. */}
+      <div className="flex border-b border-[var(--border)] overflow-x-auto">
+        {tabs.map((t) => {
+          const isActive = active === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setActive(t.id)}
+              aria-selected={isActive}
+              role="tab"
+              className={`flex-1 min-w-[6rem] flex items-center justify-center gap-2 px-3 md:px-4 py-3.5 text-sm font-medium transition-all duration-200 relative cursor-pointer whitespace-nowrap ${
+                isActive
+                  ? "text-[var(--fg)]"
+                  : "text-[var(--fg-muted)] hover:text-[var(--fg)] hover:bg-[var(--canvas-deep)]/50"
+              }`}
+              style={
+                isActive
+                  ? { background: `color-mix(in srgb, ${t.color} 10%, transparent)` }
+                  : undefined
+              }
+            >
+              <span className="flex-shrink-0" style={{ color: t.color }} aria-hidden="true">
                 <DistroLogo distro={t.id as DistroKey} size={16} />
               </span>
-              {t.label}
-              {t.badge && (
+              <span>{t.label}</span>
+              {isActive && (
                 <span
-                  className={`px-1.5 py-0.5 text-[10px] rounded uppercase tracking-wide ${
-                    t.badge === "Official"
-                      ? "bg-[#27ae60]/20 text-[#5fd48a] border border-[#27ae60]/40"
-                      : t.badge === "CI"
-                        ? "bg-[#f1c40f]/15 text-[#f4d03f] border border-[#f1c40f]/40"
-                        : t.badge === "Beta"
-                          ? "bg-[#e67e22]/20 text-[#f5a35e] border border-[#e67e22]/40"
-                          : "bg-[#9b59b6]/20 text-[#c084d6] border border-[#9b59b6]/40"
-                  }`}
-                  title={
-                    t.badge === "CI"
-                      ? "Auto-built in CI from GitHub Releases. Provided as-is."
-                      : t.badge === "Beta"
-                        ? "New install path in 1.8.0 — please report any issues."
-                        : undefined
-                  }
-                >
-                  {t.badge}
-                </span>
+                  className="absolute inset-x-0 bottom-0 h-0.5"
+                  style={{ background: t.color }}
+                  aria-hidden="true"
+                />
               )}
-            </span>
-            {active === t.id && (
-              <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[#3daee9]" />
-            )}
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
 
       <div className="p-5 md:p-6 space-y-5">
