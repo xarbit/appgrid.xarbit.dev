@@ -1,0 +1,257 @@
+---
+layout: ../layouts/DocsLayout.astro
+title: Docs
+description: Everything beyond install — build, configure, internals, troubleshooting, contributing. Install + screenshots + FAQ live on the home page.
+editPath: src/pages/docs.mdx
+---
+
+## Build from source
+
+Standard CMake build. Install KDE Frameworks 6 + Qt 6 dev headers first (see [Dependencies](#dependencies-per-distro)), then:
+
+```bash
+git clone https://github.com/xarbit/plasma6-applet-appgrid.git
+cd plasma6-applet-appgrid
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+cmake --build build -j$(nproc)
+sudo cmake --install build
+kquitapp6 plasmashell && kstart plasmashell
+```
+
+Pass `-DAPPGRID_UNIVERSAL_BUILD=ON` to compile in the opt-in update checker (only used by the universal-tarball CI build). Pass `-DAPPGRID_VERSION_OVERRIDE=<ver>` to bake an explicit version string into the binary (see [Versioning](#versioning-scheme)).
+
+**Arch users:** a `PKGBUILD` ships at the repo root. Build a proper pacman package with `makepkg -sf`, install via `sudo pacman -U`.
+
+## Dependencies (per distro)
+
+Authoritative dep lists live alongside their packaging spec — keep these in sync with what you actually install.
+
+- **Arch:** see [PKGBUILD](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/PKGBUILD) (`depends=` + `makedepends=`)
+- **Fedora:** see [packages/rpm/fedora.spec.in](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/rpm/fedora.spec.in) + CI dnf install list in [.github/workflows/build.yml](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/.github/workflows/build.yml)
+- **Debian / Ubuntu:** see [packages/deb/control.in](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/deb/control.in) + CI apt install list
+- **Universal tarball runtime:** see [packages/universal/distros.toml](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/universal/distros.toml) — per-distro runtime packages, `install.py` verifies via `ldd` before placing any files
+
+Core runtime: `plasma-workspace`, `libplasma`, `kservice`, `ki18n`, `kio`, `kpackage`, `kcoreaddons`, `kwindowsystem`, `krunner`, `kirigami`, `layer-shell-qt`, `plasma-activities`, `qt6-base`, `qt6-declarative`.
+
+## CMake build options
+
+Pass with `-D<option>=<value>` on the `cmake -B build` invocation.
+
+| Option | Default | Effect |
+|---|---|---|
+| `APPGRID_VERSION_OVERRIDE` | (empty — derived from git) | Bake an explicit version string into the binary. CI passes this for every release so the binary self-reports the exact release tag (see [Versioning](#versioning-scheme)). |
+| `APPGRID_UNIVERSAL_BUILD` | OFF | Compile in the opt-in [update checker](#update-checker--technical). ON only for the universal-tarball CI job; distro packages leave this OFF so the package manager handles updates. |
+| `ENABLE_X11` | ON | Compile X11-specific session support (frameless window flags + manual screen positioning for the Center variant on X11). Turn OFF for Wayland-only builds (Plasma 6.8+). |
+| `BUILD_TESTING` | OFF | Build the C++ + QML test suite. See [Running the test suite](#running-the-test-suite). |
+
+Standard CMake options also apply: `CMAKE_BUILD_TYPE` (Release / RelWithDebInfo / Debug / None), `CMAKE_INSTALL_PREFIX` (default `/usr/local` — set to `/usr` for system installs), `KDE_INSTALL_QTPLUGINDIR` (override the Qt plugin install path — the universal tarball CI pins this to `lib/qt6/plugins`).
+
+## Configuration reference
+
+Right-click the AppGrid panel icon → **Configure AppGrid**. Settings marked *(Center only)* apply only to the AppGrid Center variant; the Panel variant uses Plasma's native popup for those.
+
+| Setting | Description | Default |
+|---|---|---|
+| Icon | Panel icon or custom image | start-here-kde-symbolic |
+| Icons per row *(Center)* | Columns in the grid | 7 |
+| Visible rows *(Center)* | Rows visible before scrolling | 4 |
+| Icon size | Small (32 px), medium (48 px), large (64 px) | Large |
+| Sort order | Alphabetical, Most Used, By Category | Most Used |
+| Open on active screen | Open on mouse focus screen or panel screen | On |
+| Show category bar | Show or hide the category filter bar | On |
+| Search all apps | Search across categories regardless of active tab | On |
+| Start with favorites | Open showing favorites instead of all apps | Off |
+| Use system categories | Use KDE Menu Editor categories | Off |
+| Terminal shell | Shell for `t:` commands | /bin/sh |
+| Hide empty categories | Hide categories with no apps | On |
+| Show divider lines | Dividers between UI sections | On |
+| Show scrollbars | Scrollbars in grid and search | Off |
+| Show tooltips on hover | App description + install source on hover | On |
+| Open/close animation *(Center)* | None, Fade, Scale, Pop, Slide Up/Down, Glide, Buzz, Twist, Slam | Scale |
+| Background blur *(Center)* | Blur behind the launcher | On |
+| Dim background *(Center)* | Darken the screen behind the launcher | Off |
+| Icon animation | None, Shake, Grow, Bounce, Spin, Shuffle | Shake |
+| Animate icons on open | Play icon animation when launcher opens | On |
+| Show session buttons | Power / session buttons in the bottom row | On |
+| Show button labels | Text labels on session buttons | Off |
+| KRunner plugins | Search bookmarks, files, websites via KRunner | On |
+| Background opacity *(Center)* | Launcher background opacity | 85% |
+| Corner radius *(Center)* | Custom corner radius | Off (uses Plasma theme) |
+
+## Favorites storage
+
+AppGrid stores favorites in KDE's activity-aware favorites backend (`KAStatsFavoritesModel`, backed by `KActivitiesStats` from KDE Frameworks). Each AppGrid instance writes to its own client namespace (`dev.xarbit.appgrid.favorites.instance-<id>`).
+
+What that means in practice:
+
+- Favorites are activity-aware and sync via standard KDE sync mechanisms if configured.
+- AppGrid does **not** share favorites with Kickoff or Kicker — each launcher uses its own client namespace (the convention KDE-shipped launchers already follow).
+- AppGrid does **not** override or modify Kickoff / Kicker settings.
+
+Upgrading from an earlier version? See the [migration notes](#help--troubleshooting).
+
+## Plasmoid variants & IDs
+
+AppGrid ships as two plasmoids sharing a common C++ codebase but with separate metadata + applet IDs so they can be installed and configured independently.
+
+- **AppGrid (Center)** — applet ID `dev.xarbit.appgrid`. Standalone window with its own blur, opacity, corner radius, animations.
+- **AppGrid (Panel)** — applet ID `dev.xarbit.appgrid.panel`. Native Plasma popup anchored to the panel icon (Kickoff-style).
+
+Both share the same grid, search, categories, quick commands, and favorite storage backend. Settings that don't make sense for the panel variant (window-level blur, opacity, corner radius, open/close animation, multi-monitor screen selection) are managed by Plasma's native popup instead and don't appear in its Configure dialog.
+
+## Universal package internals
+
+The universal tarball (`appgrid-universal-<version>-<arch>.tar.gz`) is built once per release against Fedora 42 (oldest mainstream distro shipping Plasma libs at SONAME 7) and runs on any Plasma 6.4+ system with matching SONAMEs. Install layout:
+
+- `~/.local/lib/qt6/plugins/plasma/applets/dev.xarbit.appgrid.so` + `…appgrid.panel.so` — compiled plasmoid plugins
+- `~/.local/share/plasma/plasmoids/dev.xarbit.appgrid/` + `…appgrid.panel/` — QML + metadata
+- `~/.local/share/applications/` + `~/.local/share/icons/` — desktop integration
+- `~/.local/share/locale/<lang>/LC_MESSAGES/dev.xarbit.appgrid.mo` — translations
+- `~/.config/plasma-workspace/env/appgrid-user-local.sh` — one-off env script that adds `~/.local/lib/qt6/plugins/` to `QT_PLUGIN_PATH` at session start (this is why first install needs one log-out / log-in)
+- `~/.local/share/appgrid/MANIFEST` + `VERSION` — written by `install.py` so upgrades + the bundled `uninstall.py` know what to touch
+
+**`install.py` preflight:** refuses to run as root, validates `$HOME`, rejects existing system-wide installs (with the per-distro uninstall command), checks for `plasmashell` on `PATH`, runs `ldd` against the plugin to confirm every required library resolves (prints the per-distro install command for any missing deps), and mandatorily verifies `SHA256SUMS` over the payload before writing anything. Override `--allow-coexist` bypasses the system-wide-install refusal at your own risk.
+
+Full guide bundled in every tarball: [packages/universal/INSTALL.TXT](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/universal/INSTALL.TXT).
+
+## Update checker — technical
+
+The opt-in update checker (universal-tarball builds only — CMake flag `APPGRID_UNIVERSAL_BUILD=ON`) lives in [src/updatechecker.cpp](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/src/updatechecker.cpp). Distro packages don't link this in.
+
+- **Schedule:** 24-hour interval with ±2 h jitter; one check on settings-enable.
+- **Transport:** single `HTTPS GET` to `https://appgrid.xarbit.dev/api/latest.json`; TLS 1.2+, generic user-agent (no version), no cookies (cookie jar overridden), proxy-auth disabled, 10 s timeout, 16 KiB response cap.
+- **Rate-limit niceness:** rotating `ETag` stored locally and sent with each request so the CDN can respond `304` when nothing changed; the ETag rotates every 7 checks to avoid being usable as a long-term identifier.
+- **State file:** `~/.cache/plasmashell/dev.xarbit.appgrid.update-checker.json` — last check timestamp, last seen version, current ETag. Written atomically via tmp + rename.
+- **UI behaviour:** if a newer version exists, a small indicator appears near the session buttons. Clicking opens the release notes in your browser. Never auto-installs.
+- **Comparison:** semver-aware (pre-release tags rank older than their stable counterpart; build metadata ignored), validated against `VERSION_RE` before comparison so a malformed response can't poison the UI.
+
+Test coverage: 62 cases in [tests/test_updatechecker.cpp](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/tests/test_updatechecker.cpp) (version comparison, URL scheme validation, response-size cap, ETag rotation, state persistence).
+
+## Versioning scheme
+
+The binary's self-reported version (shown in the `i:` system-info view) is computed at build time by [CMakeLists.txt](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/CMakeLists.txt) in three priority tiers:
+
+1. If `-DAPPGRID_VERSION_OVERRIDE=<ver>` was passed, that wins. CI passes this for every release so the binary string matches the tarball filename + release tag exactly.
+2. Otherwise, if `HEAD` is exactly a release tag, use `CMAKE_PROJECT_VERSION` unchanged (e.g. `"1.8.0"`).
+3. Otherwise it's a local dev build between releases — derive `{BASE}-dev.{N}+self.g{SHA}` (where `N` is commits since the last tag and `SHA` is the 7-char short hash). The `+self.g…` build-metadata suffix flags the binary as hand-built (not a CI artifact). Per semver, build metadata is ignored for ordering — so update behaviour matches the equivalent CI build of the same git state. Useful in bug reports for telling local vs CI binaries apart at a glance.
+
+## Translations
+
+Translation files live in [po/](https://github.com/xarbit/plasma6-applet-appgrid/tree/main/po) as `<lang>/dev.xarbit.appgrid.po`. To add or update a translation:
+
+1. Fork the repo, branch from `main`.
+2. For a new language: copy `po/<closest-lang>/dev.xarbit.appgrid.po` into a new `po/<your-lang>/` directory; edit the `msgstr` entries.
+3. For an existing one: edit the `.po` file directly. Mark fuzzy entries with `#, fuzzy` until reviewed.
+4. Open a PR — keep changes scoped to translation files only; CI runs gettext validation.
+
+Strings to translate are extracted from QML `i18nd("dev.xarbit.appgrid", …)` calls and C++ `i18n(…)` macros. Don't add new `msgid` entries by hand — they'll be regenerated on the next string-extraction pass and lost.
+
+## State file locations
+
+Where AppGrid stores things on disk. Useful when debugging, wiping state, or migrating a setup to a new machine.
+
+- **Plasmoid config** (icon, grid size, sort mode, animations, all settings from [Configuration reference](#configuration-reference)): stored in your containment's `plasma-org.kde.plasma.desktop-appletsrc` (Plasma config dir, usually `~/.config/`). Per-applet — each AppGrid instance has its own.
+- **Hidden apps list** (managed via `h:`): also in the per-applet plasmoid config as `hiddenApps` (StringList of `.desktop` storage IDs).
+- **Recent launches:** per-applet plasmoid config as `recentApps`. Cleared when "Show recently used" is turned off.
+- **Favorites:** KDE Frameworks' KActivitiesStats backend (system-managed, see [Favorites storage](#favorites-storage)). One-time migration flag `favoritesPortedToKAstats` in the plasmoid config tracks whether the 1.7.x → 1.8.x port has run.
+- **Update checker cache** (universal builds, opt-in only): `~/.cache/plasmashell/dev.xarbit.appgrid.update-checker.json` — last check timestamp, last seen version, current ETag. Atomic write via tmp + rename.
+- **Universal install manifest:** `~/.local/share/appgrid/MANIFEST` + `~/.local/share/appgrid/VERSION` — written by `install.py`, read by `uninstall.py` to remove only what was installed.
+- **Universal env script:** `~/.config/plasma-workspace/env/appgrid-user-local.sh` — adds `~/.local/lib/qt6/plugins/` to `QT_PLUGIN_PATH` at session start.
+
+To wipe everything AppGrid wrote: uninstall (system package or `./uninstall.sh` for universal), then delete the cache file + remove the AppGrid widget from your panel (this clears the per-applet config). Favorites in KActivitiesStats can be cleared via System Settings → Activities or by removing every favorite manually from the launcher.
+
+## Running the test suite
+
+C++ and QML tests live in [tests/](https://github.com/xarbit/plasma6-applet-appgrid/tree/main/tests). Configure with `-DBUILD_TESTING=ON` and run via `ctest`:
+
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+cmake --build build -j$(nproc)
+ctest --test-dir build --output-on-failure
+```
+
+Covered:
+
+- `test_appfiltermodel.cpp` — proxy filtering, category / search / favorites filters
+- `test_appmodel_helpers.cpp` — model helpers (storage ID normalization, app entry parsing)
+- `test_filter.cpp` — filter predicates (hidden apps, recents exclusion)
+- `test_search_ranking.cpp` — relevance tiers + most-used boost (see [search ranking FAQ](/#faq))
+- `test_sort.cpp` — sort modes (alphabetical, most used, by category)
+- `test_updatechecker.cpp` — version comparison, URL scheme validation, response-size cap, ETag rotation, state persistence (62 cases)
+- `qml/` — QML behaviour tests via QtQuickTest
+
+Open a PR with new tests when you fix a bug — CI runs `ctest` on every push.
+
+## Help & troubleshooting
+
+### Upgrading from AppGrid 1.7.x
+
+1.8.0 migrates favorites to KDE's activity-aware backend (`KAStatsFavoritesModel` — see [Favorites storage](#favorites-storage)). On first launch, AppGrid reads your existing legacy `favoriteApps` list and ports those entries into the new backend. The legacy list is kept as a backup so the migration is non-destructive — the flag `favoritesPortedToKAstats` in the plasmoid config tracks whether it has run.
+
+**If favorites look wrong after upgrading** (missing entries, empty, ordering off): type `i:` in the search bar to open the system-info view. It shows the current migration status — KAStats entry count plus the legacy backup count — and a **Re-run migration** button. Clicking it clears the migration flag; on next open AppGrid recomputes the favorites list as the union of the legacy backup and current KAStats entries. Nothing is lost — missing legacy items are re-added.
+
+If the entry counts in the `i:` view themselves look wrong, restart plasmashell to force a fresh model load: `kquitapp6 plasmashell && kstart plasmashell`.
+
+### Switching from a distro package to the universal tarball
+
+Plasma can't reliably load two copies of the same applet ID — uninstall the system package first, then run the universal installer. The bundled `install.py` detects the conflict and prints the matching uninstall command for your distro before doing anything.
+
+- **Arch:** `sudo pacman -R plasma6-applets-appgrid`
+- **Fedora:** `sudo dnf remove plasma-applet-appgrid`
+- **Debian / Ubuntu:** `sudo apt remove plasma-applet-appgrid`
+- **openSUSE:** `sudo zypper remove plasma6-applet-appgrid`
+- **Gentoo:** `sudo emerge -C kde-misc/plasma6-applet-appgrid`
+
+Override with `./install.sh --allow-coexist` at your own risk — Plasma will still load whichever plasmoid wins discovery on next session start, usually the system one.
+
+### Switching from the universal tarball back to a distro package
+
+Run the bundled `./uninstall.sh` from the tarball directory first — it reads `~/.local/share/appgrid/MANIFEST` and removes only the files it placed. Then install the distro package the normal way. The `~/.config/plasma-workspace/env/appgrid-user-local.sh` env script is removed too, so you do need one log-out / log-in after the swap.
+
+### AppGrid doesn't show up after installing
+
+1. Restart plasmashell: `kquitapp6 plasmashell && kstart plasmashell`
+2. For the universal tarball specifically: log out + back in once on first install (Plasma needs to re-read its session env to pick up the new `QT_PLUGIN_PATH`).
+3. Right-click your panel launcher → **Show Alternatives** — AppGrid should appear in the list.
+4. If it's still missing: check the installer's `ldd` probe output for unresolved libraries (universal tarball), or `journalctl --user -b | grep -i plasma` for load errors.
+
+### Getting logs & debugging
+
+AppGrid logs through Qt's normal channels — there's no separate log file. All messages surface in plasmashell's journal. Every message AppGrid emits is prefixed with `AppGrid:` so it's easy to filter.
+
+**Tail the plasmashell journal live:**
+
+```bash
+journalctl --user -f -t plasmashell
+```
+
+**Filter to AppGrid messages only:**
+
+```bash
+journalctl --user -b -t plasmashell | grep AppGrid
+```
+
+**Plugin loading problems** (plasmoid doesn't appear, "Couldn't find plugin" errors): restart plasmashell with verbose Qt plugin logging attached to a terminal — this prints every plugin directory Qt scans and why each candidate is loaded or rejected.
+
+```bash
+kquitapp6 plasmashell
+QT_DEBUG_PLUGINS=1 plasmashell --replace 2>&1 | tee plasmashell.log
+```
+
+For QML import errors specifically, add `QML_IMPORT_TRACE=1` too. Both env vars are *extremely* noisy — only use for one-off debugging sessions.
+
+**Universal installer / uninstaller debugging:** `install.py` and `uninstall.py` print every step to stdout; pass `--dry-run` to `install.py` to see what it would do without writing anything. Errors exit with non-zero status — pipe to a file with `./install.sh 2>&1 | tee install.log`.
+
+**Update checker:** inspect the cache file directly to see what the last check stored: `cat ~/.cache/plasmashell/dev.xarbit.appgrid.update-checker.json`. Force an immediate check by toggling the setting off and on (Configure AppGrid → Check the AppGrid website for new releases).
+
+**Test the plasmoid in isolation** without restarting your whole Plasma session — useful for QML-only changes:
+
+```bash
+plasmoidviewer -a dev.xarbit.appgrid
+```
+
+### Reporting a bug
+
+Type `i:` in the search bar to open the system-info view, then click **Copy** — you'll get a paste-ready report with your AppGrid version, install type (distro vs universal), Plasma version, Qt version, KF6 version, distro, and architecture. Attach it to the issue.
+
+[Open a new issue →](https://github.com/xarbit/plasma6-applet-appgrid/issues/new)

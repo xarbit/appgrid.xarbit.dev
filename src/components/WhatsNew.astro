@@ -1,0 +1,38 @@
+---
+import { primary, releasesUrl, fetchLatestRelease, fetchLatestPrerelease } from "../config/repo";
+
+const release = await fetchLatestRelease(primary);
+const prerelease = await fetchLatestPrerelease(primary);
+
+const featured = prerelease ?? release;
+const versionLabel = featured?.tag ? `v${featured.tag}` : "the latest release";
+const linkUrl = featured?.htmlUrl ?? releasesUrl(primary);
+const isPrerelease = !!prerelease;
+---
+
+<section id="whats-new" class="py-16 md:py-20 border-t border-[var(--border)]/50">
+  <div class="max-w-3xl mx-auto px-6 text-center">
+    <div class="inline-flex items-center gap-2 px-3 py-1 mb-4 rounded-full bg-[#e67e22]/10 border border-[#e67e22]/40 text-[#f5a35e] text-xs font-medium uppercase tracking-wide">
+      <span class="w-1.5 h-1.5 rounded-full bg-[#e67e22]" />
+      {isPrerelease ? "Pre-release" : "Release"}
+    </div>
+    <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-3">
+      What's new in {versionLabel}
+    </h2>
+    <p class="text-base text-[var(--fg-muted)] mb-6">
+      Full changelog, downloads and SHA256 checksums on the release page.
+    </p>
+    <a
+      href={linkUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-breeze-blue)]/15 border border-[var(--color-breeze-blue)]/30 text-[var(--color-breeze-blue)] hover:bg-[var(--color-breeze-blue)]/25 transition-colors text-sm font-medium"
+    >
+      View release notes
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M7 17L17 7"></path>
+        <polyline points="7 7 17 7 17 17"></polyline>
+      </svg>
+    </a>
+  </div>
+</section>

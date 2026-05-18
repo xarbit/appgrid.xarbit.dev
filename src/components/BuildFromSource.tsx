@@ -35,7 +35,7 @@ export default function BuildFromSource({ cloneUrl }: Props) {
   };
 
   return (
-    <div className="breeze-card overflow-hidden mt-6">
+    <div id="build-from-source" className="breeze-card overflow-hidden mt-6">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

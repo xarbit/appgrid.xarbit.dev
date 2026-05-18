@@ -9,24 +9,36 @@
 //
 // Shape:
 //   {
-//     "version": "1.8.1",                          // normalized, no leading v
-//     "rawTag":  "v1.8.1",                         // original tag
-//     "released": "2026-05-20",                    // YYYY-MM-DD
-//     "release_notes_url": "https://github.com/…",
-//     "universal": {
-//       "x86_64":  { "url": "…", "sha256": "…" },
-//       "aarch64": { "url": "…", "sha256": "…" }
-//     }
+//     "stable": {
+//       "version": "1.7.9",
+//       "rawTag":  "v1.7.9",
+//       "release_notes_url": "https://github.com/…",
+//       "universal": { "x86_64": {url,sha256}, "aarch64": {url,sha256} }
+//     },
+//     "prerelease": {                          // optional, only when ahead
+//       "version": "1.8.0-rc.1",
+//       "rawTag":  "v1.8.0-rc.1",
+//       "release_notes_url": "…",
+//       "universal": { … }
+//     },
+//
+//     // Legacy top-level fields (always reflect stable) — kept for back-compat
+//     // with AppGrid <= 1.8.0-rc.1 update checkers.
+//     "version": "1.7.9",
+//     "rawTag":  "v1.7.9",
+//     "release_notes_url": "…",
+//     "universal": { … }
 //   }
 //
-// AppGrid only reads `version` + `release_notes_url`. The rest is for
-// future Phase 2 ("Update now" download) and for site UI use.
+// In-app update checker reads `stable.version` (or top-level `version` as
+// fallback). Site UI uses both `stable` and `prerelease` to render badges.
 
 import type { APIRoute } from "astro";
 
 import {
   primary,
   fetchLatestRelease,
+  fetchLatestPrerelease,
   pickAsset,
   type LatestRelease,
   type ReleaseAsset,
@@ -37,12 +49,16 @@ interface UniversalEntry {
   sha256?: string;
 }
 
-interface ManifestPayload {
+interface ReleaseBlock {
   version: string;
   rawTag: string;
-  released?: string;
   release_notes_url: string;
   universal: Record<string, UniversalEntry>;
+}
+
+interface ManifestPayload extends ReleaseBlock {
+  stable: ReleaseBlock;
+  prerelease?: ReleaseBlock;
 }
 
 // Match the tarball naming used by packages/universal/build-package.sh:
@@ -75,34 +91,48 @@ async function entryForArch(release: LatestRelease, arch: string): Promise<Unive
   };
 }
 
-export const GET: APIRoute = async () => {
-  const release = await fetchLatestRelease(primary);
-  if (!release) {
-    return new Response(
-      JSON.stringify({ error: "release information unavailable" }, null, 2),
-      { status: 503, headers: { "Content-Type": "application/json" } },
-    );
-  }
-
-  const universal: ManifestPayload["universal"] = {};
+async function buildBlock(release: LatestRelease): Promise<ReleaseBlock> {
+  const universal: Record<string, UniversalEntry> = {};
   for (const arch of ["x86_64", "aarch64"] as const) {
     const entry = await entryForArch(release, arch);
     if (entry) universal[arch] = entry;
   }
-
-  const payload: ManifestPayload = {
+  return {
     version: release.tag,
     rawTag: release.rawTag,
     release_notes_url: release.htmlUrl,
     universal,
   };
+}
+
+export const GET: APIRoute = async () => {
+  const stable = await fetchLatestRelease(primary);
+  if (!stable) {
+    return new Response(
+      JSON.stringify({ error: "release information unavailable" }, null, 2),
+      { status: 503, headers: { "Content-Type": "application/json" } },
+    );
+  }
+  const prerelease = await fetchLatestPrerelease(primary);
+
+  const stableBlock = await buildBlock(stable);
+  const prereleaseBlock = prerelease ? await buildBlock(prerelease) : undefined;
+
+  const payload: ManifestPayload = {
+    // Top-level mirrors `stable` for back-compat with the AppGrid 1.8.0-rc
+    // update checker which only reads `version` + `release_notes_url`.
+    ...stableBlock,
+    stable: stableBlock,
+    ...(prereleaseBlock ? { prerelease: prereleaseBlock } : {}),
+  };
 
   return new Response(JSON.stringify(payload, null, 2), {
     headers: {
       "Content-Type": "application/json",
-      // Hint for any caching layer in front of GitHub Pages — file refreshes
-      // on each site build, which itself only happens on release publish.
       "Cache-Control": "public, max-age=3600",
+      // Belt + suspenders alongside robots.txt Disallow and the sitemap
+      // filter — this is a machine-readable endpoint, not a page.
+      "X-Robots-Tag": "noindex, nofollow",
     },
   });
 };

@@ -2,63 +2,82 @@
 const features = [
   {
     title: "Unified search",
-    desc: "App results and KRunner results merged into one list with Alt+1–9 shortcuts.",
+    desc: "App results and KRunner results in one list. Alt+1–9 to launch by position. Search by keyword (\"browser\" finds Firefox) or install source (\"flatpak\", \"snap\", \"web app\").",
     icon: "search",
   },
   {
+    title: "Smart ranking",
+    desc: "Name prefix beats substring beats generic name beats keyword. Recent launches bubble up.",
+    icon: "sparkles",
+  },
+  {
+    title: "Quick commands",
+    desc: "Terminal (t:), shell (:), file browser (/), system info (i:), hidden apps (h:), help (?). Each prefix opens a focused view.",
+    icon: "terminal",
+  },
+  {
+    title: "Application actions",
+    desc: "Right-click any app for jumplist actions (e.g., New Private Window, New Document) sourced from its .desktop file.",
+    icon: "mouse",
+  },
+  {
     title: "Two variants",
-    desc: "Standalone centered popup or native Plasma panel popup. Pick what fits your workflow.",
+    desc: "AppGrid (Center) — standalone window with its own blur, opacity, corner radius. AppGrid (Panel) — native Plasma popup anchored to the panel icon, Kickoff-style.",
     icon: "layout",
   },
   {
     title: "Favorites & categories",
-    desc: "Reorderable favorites with edit mode. Categories with Alt+key mnemonics or KDE Menu Editor.",
+    desc: "Reorder favorites by drag-and-drop or Ctrl+Shift+arrow — both new in 1.8.0, no edit mode needed. By-category view with Alt+key mnemonics, backed by either AppGrid's built-in mapping or KDE Menu Editor.",
     icon: "star",
   },
   {
-    title: "Quick commands",
-    desc: "Terminal (t:), shell (:), file browser (/), system info (i:), hidden apps (h:), help (?).",
-    icon: "terminal",
+    title: "Drag & drop everywhere",
+    desc: "Drag apps from any view (All, Favorites, By Category) onto your panel, desktop, or the Favorites strip. By-category drag-out is new in 1.8.0.",
+    icon: "drag",
+    badge: "New in 1.8.0",
   },
   {
-    title: "Smart ranking",
-    desc: "Name prefix > substring > generic name > keyword. Search keywords like \"browser\" find Firefox.",
-    icon: "sparkles",
-  },
-  {
-    title: "Install source detection",
-    desc: "Search by \"flatpak\", \"snap\", or \"web app\". Source badges in results and tooltips.",
-    icon: "package",
-  },
-  {
-    title: "Application actions",
-    desc: "Right-click any app for jumplist actions (e.g., New Private Window).",
-    icon: "mouse",
+    title: "Recent activity",
+    desc: "Launches are broadcast to KActivities so apps you start through AppGrid show up in Plasma's system-wide recent activity (Activity Switcher, KRunner).",
+    icon: "activity",
+    badge: "New in 1.8.0",
   },
   {
     title: "Animations",
-    desc: "Open/close: Fade, Scale, Pop, Slide, Glide, Buzz, Twist, Slam. Icon: shake, grow, bounce, spin.",
+    desc: "Open/close: Fade, Scale, Pop, Slide, Glide, Buzz, Twist, Slam. Icon: shake, grow, bounce, spin. Respects your system animation speed.",
     icon: "play",
   },
   {
-    title: "Multi-monitor",
-    desc: "Open on active screen or panel screen. LayerShellQt 6.6+ for best results.",
-    icon: "monitor",
-  },
-  {
     title: "Customizable",
-    desc: "Grid size, icon size, blur, opacity, corner radius, dividers, session buttons.",
+    desc: "Grid size, icon size, blur, opacity, corner radius, dividers, session buttons, search placement, and more — all per-variant.",
     icon: "sliders",
   },
   {
+    title: "Sort modes",
+    desc: "Alphabetical, Most Used, By Category. Switch from the settings or the sort menu.",
+    icon: "sort",
+  },
+  {
     title: "Plasma-native",
-    desc: "Respects system animation speed, font size, and Plasma theme corner radius.",
+    desc: "Respects system animation speed, font size, accent colour and Plasma theme corner radius. Built on KDE Frameworks (Kirigami, KIO, KRunner, Plasma, KWindowSystem, LayerShellQt) — same building blocks the rest of your desktop uses.",
     icon: "paintbrush",
   },
   {
     title: "Drop-in replacement",
-    desc: "Replace Kickoff or Kicker via Plasma's Show Alternatives. Session management included.",
+    desc: "Replace Kickoff or Kicker via Plasma's Show Alternatives. Session buttons, lock, logout, switch user — all included.",
     icon: "replace",
+  },
+  {
+    title: "Universal tarball install",
+    desc: "User-local ~/.local/ install for any Plasma 6.4+ system. Primary path for immutable distros (KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, SteamOS), available for any other distro too. No root, survives rebases.",
+    icon: "shield",
+    badge: "New in 1.8.0",
+  },
+  {
+    title: "Update indicator",
+    desc: "Universal-build only, opt-in: shows a small indicator near the session buttons when a new release is out. One anonymous HTTPS request per day, no telemetry. Distro packages let your package manager handle updates.",
+    icon: "bell",
+    badge: "New in 1.8.0",
   },
 ];
 
@@ -83,6 +102,16 @@ const icons: Record<string, string> = {
     '<path d="M18.37 2.63 14 7l-3-3 4.37-4.37a2 2 0 0 1 2.83 0l.17.17a2 2 0 0 1 0 2.83z"/><path d="M9 8l-7 7v5h5l7-7"/>',
   replace:
     '<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+  shield:
+    '<path d="M12 2l9 4v6c0 5-3.5 9.5-9 10-5.5-.5-9-5-9-10V6l9-4z"/>',
+  drag:
+    '<polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/>',
+  activity:
+    '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+  bell:
+    '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+  sort:
+    '<path d="M3 6h13"/><path d="M3 12h9"/><path d="M3 18h5"/><path d="M17 18l4-4 4 4"/><path d="M21 14v8"/>',
 };
 ---
 
@@ -90,19 +119,18 @@ const icons: Record<string, string> = {
   <div class="max-w-6xl mx-auto px-6">
     <div class="text-center mb-14 max-w-2xl mx-auto">
       <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">
-        Everything you need.
-        <span class="text-[var(--fg-muted)] font-medium">Nothing you don't.</span>
+        Built for daily use
       </h2>
       <p class="text-lg text-[var(--fg-muted)]">
-        Polished, fast, and respectful of your Plasma theme. AppGrid feels native because it is.
+        Search, launch, drag, customize — the things you'll actually touch.
       </p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {
         features.map((f) => (
-          <div class="breeze-card p-6">
-            <div class="w-10 h-10 rounded-lg bg-[#3daee9]/15 border border-[#3daee9]/30 grid place-items-center text-[#3daee9] mb-4">
+          <div class="breeze-card p-6 group transition-transform duration-300 hover:-translate-y-0.5 hover:border-[var(--color-breeze-blue)]/40">
+            <div class="w-10 h-10 rounded-lg bg-[#3daee9]/15 border border-[#3daee9]/30 grid place-items-center text-[#3daee9] mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
               <svg
                 width="20"
                 height="20"
@@ -115,7 +143,14 @@ const icons: Record<string, string> = {
                 set:html={icons[f.icon]}
               />
             </div>
-            <h3 class="text-lg font-semibold mb-1.5">{f.title}</h3>
+            <h3 class="text-lg font-semibold mb-1.5 flex items-center gap-2">
+              {f.title}
+              {f.badge && (
+                <span class="px-1.5 py-0.5 text-[10px] rounded uppercase tracking-wide bg-[#e67e22]/20 text-[#f5a35e] border border-[#e67e22]/40">
+                  {f.badge}
+                </span>
+              )}
+            </h3>
             <p class="text-sm text-[var(--fg-muted)] leading-relaxed">{f.desc}</p>
           </div>
         ))

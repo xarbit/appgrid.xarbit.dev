@@ -2,19 +2,52 @@
 import { Image } from "astro:assets";
 import heroLight from "../assets/screenshots/launcher-main.png";
 import heroDark from "../assets/screenshots/launcher-main-dark.png";
-import { primary, mirrors, repoUrl, fetchLatestVersion } from "../config/repo";
+import {
+  primary,
+  mirrors,
+  repoUrl,
+  fetchLatestVersion,
+  fetchLatestPrerelease,
+  fetchStars,
+  formatStars,
+} from "../config/repo";
 
-const version = await fetchLatestVersion(primary);
+const stable = await fetchLatestVersion(primary);
+const prerelease = await fetchLatestPrerelease(primary);
+const starsCount = await fetchStars(primary);
+const starsLabel = starsCount !== null ? formatStars(starsCount) : null;
+
+// Distros we package for (count by hand to match install section).
+const distrosPackaged = 6; // Arch, Fedora, Ubuntu, Debian, openSUSE, Gentoo
+const distrosImmutable = 6; // KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, SteamOS
 ---
 
 <section class="relative overflow-hidden">
   <div class="max-w-6xl mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24">
     <div class="text-center max-w-3xl mx-auto">
-      <div
-        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3daee9]/10 border border-[#3daee9]/30 text-[#93cee9] text-xs font-medium mb-6"
-      >
-        <span class="w-2 h-2 rounded-full bg-[#3daee9] animate-pulse"></span>
-        KDE Plasma 6{version && ` · v${version}`}
+      <div class="inline-flex flex-wrap items-center justify-center gap-2 mb-6">
+        {
+          stable && (
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3daee9]/10 border border-[#3daee9]/30 text-[#93cee9] text-xs font-medium">
+              <span class="w-2 h-2 rounded-full bg-[#3daee9] animate-pulse" />
+              stable: v{stable}
+            </span>
+          )
+        }
+        {
+          prerelease && (
+            <a
+              href={prerelease.htmlUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e67e22]/10 border border-[#e67e22]/40 text-[#f5a35e] text-xs font-medium hover:bg-[#e67e22]/20 transition-colors"
+              title="Pre-release available — click for release notes"
+            >
+              <span class="w-2 h-2 rounded-full bg-[#e67e22] animate-pulse" />
+              pre-release: v{prerelease.tag}
+            </a>
+          )
+        }
       </div>
 
       <h1
@@ -29,9 +62,11 @@ const version = await fetchLatestVersion(primary);
       </h1>
 
       <p class="text-lg md:text-xl text-[var(--fg-muted)] mb-10 max-w-2xl mx-auto leading-relaxed">
-        A modern alternative to Kickoff and Kicker. A grid launcher for KDE Plasma 6 —
-        unified search, KRunner integration, animations. Packaged for Arch, Fedora,
-        Ubuntu, Debian, and openSUSE.
+        A grid-style replacement for Kickoff and Kicker with unified search,
+        KRunner integration and smooth animations. Packaged for Arch, Fedora,
+        Ubuntu, Debian and openSUSE, plus a universal <code>~/.local/</code>
+        tarball that runs on any Plasma 6.4+ system, immutable distros included
+        (KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, SteamOS).
       </p>
 
       <div class="flex flex-wrap items-center justify-center gap-3">
@@ -77,25 +112,62 @@ const version = await fetchLatestVersion(primary);
         )
       }
 
-      <div class="mt-6 text-sm text-[var(--fg-muted)] flex flex-wrap justify-center gap-x-6 gap-y-2">
-        <span class="flex items-center gap-1.5">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-          Wayland-first
-        </span>
-        <span class="flex items-center gap-1.5">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-          Free &amp; open source
-        </span>
-        <span class="flex items-center gap-1.5">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-          GPL-2.0
-        </span>
+      <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl mx-auto">
+        {starsLabel && (
+          <a
+            href={repoUrl(primary)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex flex-col items-center gap-1 p-3 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:border-[#f1c40f]/40 transition-colors group"
+          >
+            <div class="flex items-center gap-1.5 text-[#f4d03f]">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <span class="font-semibold text-[var(--fg)] tabular-nums">{starsLabel}</span>
+            </div>
+            <span class="text-xs text-[var(--fg-muted)] uppercase tracking-wide">{primary.label} stars</span>
+          </a>
+        )}
+
+        <div class="flex flex-col items-center gap-1 p-3 rounded-lg border border-[var(--border)] bg-[var(--card)]">
+          <div class="flex items-center gap-1.5 text-[#3daee9]">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M16.5 9.4 7.5 4.21" />
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </svg>
+            <span class="font-semibold text-[var(--fg)] tabular-nums">{distrosPackaged + distrosImmutable}+</span>
+          </div>
+          <span class="text-xs text-[var(--fg-muted)] uppercase tracking-wide">distros supported</span>
+        </div>
+
+        {stable && (
+          <a
+            href="#whats-new"
+            class="flex flex-col items-center gap-1 p-3 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:border-[var(--color-breeze-blue)]/40 transition-colors"
+          >
+            <div class="flex items-center gap-1.5 text-[#5fd48a]">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span class="font-semibold text-[var(--fg)] tabular-nums">v{stable}</span>
+            </div>
+            <span class="text-xs text-[var(--fg-muted)] uppercase tracking-wide">latest stable</span>
+          </a>
+        )}
+
+        <div class="flex flex-col items-center gap-1 p-3 rounded-lg border border-[var(--border)] bg-[var(--card)]">
+          <div class="flex items-center gap-1.5 text-[#c084d6]">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M9 12l2 2 4-4" />
+              <circle cx="12" cy="12" r="10" />
+            </svg>
+            <span class="font-semibold text-[var(--fg)]">GPL-2.0</span>
+          </div>
+          <span class="text-xs text-[var(--fg-muted)] uppercase tracking-wide">free &amp; open</span>
+        </div>
       </div>
     </div>
 

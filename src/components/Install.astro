@@ -1,70 +1,176 @@
 ---
-import InstallTabs from "./InstallTabs";
+import InstallChannel, { type ChannelBundle } from "./InstallChannel";
 import BuildFromSource from "./BuildFromSource";
-import DistroStrip from "./DistroStrip.astro";
-import { primary, repoUrl, releasesUrl, fetchLatestRelease, pickAsset } from "../config/repo";
+import {
+  primary,
+  repoUrl,
+  releasesUrl,
+  fetchLatestRelease,
+  fetchLatestPrerelease,
+  pickAsset,
+  fetchSha256Sidecar,
+  type LatestRelease,
+  type ReleaseAsset,
+} from "../config/repo";
 
-const release = await fetchLatestRelease(primary);
+const stable = await fetchLatestRelease(primary);
+const prerelease = await fetchLatestPrerelease(primary);
 
-// Asset URL builders — fall back to the release page when an asset isn't found.
-const fallbackUrl = release?.htmlUrl ?? releasesUrl(primary);
+const fallbackUrl = stable?.htmlUrl ?? releasesUrl(primary);
 
-const fedoraAsset = release ? pickAsset(release.assets, /fc\d+\.x86_64\.rpm$/) : null;
-const ubuntuAsset = release
-  ? pickAsset(release.assets, /ubuntu[\d.]+_[a-z]+_amd64\.deb$/)
-  : null;
-const debianAsset = release
-  ? pickAsset(release.assets, /debian[\d.]+_[a-z]+_amd64\.deb$/)
-  : null;
+async function archAsset(assets: ReleaseAsset[], pattern: RegExp) {
+  const asset = pickAsset(assets, pattern);
+  if (!asset) return null;
+  const sha256 = await fetchSha256Sidecar(assets, asset.name);
+  return { url: asset.url, name: asset.name, sha256: sha256 ?? null };
+}
+
+async function bundleFor(release: LatestRelease | null): Promise<ChannelBundle | null> {
+  if (!release) return null;
+  return {
+    tag: release.tag,
+    htmlUrl: release.htmlUrl,
+    arch: {
+      x86_64: await archAsset(release.assets, /^plasma6-applets-appgrid-.*-x86_64\.pkg\.tar\.zst$/),
+      aarch64: null,
+    },
+    fedora: {
+      x86_64: await archAsset(release.assets, /fc\d+\.x86_64\.rpm$/),
+      aarch64: await archAsset(release.assets, /fc\d+\.aarch64\.rpm$/),
+    },
+    ubuntu: {
+      x86_64: await archAsset(release.assets, /ubuntu[\d.]+_[a-z]+_amd64\.deb$/),
+      aarch64: await archAsset(release.assets, /ubuntu[\d.]+_[a-z]+_arm64\.deb$/),
+    },
+    debian: {
+      x86_64: await archAsset(release.assets, /debian[\d.]+_[a-z]+_amd64\.deb$/),
+      aarch64: await archAsset(release.assets, /debian[\d.]+_[a-z]+_arm64\.deb$/),
+    },
+    universal: {
+      x86_64: await archAsset(release.assets, /^appgrid-universal-.*-x86_64\.tar\.gz$/),
+      aarch64: await archAsset(release.assets, /^appgrid-universal-.*-aarch64\.tar\.gz$/),
+    },
+  };
+}
+
+const stableBundle = await bundleFor(stable);
+const prereleaseBundle = await bundleFor(prerelease);
+
+// Base for mock fallback URLs — only used when CI hasn't published an
+// asset for a given arch yet. Derived from repo config so it follows
+// owner/repo renames automatically.
+const releaseDownloadBase = `${repoUrl(primary)}/releases/download`;
 ---
 
-<section id="install" class="py-20 md:py-28 border-t border-[var(--border)]/50">
+<section id="install" class="py-20 md:py-28 border-t border-[var(--border)]/50 overflow-hidden">
   <div class="max-w-6xl mx-auto px-6">
     <div class="text-center mb-10">
       <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">
         Install AppGrid
       </h2>
       <p class="text-lg text-[var(--fg-muted)]">
-        Pre-built packages for the major distros. Or build from source.
+        Pre-built packages for the major distros, or a universal
+        <code>~/.local/</code> tarball that runs anywhere Plasma 6.4 does.
+        Source builds work too.
       </p>
-      {
-        release && (
-          <a
-            href={release.htmlUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 mt-4 px-3 py-1 rounded-full bg-[var(--color-breeze-blue)]/10 border border-[var(--color-breeze-blue)]/30 text-[var(--color-breeze-blue)] text-xs font-medium hover:bg-[var(--color-breeze-blue)]/15 transition-colors"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            Latest release · v{release.tag}
-          </a>
-        )
-      }
     </div>
 
-    <DistroStrip />
+    <div class="max-w-3xl mx-auto mb-6">
+      <div class="rounded-lg border border-[#3daee9]/30 bg-[#3daee9]/10 p-4">
+        <p class="text-sm text-[var(--fg-body)] flex items-start gap-3">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            class="mt-0.5 flex-shrink-0 text-[#3daee9]"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+          <span>
+            <strong class="text-[var(--fg)] font-semibold">Upgrading from AppGrid 1.7.x or earlier?</strong>
+            1.8.0 migrates your favorites to KDE's activity-aware backend on first launch
+            — the legacy list is kept as a backup, nothing is lost. If anything looks off
+            afterwards, type <code class="px-1 py-0.5 rounded bg-[var(--canvas-deep)] border border-[var(--border)] text-[var(--fg)] text-xs">i:</code>
+            in the search bar and use the <strong>Re-run migration</strong> button.
+            Details in the
+            <a href="/docs#help" class="text-[#3daee9] hover:underline">docs</a>.
+          </span>
+        </p>
+      </div>
+    </div>
 
-    <InstallTabs
-      client:visible
-      releasesUrl={fallbackUrl}
-      fedoraAssetUrl={fedoraAsset?.url ?? null}
-      fedoraAssetName={fedoraAsset?.name ?? null}
-      ubuntuAssetUrl={ubuntuAsset?.url ?? null}
-      ubuntuAssetName={ubuntuAsset?.name ?? null}
-      debianAssetUrl={debianAsset?.url ?? null}
-      debianAssetName={debianAsset?.name ?? null}
-      releaseHtmlUrl={release?.htmlUrl ?? fallbackUrl}
-    />
+    <div class="max-w-3xl mx-auto mb-8">
+      <div class="flex items-start gap-3 text-sm text-[var(--fg-muted)] px-1">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          class="mt-0.5 flex-shrink-0 text-[#3daee9]"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+        <span class="leading-relaxed">
+          <strong class="text-[var(--fg)] font-semibold">Pick a path.</strong>
+          Packaged distro → use the tab for yours.
+          Immutable distro or no native package → jump to
+          <a href="#universal-install" class="text-[#f5a35e] font-medium hover:underline">Universal</a>.
+          Compiling? See
+          <a href="#build-from-source" class="text-[#3daee9] hover:underline">Build from source</a>.
+        </span>
+      </div>
+    </div>
 
-    <BuildFromSource client:visible cloneUrl={`${repoUrl(primary)}.git`} />
+    <div class="max-w-4xl mx-auto relative">
+      <!-- Soft cloud behind the distro tabs (blue) + universal box (orange).
+           Sits behind both widgets, masked by overflow-hidden on the section. -->
+      <div
+        class="absolute -inset-x-10 -top-10 -bottom-32 bg-gradient-to-b from-[#3daee9]/8 via-[#9b59b6]/4 to-[#e67e22]/8 blur-3xl -z-10 pointer-events-none"
+        aria-hidden="true"
+      >
+      </div>
 
-    <p class="text-center text-sm text-[var(--fg-muted)] mt-6">
-      After installing, right-click your panel launcher → <span class="text-[var(--fg)] font-medium">Show Alternatives</span>
-      → <span class="text-[var(--fg)] font-medium">AppGrid</span>.
-    </p>
+      <InstallChannel
+        client:visible
+        stable={stableBundle}
+        prerelease={prereleaseBundle}
+        releasesUrl={fallbackUrl}
+        releaseDownloadBase={releaseDownloadBase}
+      />
+
+      <BuildFromSource client:visible cloneUrl={`${repoUrl(primary)}.git`} />
+    </div>
+
+    <div class="max-w-3xl mx-auto mt-12">
+      <div class="breeze-card p-6">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-lg bg-[#27ae60]/15 border border-[#27ae60]/30 grid place-items-center text-[#5fd48a] flex-shrink-0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-base font-semibold mb-2">Installed — now switch your launcher to AppGrid</h3>
+            <ol class="text-sm text-[var(--fg-body)] leading-relaxed space-y-1.5 list-decimal pl-5">
+              <li>Right-click your current panel launcher (Kickoff / Kicker / dashboard icon).</li>
+              <li>Pick <span class="px-1.5 py-0.5 rounded bg-[var(--canvas-deep)] border border-[var(--border)] text-[var(--fg)] text-xs font-medium">Show Alternatives…</span></li>
+              <li>Choose <span class="px-1.5 py-0.5 rounded bg-[var(--color-breeze-blue)]/15 border border-[var(--color-breeze-blue)]/30 text-[#3daee9] text-xs font-medium">AppGrid</span> (or <span class="px-1.5 py-0.5 rounded bg-[var(--color-breeze-blue)]/15 border border-[var(--color-breeze-blue)]/30 text-[#3daee9] text-xs font-medium">AppGrid Panel</span> for the Kickoff-style popup) and click <strong>Switch</strong>.</li>
+            </ol>
+            <p class="text-xs text-[var(--fg-muted)] mt-3">
+              Prefer to keep your old launcher? Right-click the panel → <strong>Add Widgets</strong> → search <strong>AppGrid</strong> to add it as a second widget instead.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>

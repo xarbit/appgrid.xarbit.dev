@@ -1,0 +1,127 @@
+---
+import { primary, repoUrl, issuesUrl, fetchStars, formatStars } from "../config/repo";
+
+const stars = await fetchStars(primary);
+const starsLabel = stars !== null ? formatStars(stars) : null;
+
+const repo = repoUrl(primary);
+const issues = issuesUrl(primary);
+const translationsUrl = `${repo}/tree/main/po`;
+const pullsUrl = `${repo}/pulls`;
+---
+
+<section id="contribute" class="py-20 md:py-28 border-t border-[var(--border)]/50">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="text-center mb-12 max-w-2xl mx-auto">
+      <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">
+        Help out
+      </h2>
+      <p class="text-lg text-[var(--fg-muted)]">
+        AppGrid is a side project. Stars, bug reports, and translations all help — pick whichever fits.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <a
+        href={repo}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="breeze-card p-6 flex flex-col items-start gap-3 hover:border-[var(--color-breeze-blue)]/50 transition-colors group"
+      >
+        <div class="w-10 h-10 rounded-lg bg-[#f1c40f]/15 border border-[#f1c40f]/30 grid place-items-center text-[#f4d03f]">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-base mb-1 flex items-center gap-2">
+            Star on {primary.label}
+            {starsLabel && (
+              <span class="text-xs font-normal text-[var(--fg-muted)] tabular-nums">
+                · {starsLabel}
+              </span>
+            )}
+          </h3>
+          <p class="text-sm text-[var(--fg-muted)] leading-relaxed">
+            Costs you a click, helps the project show up in {primary.label} search.
+          </p>
+        </div>
+        <span class="text-xs text-[var(--color-breeze-blue)] mt-auto group-hover:underline">Open repo →</span>
+      </a>
+
+      <a
+        href={issues}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="breeze-card p-6 flex flex-col items-start gap-3 hover:border-[var(--color-breeze-blue)]/50 transition-colors group"
+      >
+        <div class="w-10 h-10 rounded-lg bg-[#e74c3c]/15 border border-[#e74c3c]/30 grid place-items-center text-[#ec7063]">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-base mb-1">Report a bug or idea</h3>
+          <p class="text-sm text-[var(--fg-muted)] leading-relaxed">
+            Found something broken? Want a feature? Open an issue with steps to reproduce or a clear use case.
+          </p>
+        </div>
+        <span class="text-xs text-[var(--color-breeze-blue)] mt-auto group-hover:underline">Open issues →</span>
+      </a>
+
+      <a
+        href={translationsUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="breeze-card p-6 flex flex-col items-start gap-3 hover:border-[var(--color-breeze-blue)]/50 transition-colors group"
+      >
+        <div class="w-10 h-10 rounded-lg bg-[#9b59b6]/15 border border-[#9b59b6]/30 grid place-items-center text-[#c084d6]">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 8l6 6" />
+            <path d="M4 14l6-6 2-3" />
+            <path d="M2 5h12" />
+            <path d="M7 2h1" />
+            <path d="M22 22l-5-10-5 10" />
+            <path d="M14 18h6" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-base mb-1">Translate</h3>
+          <p class="text-sm text-[var(--fg-muted)] leading-relaxed">
+            Open a PR against the <code class="px-1 py-0.5 rounded bg-[var(--canvas-deep)] border border-[var(--border)] text-[var(--fg)] text-xs">po/</code> directory to add or improve a language.
+          </p>
+        </div>
+        <span class="text-xs text-[var(--color-breeze-blue)] mt-auto group-hover:underline">Browse translations →</span>
+      </a>
+
+      <a
+        href={issues + "/new?title=Packaging+for+%3Cdistro%3E&labels=packaging"}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="breeze-card p-6 flex flex-col items-start gap-3 hover:border-[var(--color-breeze-blue)]/50 transition-colors group"
+      >
+        <div class="w-10 h-10 rounded-lg bg-[#27ae60]/15 border border-[#27ae60]/30 grid place-items-center text-[#5fd48a]">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16.5 9.4 7.5 4.21" />
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+            <line x1="12" y1="22.08" x2="12" y2="12" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="font-semibold text-base mb-1">Package for your distro</h3>
+          <p class="text-sm text-[var(--fg-muted)] leading-relaxed">
+            Distro maintainer? Help ship AppGrid in your distro's official repos — Nixpkgs, openSUSE Factory, Void, NixOS, Solus, anything. Open an issue to coordinate (dependency list is in the docs).
+          </p>
+        </div>
+        <span class="text-xs text-[var(--color-breeze-blue)] mt-auto group-hover:underline">Open a packaging issue →</span>
+      </a>
+    </div>
+
+    <p class="text-center text-sm text-[var(--fg-muted)] mt-8">
+      Code contributions? <a href={pullsUrl} target="_blank" rel="noopener noreferrer" class="text-[var(--color-breeze-blue)] hover:underline">Open a pull request</a> — keep changes focused and include a short rationale.
+    </p>
+  </div>
+</section>

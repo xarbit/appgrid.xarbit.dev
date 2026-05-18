@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar.astro";
 import Footer from "../components/Footer.astro";
 import { primary, repoUrl, issuesUrl } from "../config/repo";
 
-const lastUpdated = "2026-05-15";
+const lastUpdated = "2026-05-18";
 ---
 
 <Layout
@@ -95,7 +95,45 @@ const lastUpdated = "2026-05-15";
       </section>
 
       <section class="space-y-4 mb-10">
-        <h2 class="text-2xl font-semibold">5. Externe Links</h2>
+        <h2 class="text-2xl font-semibold">5. Update-Prüfung im AppGrid-Plasmoid (optional)</h2>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Ab Version <strong>1.8.0</strong> enthält der
+          <strong>Universal-Tarball-Build</strong> des AppGrid-Plasmoids einen
+          <strong>optionalen Update-Indikator</strong>. Dieser ist ausschließlich
+          in das Universal-Paket einkompiliert (CMake-Schalter
+          <code>APPGRID_UNIVERSAL_BUILD=ON</code>); die regulären Distributions-Pakete
+          (Arch, Fedora, Ubuntu, Debian, openSUSE) enthalten den Code-Pfad nicht,
+          da hier der jeweilige Paketmanager Updates verwaltet.
+        </p>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Auch im Universal-Build ist der Indikator standardmäßig <strong>deaktiviert</strong>
+          und muss in den Plasmoid-Einstellungen ausdrücklich aktiviert werden
+          („Check the AppGrid website for new releases"). Erst nach dieser
+          Opt-in-Entscheidung fragt AppGrid einmal pro Tag (mit zufälligem
+          Versatz von bis zu zwei Stunden) die Datei
+          <code>/api/latest.json</code> dieser Website per HTTPS ab, um zu prüfen,
+          ob eine neuere Version verfügbar ist.
+        </p>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Diese Anfrage:
+        </p>
+        <ul class="list-disc pl-6 text-[var(--fg-body)] space-y-1">
+          <li>setzt <strong>keine Cookies</strong> und liest keine vorhandenen Cookies aus;</li>
+          <li>enthält <strong>keine Benutzer-ID, keine Installations-ID</strong> und keine Telemetrie;</li>
+          <li>sendet nur einen generischen <code>User-Agent</code> und einen rotierenden <code>ETag</code> zur Bandbreiteneinsparung;</li>
+          <li>verwendet TLS 1.2 oder neuer;</li>
+          <li>kann jederzeit in den Plasmoid-Einstellungen deaktiviert werden.</li>
+        </ul>
+        <p class="text-[var(--fg-body)] leading-relaxed">
+          Da die Antwortdatei über GitHub Pages ausgeliefert wird, fällt dabei das in
+          Abschnitt&nbsp;2 beschriebene Server-Logging an (IP-Adresse, Zeitstempel,
+          User-Agent). Es findet keinerlei zusätzliche Verarbeitung statt; insbesondere
+          werden keine Profile gebildet und keine Daten an Dritte weitergegeben.
+        </p>
+      </section>
+
+      <section class="space-y-4 mb-10">
+        <h2 class="text-2xl font-semibold">6. Externe Links</h2>
         <p class="text-[var(--fg-body)] leading-relaxed">
           Diese Website enthält Links zu externen Diensten (z.&nbsp;B. <a
             href={repoUrl(primary)}
@@ -107,7 +145,7 @@ const lastUpdated = "2026-05-15";
       </section>
 
       <section class="space-y-4 mb-10">
-        <h2 class="text-2xl font-semibold">6. Ihre Rechte</h2>
+        <h2 class="text-2xl font-semibold">7. Ihre Rechte</h2>
         <p class="text-[var(--fg-body)] leading-relaxed">
           Sie haben gegenüber dem Verantwortlichen die folgenden Rechte hinsichtlich Ihrer
           personenbezogenen Daten:
@@ -132,7 +170,7 @@ const lastUpdated = "2026-05-15";
       </section>
 
       <section class="space-y-4 mb-10">
-        <h2 class="text-2xl font-semibold">7. Markenrechtliche Hinweise</h2>
+        <h2 class="text-2xl font-semibold">8. Markenrechtliche Hinweise</h2>
         <p class="text-[var(--fg-body)] leading-relaxed">
           <strong>KDE®</strong> und das <strong>K Desktop Environment®</strong>-Logo sind
           eingetragene Marken der <a
@@ -154,7 +192,7 @@ const lastUpdated = "2026-05-15";
       </section>
 
       <section class="space-y-4 mb-10">
-        <h2 class="text-2xl font-semibold">8. Änderungen dieser Datenschutzerklärung</h2>
+        <h2 class="text-2xl font-semibold">9. Änderungen dieser Datenschutzerklärung</h2>
         <p class="text-[var(--fg-body)] leading-relaxed">
           Diese Datenschutzerklärung kann angepasst werden, wenn sich technische Gegebenheiten
           oder rechtliche Rahmenbedingungen ändern. Die jeweils aktuelle Version finden Sie

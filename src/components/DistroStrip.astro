@@ -1,5 +1,5 @@
 ---
-const distros = [
+const packaged = [
   { name: "Arch Linux", short: "Arch", color: "#1793d1" },
   { name: "Fedora", short: "Fedora", color: "#3c6eb4" },
   { name: "Ubuntu", short: "Ubuntu", color: "#e95420" },
@@ -10,27 +10,74 @@ const distros = [
   { name: "CachyOS", short: "CachyOS", color: "#00aaff" },
   { name: "Manjaro", short: "Manjaro", color: "#34be5b" },
 ];
+
+// Immutable + atomic distros where the system package manager isn't an
+// option. AppGrid 1.8.0+ ships a hardened user-local tarball that installs
+// into ~/.local/ and survives system rebases / updates.
+const immutable = [
+  { name: "KDE Linux", short: "KDE Linux", color: "#3daee9" },
+  { name: "Fedora Kinoite", short: "Kinoite", color: "#3c6eb4" },
+  { name: "Bazzite", short: "Bazzite", color: "#8a2be2" },
+  { name: "Aurora (uBlue)", short: "Aurora", color: "#5e9eff" },
+  { name: "openSUSE Kalpa", short: "Kalpa", color: "#73ba25" },
+  { name: "SteamOS (Deck)", short: "SteamOS", color: "#1a9fff" },
+];
 ---
 
-<div class="mb-10">
-  <p class="text-center text-xs uppercase tracking-widest text-[var(--fg-muted)] mb-5">
-    Available on
-  </p>
-  <div class="flex flex-wrap items-center justify-center gap-2 md:gap-3">
-    {
-      distros.map((d) => (
-        <span
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[var(--border)] bg-[var(--card)] text-sm text-[var(--fg-body)]"
-          title={d.name}
-        >
+<div class="mb-10 space-y-6">
+  <div>
+    <p class="text-center text-xs uppercase tracking-widest text-[var(--fg-muted)] mb-5">
+      Packaged for
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-2 md:gap-3">
+      {
+        packaged.map((d) => (
           <span
-            class="w-2 h-2 rounded-full flex-shrink-0"
-            style={`background: ${d.color};`}
-            aria-hidden="true"
-          />
-          {d.short}
-        </span>
-      ))
-    }
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[var(--border)] bg-[var(--card)] text-sm text-[var(--fg-body)]"
+            title={d.name}
+          >
+            <span
+              class="w-2 h-2 rounded-full flex-shrink-0"
+              style={`background: ${d.color};`}
+              aria-hidden="true"
+            />
+            {d.short}
+          </span>
+        ))
+      }
+    </div>
+  </div>
+
+  <div>
+    <p class="text-center text-xs uppercase tracking-widest text-[var(--fg-muted)] mb-5">
+      Universal tarball also runs on
+      <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded uppercase tracking-wide bg-[#e67e22]/20 text-[#f5a35e] border border-[#e67e22]/40 align-middle">
+        Beta
+      </span>
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-2 md:gap-3">
+      {
+        immutable.map((d) => (
+          <span
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#e67e22]/30 bg-[#e67e22]/5 text-sm text-[var(--fg-body)]"
+            title={d.name}
+          >
+            <span
+              class="w-2 h-2 rounded-full flex-shrink-0"
+              style={`background: ${d.color};`}
+              aria-hidden="true"
+            />
+            {d.short}
+          </span>
+        ))
+      }
+    </div>
+    <p class="text-center text-xs text-[var(--fg-muted)] mt-3">
+      Works on any Plasma 6.4+ system —
+      <code class="px-1 py-0.5 rounded bg-[var(--canvas-deep)] border border-[var(--border)] text-[var(--fg)]"
+        >~/.local/</code
+      >
+      install · no root · survives system rebases
+    </p>
   </div>
 </div>

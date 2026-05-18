@@ -3,8 +3,12 @@ import { primary, issuesUrl } from "../config/repo";
 
 const faqs = [
   {
+    q: "What's new in AppGrid 1.8.0?",
+    a: "The big additions: a universal ~/.local/ tarball that runs on any Plasma 6.4+ system, drag-and-drop reordering of favorites (plus Ctrl+Shift+arrow), drag-out support from the by-category view, an opt-in update indicator in the universal build, and KActivities integration so launches show up in Plasma's recent activity. Plus the usual round of layout, animation and Wayland fixes. Full changelog on the Releases page.",
+  },
+  {
     q: "Is AppGrid free?",
-    a: "Yes. AppGrid is Free and Open Source Software released under the GPL-2.0-or-later license. No ads, no telemetry, no donations required.",
+    a: "Yes. AppGrid is Free and Open Source Software released under the GPL-2.0-or-later license. No ads, no donations required.",
   },
   {
     q: "Does AppGrid replace Kickoff or Kicker?",
@@ -12,27 +16,47 @@ const faqs = [
   },
   {
     q: "Center variant vs. Panel variant — which should I pick?",
-    a: "AppGrid (Center) is a standalone window that opens centered on screen with its own blur, opacity, and corner radius settings. AppGrid (Panel) is a native Plasma popup anchored to the panel icon, like Kickoff — same grid, same search, no separate window settings. Pick whichever fits your workflow; both ship in the same package.",
+    a: "AppGrid (Center) is a standalone window that opens in the middle of the screen with its own blur, opacity and corner radius settings. AppGrid (Panel) is a native Plasma popup anchored to the panel icon, Kickoff-style — same grid and search, no separate window settings. Pick whichever fits your workflow; both ship together.",
   },
   {
     q: "Does it work on Wayland and X11?",
-    a: "AppGrid is Wayland-first and primarily tested there. X11 is supported but less polished — the Center variant uses frameless window flags and manual positioning on X11 instead of LayerShellQt. The Panel variant uses Plasma's native popup and works equally on both.",
+    a: "Wayland is the primary target and where most testing happens. X11 works but is less polished: the Center variant uses frameless window flags and manual positioning instead of LayerShellQt. The Panel variant uses Plasma's native popup, so it works the same on both.",
   },
   {
     q: "Does it work on KDE Plasma 5?",
-    a: "No. AppGrid targets KDE Plasma 6.0 and later. Plasma 5 uses Qt 5 / KF5 APIs that AppGrid no longer supports.",
+    a: "No. AppGrid targets KDE Plasma 6.0 and later (6.4+ recommended; required for the universal tarball). Plasma 5 uses Qt 5 / KF5 APIs that AppGrid no longer supports.",
   },
   {
     q: "Why is there no .plasmoid file on the KDE Store?",
-    a: "AppGrid uses a C++ backend for app discovery, window management, blur effects, and session actions. The .plasmoid format only supports pure-QML plasmoids — it has no way to install the compiled plugin (.so) to the system plugin path Plasma expects. That's why AppGrid ships as distro packages (Arch, Fedora, Ubuntu, Debian) and via the OBS community build for openSUSE.",
+    a: "AppGrid has a C++ backend (app discovery, window management, blur effects, session actions). The .plasmoid format only supports pure-QML plasmoids, so it can't install the compiled .so where Plasma expects it. Instead AppGrid ships as native packages (Arch, Fedora, Ubuntu, Debian, openSUSE OBS) and a universal user-local tarball (new in 1.8.0) for everything else.",
   },
   {
-    q: "How do I reorder my favorites?",
-    a: "Open the Favorites tab, click the pencil icon in the bottom-right corner — icons start wiggling. Click an icon to select it, then click another to swap their positions. You can also remove a favorite via the remove button on its icon. Click the checkmark when done; order saves automatically.",
+    q: "What does the universal package do, and who is it for?",
+    a: "New in 1.8.0. It's a tarball that installs AppGrid into ~/.local/ on any Plasma 6.4+ system, no root needed. Grab appgrid-universal-<version>-<arch>.tar.gz from the Releases page, extract, run ./install.sh — the installer detects your distro, checks SHA256 checksums, and verifies every required library resolves via ldd before writing anything. It's the primary install path for immutable distros (KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, SteamOS) and a valid alternative on regular distros if you'd rather not add a repo or your distro has no native package yet. Beta in 1.8.0 — please report issues.",
   },
   {
-    q: "How does \"Recently Used\" work?",
-    a: "Where the section appears depends on your settings. Start with Favorites OFF: shown in the All tab (Alphabetical sort only). Start with Favorites ON: shown in the Favorites tab. By Category sort: shown at the top of the category view. Turning the setting off clears the recent list; turning it back on starts fresh.",
+    q: "I already have AppGrid from my distro's package manager — can I switch to the universal package?",
+    a: "Yes, but uninstall the system-wide copy first. Otherwise Plasma will see two AppGrid plasmoids registered (one in /usr/share/plasma/plasmoids/, one in ~/.local/share/plasma/plasmoids/) and will load whichever comes first in its discovery order — usually leaving you on the old version. Remove first with: sudo pacman -R plasma6-applets-appgrid (Arch), sudo dnf remove plasma-applet-appgrid (Fedora), sudo apt remove plasma-applet-appgrid (Debian/Ubuntu), sudo zypper remove plasma6-applet-appgrid (openSUSE), or sudo emerge -C kde-misc/plasma6-applet-appgrid (Gentoo). Then run ./install.sh from the universal tarball and log out + back in once.",
+  },
+  {
+    q: "Does the in-app update checker phone home?",
+    a: "Only if you ask it to. The check only exists in the universal-tarball build (APPGRID_UNIVERSAL_BUILD=ON); distro packages leave it out because your package manager already handles updates. Even on the universal build it's off by default — turn it on in Settings → \"Check the AppGrid website for new releases\". When enabled, AppGrid pings the project website once a day for the latest version. If a new release is out a small indicator appears next to the session buttons; clicking it opens the release notes. Never auto-installs.",
+  },
+  {
+    q: "How do I add or reorder favorites?",
+    a: "Add: drag an app from any tab (All, By Category, even another launcher) onto the Favorites strip. Reorder: drag a favorite to its new position, or use Ctrl+Shift+arrow to nudge the highlighted one. Remove: right-click → Remove from Favorites. Order saves automatically. All three of these became drag-driven in 1.8.0; the old pencil edit mode is gone.",
+  },
+  {
+    q: "Can I drag apps out of AppGrid onto my panel or desktop?",
+    a: "Yes, from any view. As of 1.8.0 the by-category view supports drag-out too. Drag onto the taskbar to pin, onto the desktop to create a launcher, or onto the Favorites strip to add it as a favorite.",
+  },
+  {
+    q: "How does search ranking work?",
+    a: "Each result gets a relevance tier — name prefix (best) > name substring > generic name > keyword > no match. Within the same tier, most-used apps (by launch count) come first. A heavily-used app can jump up exactly one tier: a frequently-launched keyword match can beat a never-launched generic match, but a strong name-prefix match always wins over a distant keyword match. Default-application bindings (e.g. your default browser ranks above other browsers) also factor in.",
+  },
+  {
+    q: "How are most-used apps tracked?",
+    a: "AppGrid keeps a per-app launch count, updated every time you launch something from the grid. That count feeds two things: (1) the optional \"most used\" header section at the top of the All / by-Category view, and (2) the search relevance bump described above. Disable the section in Settings to hide the header. Counts are stored locally in your Plasma config — no network calls.",
   },
   {
     q: "What are the two category modes?",
@@ -40,7 +64,7 @@ const faqs = [
   },
   {
     q: "Does AppGrid collect any data?",
-    a: "No. AppGrid runs locally on your machine. No telemetry, no analytics, no network calls. The website itself uses no cookies, no tracking, and no third-party scripts — see the privacy notice for hosting details.",
+    a: "No telemetry, no analytics, no tracking. AppGrid runs locally on your machine and makes no network calls by default. The one exception is the optional update indicator in the universal-tarball build (off by default; see the update-checker FAQ above). The website itself uses no cookies and no third-party scripts — see the privacy notice for hosting details.",
   },
 ];
 

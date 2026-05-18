@@ -313,6 +313,112 @@ export function pickAsset(assets: ReleaseAsset[], pattern: RegExp): ReleaseAsset
   return assets.find((a) => pattern.test(a.name)) ?? null;
 }
 
+/**
+ * If a `<assetName>.sha256` sidecar exists in the same release, fetch it and
+ * return the hex digest. Returns null when no sidecar exists or the fetch
+ * fails (the UI then hides its checksum block). Adds a 5s timeout so a flaky
+ * GitHub Pages CDN won't stall the whole site build.
+ */
+export async function fetchSha256Sidecar(
+  assets: ReleaseAsset[],
+  assetName: string,
+): Promise<string | null> {
+  const sidecarName = `${assetName}.sha256`;
+  const sidecar = assets.find((a) => a.name === sidecarName);
+  if (!sidecar) return null;
+  try {
+    const res = await fetch(sidecar.url, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) return null;
+    const text = (await res.text()).trim();
+    const hex = text.split(/\s+/)[0];
+    return /^[0-9a-f]{64}$/i.test(hex) ? hex.toLowerCase() : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Fetch the most recent pre-release (rc / beta / alpha) ahead of the stable
+ * release. Returns null if no pre-release exists or it isn't newer than the
+ * current stable.
+ */
+export async function fetchLatestPrerelease(r: RepoConfig): Promise<LatestRelease | null> {
+  if (r.platform !== "github") return null;
+
+  try {
+    const headers: Record<string, string> = {
+      "User-Agent": "appgrid-website-build",
+      Accept: "application/vnd.github+json",
+    };
+    if (import.meta.env.GITHUB_TOKEN) {
+      headers.Authorization = `Bearer ${import.meta.env.GITHUB_TOKEN}`;
+    }
+    const endpoint = `https://api.github.com/repos/${r.owner}/${r.repo}/releases?per_page=20`;
+    const res = await fetch(endpoint, {
+      headers,
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) {
+      console.warn(`[prerelease] ${r.platform}: HTTP ${res.status}`);
+      return null;
+    }
+    const list = (await res.json()) as Array<{
+      tag_name?: string;
+      html_url?: string;
+      prerelease?: boolean;
+      draft?: boolean;
+      assets?: Array<{ name: string; browser_download_url?: string; url?: string }>;
+    }>;
+
+    const stable = await fetchLatestRelease(r);
+    const candidate = list.find((rel) => rel.prerelease && !rel.draft && rel.tag_name);
+    if (!candidate?.tag_name) return null;
+
+    const tag = normalizeTag(candidate.tag_name);
+    if (stable && !isVersionNewer(tag, stable.tag)) return null;
+
+    return {
+      tag,
+      rawTag: candidate.tag_name,
+      htmlUrl: candidate.html_url ?? `${repoUrl(r)}/releases/tag/${candidate.tag_name}`,
+      assets: (candidate.assets ?? []).map((a) => ({
+        name: a.name,
+        url: a.browser_download_url ?? a.url ?? "",
+      })),
+    };
+  } catch (err) {
+    console.warn(`[prerelease] ${r.platform} fetch failed:`, err);
+    return null;
+  }
+}
+
+/** Strict semver-ish "is a newer than b" — strips leading v, numeric segment
+ * compare with pre-release tail ranked below the corresponding release.
+ * Mirrors the AppGrid C++ UpdateChecker::isNewer logic so the website's
+ * notion of "newer" matches what the in-app checker decides.
+ */
+function isVersionNewer(a: string, b: string): boolean {
+  const strip = (s: string) => (s.startsWith("v") ? s.slice(1) : s);
+  const split = (s: string): [string, string] => {
+    const plus = s.indexOf("+");
+    const head = plus < 0 ? s : s.slice(0, plus);
+    const dash = head.indexOf("-");
+    return dash < 0 ? [head, ""] : [head.slice(0, dash), head.slice(dash + 1)];
+  };
+  const [aCore, aPre] = split(strip(a));
+  const [bCore, bPre] = split(strip(b));
+  const pa = aCore.split(".").map((n) => parseInt(n, 10) || 0);
+  const pb = bCore.split(".").map((n) => parseInt(n, 10) || 0);
+  const n = Math.max(pa.length, pb.length);
+  for (let i = 0; i < n; i++) {
+    const ia = pa[i] ?? 0;
+    const ib = pb[i] ?? 0;
+    if (ia !== ib) return ia > ib;
+  }
+  if (aPre === "" && bPre !== "") return true;
+  if (aPre !== "" && bPre === "") return false;
+  return aPre > bPre;
+}
+
 /** Fetch latest release tag with memo + 1h disk cache. Returns normalized tag (no leading v). */
 export async function fetchLatestVersion(r: RepoConfig): Promise<string | null> {
   const key = cacheKey(r);
