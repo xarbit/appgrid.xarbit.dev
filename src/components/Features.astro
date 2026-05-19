@@ -23,6 +23,11 @@ const features = [
     icon: "mouse",
   },
   {
+    title: "Hide apps you don't want",
+    desc: "Right-click → Hide Application to remove anything you never launch from the grid. Type h: to see the hidden list and unhide with one click. Per-user, never touches system .desktop files.",
+    icon: "eye-off",
+  },
+  {
     title: "Two variants",
     desc: "AppGrid (Center) — standalone window with its own blur, opacity, corner radius. AppGrid (Panel) — native Plasma popup anchored to the panel icon, Kickoff-style.",
     icon: "layout",
@@ -53,11 +58,6 @@ const features = [
     title: "Customizable",
     desc: "Grid size, icon size, blur, opacity, corner radius, dividers, session buttons, search placement, and more — all per-variant.",
     icon: "sliders",
-  },
-  {
-    title: "Sort modes",
-    desc: "Alphabetical, Most Used, By Category. Switch from the settings or the sort menu.",
-    icon: "sort",
   },
   {
     title: "Plasma-native",
@@ -112,8 +112,8 @@ const icons: Record<string, string> = {
     '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
   bell:
     '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
-  sort:
-    '<path d="M3 6h13"/><path d="M3 12h9"/><path d="M3 18h5"/><path d="M17 18l4-4 4 4"/><path d="M21 14v8"/>',
+  "eye-off":
+    '<path d="M9.88 9.88a3 3 0 0 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/>',
 };
 ---
 
