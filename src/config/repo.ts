@@ -370,7 +370,16 @@ export async function fetchLatestPrerelease(r: RepoConfig): Promise<LatestReleas
     }>;
 
     const stable = await fetchLatestRelease(r);
-    const candidate = list.find((rel) => rel.prerelease && !rel.draft && rel.tag_name);
+    // Skip non-semver "latest" snapshot releases — the dev-release CI job
+    // publishes a rolling prerelease tagged literally "latest" that would
+    // otherwise win the list.find() race and make isVersionNewer parse
+    // its tag as 0.0.0 vs the real stable, returning null.
+    const candidate = list.find((rel) =>
+        rel.prerelease &&
+        !rel.draft &&
+        rel.tag_name &&
+        /^v?\d+\.\d+\.\d+/.test(rel.tag_name)
+    );
     if (!candidate?.tag_name) return null;
 
     const tag = normalizeTag(candidate.tag_name);
