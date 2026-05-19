@@ -1,15 +1,18 @@
 ---
-import { Picture } from "astro:assets";
-import heroLight0 from "../assets/screenshots/launcher-empty.png";
-import heroLight1 from "../assets/screenshots/launcher-t.png";
-import heroLight2 from "../assets/screenshots/launcher-te.png";
-import heroLight3 from "../assets/screenshots/launcher-ter.png";
-import heroLight4 from "../assets/screenshots/launcher-term.png";
-import heroDark0 from "../assets/screenshots/launcher-dark-empty.png";
-import heroDark1 from "../assets/screenshots/launcher-dark-t.png";
-import heroDark2 from "../assets/screenshots/launcher-dark-te.png";
-import heroDark3 from "../assets/screenshots/launcher-dark-ter.png";
-import heroDark4 from "../assets/screenshots/launcher-dark-term.png";
+import { getImage } from "astro:assets";
+import heroSpriteLight from "../assets/screenshots/hero-sprite-light.png";
+import heroSpriteDark from "../assets/screenshots/hero-sprite-dark.png";
+
+// Sprite contains 5 frames stacked vertically per theme.
+// background-position-y in CSS steps between them — single DOM element,
+// single animated property = atomic update each transition.
+const [spriteLightAvif, spriteLightWebp, spriteDarkAvif, spriteDarkWebp] =
+  await Promise.all([
+    getImage({ src: heroSpriteLight, format: "avif", quality: 60, width: 1208 }),
+    getImage({ src: heroSpriteLight, format: "webp", quality: 85, width: 1208 }),
+    getImage({ src: heroSpriteDark, format: "avif", quality: 60, width: 1208 }),
+    getImage({ src: heroSpriteDark, format: "webp", quality: 85, width: 1208 }),
+  ]);
 import BrandIcon from "./BrandIcon.astro";
 import {
   primary,
@@ -201,32 +204,17 @@ const distrosImmutable = 6; // KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, Steam
         class="absolute -inset-x-10 -inset-y-6 bg-gradient-to-b from-[#3daee9]/20 via-[#9b59b6]/10 to-transparent blur-3xl -z-10"
       >
       </div>
-      <div class="hero-demo mx-auto drop-shadow-2xl" aria-label="AppGrid demo: typing 'term' in the search bar, then launching Ghostty">
-        <!-- 5 frames per theme, stacked. Opacity-animated so the right
-             frame is visible at each keystroke window. Aspect-ratio on
-             the parent reserves layout; absolute children avoid CLS. -->
-        <Picture
-          src={heroDark0}
-          alt="AppGrid launcher with empty search (dark theme)"
-          loading="eager"
-          decoding="sync"
-          widths={[640, 960, 1208]}
-          sizes="(max-width: 768px) 100vw, 1100px"
-          quality={90}
-          formats={["avif", "webp"]} fallbackFormat="webp"
-          pictureAttributes={{ class: "hero-frame-wrap" }}
-          class="hero-frame hero-frame--dark hero-frame--0"
-        />
-        <Picture src={heroDark1} alt="" loading="eager" decoding="sync" widths={[640, 960, 1208]} sizes="(max-width: 768px) 100vw, 1100px" quality={90} formats={["avif", "webp"]} fallbackFormat="webp" pictureAttributes={{ class: "hero-frame-wrap" }} class="hero-frame hero-frame--dark hero-frame--1" />
-        <Picture src={heroDark2} alt="" loading="eager" decoding="sync" widths={[640, 960, 1208]} sizes="(max-width: 768px) 100vw, 1100px" quality={90} formats={["avif", "webp"]} fallbackFormat="webp" pictureAttributes={{ class: "hero-frame-wrap" }} class="hero-frame hero-frame--dark hero-frame--2" />
-        <Picture src={heroDark3} alt="" loading="eager" decoding="sync" widths={[640, 960, 1208]} sizes="(max-width: 768px) 100vw, 1100px" quality={90} formats={["avif", "webp"]} fallbackFormat="webp" pictureAttributes={{ class: "hero-frame-wrap" }} class="hero-frame hero-frame--dark hero-frame--3" />
-        <Picture src={heroDark4} alt="" loading="eager" decoding="sync" widths={[640, 960, 1208]} sizes="(max-width: 768px) 100vw, 1100px" quality={90} formats={["avif", "webp"]} fallbackFormat="webp" pictureAttributes={{ class: "hero-frame-wrap" }} class="hero-frame hero-frame--dark hero-frame--4" />
-
-        <Picture src={heroLight0} alt="AppGrid launcher with empty search (light theme)" loading="eager" decoding="sync" widths={[640, 960, 1208]} sizes="(max-width: 768px) 100vw, 1100px" quality={90} formats={["avif", "webp"]} fallbackFormat="webp" pictureAttributes={{ class: "hero-frame-wrap" }} class="hero-frame hero-frame--light hero-frame--0" />
-        <Picture src={heroLight1} alt="" loading="eager" decoding="sync" widths={[640, 960, 1208]} sizes="(max-width: 768px) 100vw, 1100px" quality={90} formats={["avif", "webp"]} fallbackFormat="webp" pictureAttributes={{ class: "hero-frame-wrap" }} class="hero-frame hero-frame--light hero-frame--1" />
-        <Picture src={heroLight2} alt="" loading="eager" decoding="sync" widths={[640, 960, 1208]} sizes="(max-width: 768px) 100vw, 1100px" quality={90} formats={["avif", "webp"]} fallbackFormat="webp" pictureAttributes={{ class: "hero-frame-wrap" }} class="hero-frame hero-frame--light hero-frame--2" />
-        <Picture src={heroLight3} alt="" loading="eager" decoding="sync" widths={[640, 960, 1208]} sizes="(max-width: 768px) 100vw, 1100px" quality={90} formats={["avif", "webp"]} fallbackFormat="webp" pictureAttributes={{ class: "hero-frame-wrap" }} class="hero-frame hero-frame--light hero-frame--3" />
-        <Picture src={heroLight4} alt="" loading="eager" decoding="sync" widths={[640, 960, 1208]} sizes="(max-width: 768px) 100vw, 1100px" quality={90} formats={["avif", "webp"]} fallbackFormat="webp" pictureAttributes={{ class: "hero-frame-wrap" }} class="hero-frame hero-frame--light hero-frame--4" />
+      <div
+        class="hero-demo mx-auto drop-shadow-2xl"
+        role="img"
+        aria-label="AppGrid demo: typing 'term' in the search bar, then launching Ghostty"
+        style={`--sprite-dark: image-set(url("${spriteDarkAvif.src}") type("image/avif"), url("${spriteDarkWebp.src}") type("image/webp")); --sprite-light: image-set(url("${spriteLightAvif.src}") type("image/avif"), url("${spriteLightWebp.src}") type("image/webp"));`}
+      >
+        <!-- Single-element sprite renderer per theme. Theme CSS hides
+             the inactive layer. background-position-y steps through
+             five frames stacked vertically in one source image. -->
+        <div class="hero-sprite hero-sprite--dark"></div>
+        <div class="hero-sprite hero-sprite--light"></div>
 
         <!-- Animation overlay. All coordinates are % of the rendered
              image bounds so they scale. Tune --search-* and --ghostty-*
@@ -285,77 +273,52 @@ const distrosImmutable = 6; // KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, Steam
     --start-y: -8%;
   }
 
-  /* <Picture> wraps the img in <picture>. display:contents removes
-     the wrapper from the layout tree so the existing absolute-position
-     CSS on .hero-frame (the img inside) keeps working. */
-  .hero-frame-wrap {
-    display: contents;
-  }
-
-  /* Theme separation — hide opposite set entirely. */
-  .hero-frame {
+  /* Single-element CSS sprite. One sprite image per theme — five
+     frames stacked vertically. background-position-y steps between
+     them. One DOM element + one animated property = atomic update
+     each transition, no possibility of multi-frame overlap or
+     compounded shadows. */
+  .hero-sprite {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    opacity: 0;
-    /* GPU promote each frame so opacity flips don't trigger layout
-       and don't cause flicker while the next frame decodes. */
-    will-change: opacity;
-    transform: translateZ(0);
-    backface-visibility: hidden;
+    background-repeat: no-repeat;
+    /* Sprite is 5× tall as one frame. Sized to 100% width × 500% height
+       so each frame occupies 20% of the bg height, matching the
+       container's aspect ratio. */
+    background-size: 100% 500%;
+    background-position: 0% 0%;
+    animation: hero-sprite 9s steps(1, end) infinite;
   }
+
+  .hero-sprite--dark { background-image: var(--sprite-dark); }
+  .hero-sprite--light { background-image: var(--sprite-light); display: none; }
+
   /* Default to dark; system pref toggles when no explicit theme set. */
-  .hero-frame--light { display: none; }
   @media (prefers-color-scheme: light) {
-    html:not([data-theme]) .hero-frame--dark { display: none; }
-    html:not([data-theme]) .hero-frame--light { display: block; }
+    html:not([data-theme]) .hero-sprite--dark { display: none; }
+    html:not([data-theme]) .hero-sprite--light { display: block; }
   }
-  html[data-theme="dark"] .hero-frame--dark { display: block; }
-  html[data-theme="dark"] .hero-frame--light { display: none; }
-  html[data-theme="light"] .hero-frame--dark { display: none; }
-  html[data-theme="light"] .hero-frame--light { display: block; }
+  html[data-theme="dark"] .hero-sprite--dark { display: block; }
+  html[data-theme="dark"] .hero-sprite--light { display: none; }
+  html[data-theme="light"] .hero-sprite--dark { display: none; }
+  html[data-theme="light"] .hero-sprite--light { display: block; }
 
-  /* Per-frame opacity timeline (9s loop). Letter cadence is uneven —
-     "t" and "e" fire fast, "r" and "m" fire slow, mimicking a user
-     who hesitates before the less common letters.
-       0–22%    frame 0 (empty)  — initial dwell + cursor enters
-       22–27%   frame 1 (t)      — fast (≈0.45s)
-       27–32%   frame 2 (te)     — fast (≈0.45s)
-       32–43%   frame 3 (ter)    — slow (≈1.0s)
-       43–93%   frame 4 (term)   — slow arrival, then dwell + click
-       94–100%  frame 0 (reset)  — after cursor offscreen */
-  .hero-frame--0 { animation: hero-frame-0 9s linear infinite; }
-  .hero-frame--1 { animation: hero-frame-1 9s linear infinite; }
-  .hero-frame--2 { animation: hero-frame-2 9s linear infinite; }
-  .hero-frame--3 { animation: hero-frame-3 9s linear infinite; }
-  .hero-frame--4 { animation: hero-frame-4 9s linear infinite; }
-
-  @keyframes hero-frame-0 {
-    0%, 21.5% { opacity: 1; }
-    22%, 93.5% { opacity: 0; }
-    94%, 100% { opacity: 1; }
-  }
-  @keyframes hero-frame-1 {
-    0%, 21.5% { opacity: 0; }
-    22%, 26.5% { opacity: 1; }
-    27%, 100% { opacity: 0; }
-  }
-  @keyframes hero-frame-2 {
-    0%, 26.5% { opacity: 0; }
-    27%, 31.5% { opacity: 1; }
-    32%, 100% { opacity: 0; }
-  }
-  @keyframes hero-frame-3 {
-    0%, 31.5% { opacity: 0; }
-    32%, 42.5% { opacity: 1; }
-    43%, 100% { opacity: 0; }
-  }
-  @keyframes hero-frame-4 {
-    0%, 42.5% { opacity: 0; }
-    43%, 93.5% { opacity: 1; }
-    94%, 100% { opacity: 0; }
+  /* background-position-y in % maps over (bg-height - container-height).
+     With bg-height = 5×, container = 1×, range = 4×. So:
+       0%   → frame 0 (empty)
+       25%  → frame 1 (t)
+       50%  → frame 2 (te)
+       75%  → frame 3 (ter)
+       100% → frame 4 (term) */
+  @keyframes hero-sprite {
+    0% { background-position: 0% 0%; }
+    22% { background-position: 0% 25%; }
+    27% { background-position: 0% 50%; }
+    32% { background-position: 0% 75%; }
+    43% { background-position: 0% 100%; }
+    94% { background-position: 0% 0%; }
   }
 
   .hero-overlay {
@@ -456,11 +419,10 @@ const distrosImmutable = 6; // KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, Steam
 
   /* Reduced motion — freeze on the empty state, hide cursor + pulses. */
   @media (prefers-reduced-motion: reduce) {
-    .hero-frame, .hero-cursor, .hero-pulse {
+    .hero-sprite, .hero-cursor, .hero-pulse {
       animation: none !important;
     }
-    .hero-frame--0 { opacity: 1; }
-    .hero-frame:not(.hero-frame--0) { opacity: 0; }
+    .hero-sprite { background-position: 0% 0%; }
     .hero-pulse { opacity: 0; }
     .hero-cursor {
       top: var(--start-y);
