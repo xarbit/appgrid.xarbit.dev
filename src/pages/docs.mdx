@@ -29,7 +29,7 @@ Authoritative dep lists live alongside their packaging spec — keep these in sy
 - **Arch:** see [PKGBUILD](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/PKGBUILD) (`depends=` + `makedepends=`)
 - **Fedora:** see [packages/rpm/fedora.spec.in](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/rpm/fedora.spec.in) + CI dnf install list in [.github/workflows/build.yml](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/.github/workflows/build.yml)
 - **Debian / Ubuntu:** see [packages/deb/control.in](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/deb/control.in) + CI apt install list
-- **Universal tarball runtime:** see [packages/universal/distros.toml](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/universal/distros.toml) — per-distro runtime packages, `install.py` verifies via `ldd` before placing any files
+- **Universal Package runtime:** see [packages/universal/distros.toml](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/universal/distros.toml) — per-distro runtime packages, `install.py` verifies via `ldd` before placing any files
 
 Core runtime: `plasma-workspace`, `libplasma`, `kservice`, `ki18n`, `kio`, `kpackage`, `kcoreaddons`, `kwindowsystem`, `krunner`, `kirigami`, `layer-shell-qt`, `plasma-activities`, `qt6-base`, `qt6-declarative`.
 
@@ -44,7 +44,7 @@ Pass with `-D<option>=<value>` on the `cmake -B build` invocation.
 | `ENABLE_X11` | ON | Compile X11-specific session support (frameless window flags + manual screen positioning for the Center variant on X11). Turn OFF for Wayland-only builds (Plasma 6.8+). |
 | `BUILD_TESTING` | OFF | Build the C++ + QML test suite. See [Running the test suite](#running-the-test-suite). |
 
-Standard CMake options also apply: `CMAKE_BUILD_TYPE` (Release / RelWithDebInfo / Debug / None), `CMAKE_INSTALL_PREFIX` (default `/usr/local` — set to `/usr` for system installs), `KDE_INSTALL_QTPLUGINDIR` (override the Qt plugin install path — the universal tarball CI pins this to `lib/qt6/plugins`).
+Standard CMake options also apply: `CMAKE_BUILD_TYPE` (Release / RelWithDebInfo / Debug / None), `CMAKE_INSTALL_PREFIX` (default `/usr/local` — set to `/usr` for system installs), `KDE_INSTALL_QTPLUGINDIR` (override the Qt plugin install path — the Universal Package CI pins this to `lib/qt6/plugins`).
 
 ## Configuration reference
 
@@ -101,7 +101,7 @@ Both share the same grid, search, categories, quick commands, and favorite stora
 
 ## Universal package internals
 
-The universal tarball (`appgrid-universal-<version>-<arch>.tar.gz`) is built once per release against Fedora 42 (oldest mainstream distro shipping Plasma libs at SONAME 7) and runs on any Plasma 6.4+ system with matching SONAMEs. Install layout:
+The Universal Package (`appgrid-universal-<version>-<arch>.tar.gz`) is built once per release against Fedora 42 (oldest mainstream distro shipping Plasma libs at SONAME 7) and runs on any Plasma 6.4+ system with matching SONAMEs. Install layout:
 
 - `~/.local/lib/qt6/plugins/plasma/applets/dev.xarbit.appgrid.so` + `…appgrid.panel.so` — compiled plasmoid plugins
 - `~/.local/share/plasma/plasmoids/dev.xarbit.appgrid/` + `…appgrid.panel/` — QML + metadata
@@ -192,7 +192,7 @@ Open a PR with new tests when you fix a bug — CI runs `ctest` on every push.
 
 If the entry counts in the `i:` view themselves look wrong, restart plasmashell to force a fresh model load: `kquitapp6 plasmashell && kstart plasmashell`.
 
-### Switching from a distro package to the universal tarball
+### Switching from a distro package to the Universal Package
 
 Plasma can't reliably load two copies of the same applet ID — uninstall the system package first, then run the universal installer. The bundled `install.py` detects the conflict and prints the matching uninstall command for your distro before doing anything.
 
@@ -204,16 +204,16 @@ Plasma can't reliably load two copies of the same applet ID — uninstall the sy
 
 Override with `./install.sh --allow-coexist` at your own risk — Plasma will still load whichever plasmoid wins discovery on next session start, usually the system one.
 
-### Switching from the universal tarball back to a distro package
+### Switching from the Universal Package back to a distro package
 
 Run the bundled `./uninstall.sh` from the tarball directory first — it reads `~/.local/share/appgrid/MANIFEST` and removes only the files it placed. Then install the distro package the normal way. The `~/.config/plasma-workspace/env/appgrid-user-local.sh` env script is removed too, so you do need one log-out / log-in after the swap.
 
 ### AppGrid doesn't show up after installing
 
 1. Restart plasmashell: `kquitapp6 plasmashell && kstart plasmashell`
-2. For the universal tarball specifically: log out + back in once on first install (Plasma needs to re-read its session env to pick up the new `QT_PLUGIN_PATH`).
+2. For the Universal Package specifically: log out + back in once on first install (Plasma needs to re-read its session env to pick up the new `QT_PLUGIN_PATH`).
 3. Right-click your panel launcher → **Show Alternatives** — AppGrid should appear in the list.
-4. If it's still missing: check the installer's `ldd` probe output for unresolved libraries (universal tarball), or `journalctl --user -b | grep -i plasma` for load errors.
+4. If it's still missing: check the installer's `ldd` probe output for unresolved libraries (Universal Package), or `journalctl --user -b | grep -i plasma` for load errors.
 
 ### Getting logs & debugging
 

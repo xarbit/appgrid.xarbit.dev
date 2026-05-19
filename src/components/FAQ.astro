@@ -4,7 +4,7 @@ import { primary, issuesUrl } from "../config/repo";
 const faqs = [
   {
     q: "What's new in AppGrid 1.8.0?",
-    a: "The big additions: a universal ~/.local/ tarball that runs on any Plasma 6.4+ system, drag-and-drop reordering of favorites (plus Ctrl+Shift+arrow), drag-out support from the by-category view, an opt-in update indicator in the universal build, and KActivities integration so launches show up in Plasma's recent activity. Plus the usual round of layout, animation and Wayland fixes. Full changelog on the Releases page.",
+    a: "The big additions: a Universal Package (~/.local/) that runs on any Plasma 6.4+ system, drag-and-drop reordering of favorites (plus Ctrl+Shift+arrow), drag-out support from the by-category view, an opt-in update indicator in the universal build, and KActivities integration so launches show up in Plasma's recent activity. Plus the usual round of layout, animation and Wayland fixes. Full changelog on the Releases page.",
   },
   {
     q: "Is AppGrid free?",
@@ -24,19 +24,19 @@ const faqs = [
   },
   {
     q: "Does it work on KDE Plasma 5?",
-    a: "No. AppGrid targets KDE Plasma 6.0 and later (6.4+ recommended; required for the universal tarball). Plasma 5 uses Qt 5 / KF5 APIs that AppGrid no longer supports.",
+    a: "No. AppGrid targets KDE Plasma 6.0 and later (6.4+ recommended; required for the Universal Package). Plasma 5 uses Qt 5 / KF5 APIs that AppGrid no longer supports.",
   },
   {
     q: "Why is there no .plasmoid file on the KDE Store?",
-    a: "AppGrid has a C++ backend (app discovery, window management, blur effects, session actions). The .plasmoid format only supports pure-QML plasmoids, so it can't install the compiled .so where Plasma expects it. Instead AppGrid ships as native packages (Arch, Fedora, Ubuntu, Debian, openSUSE OBS) and a universal user-local tarball (new in 1.8.0) for everything else.",
+    a: "AppGrid has a C++ backend (app discovery, window management, blur effects, session actions). The .plasmoid format only supports pure-QML plasmoids, so it can't install the compiled .so where Plasma expects it. Instead AppGrid ships as native packages (Arch, Fedora, Ubuntu, Debian, openSUSE OBS) and a Universal Package (user-local, new in 1.8.0) for everything else.",
   },
   {
     q: "What does the universal package do, and who is it for?",
-    a: "New in 1.8.0. It's a tarball that installs AppGrid into ~/.local/ on any Plasma 6.4+ system, no root needed. Grab appgrid-universal-<version>-<arch>.tar.gz from the Releases page, extract, run ./install.sh — the installer detects your distro, checks SHA256 checksums, and verifies every required library resolves via ldd before writing anything. It's the primary install path for immutable distros (KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, SteamOS) and a valid alternative on regular distros if you'd rather not add a repo or your distro has no native package yet. Beta in 1.8.0 — please report issues.",
+    a: "New in 1.8.0. It's the Universal Package that installs AppGrid into ~/.local/ on any Plasma 6.4+ system, no root needed. Grab appgrid-universal-<version>-<arch>.tar.gz from the Releases page, extract, run ./install.sh — the installer detects your distro, checks SHA256 checksums, and verifies every required library resolves via ldd before writing anything. It's the primary install path for immutable distros (KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, SteamOS) and a valid alternative on regular distros if you'd rather not add a repo or your distro has no native package yet. Beta in 1.8.0 — please report issues.",
   },
   {
     q: "I already have AppGrid from my distro's package manager — can I switch to the universal package?",
-    a: "Yes, but uninstall the system-wide copy first. Otherwise Plasma will see two AppGrid plasmoids registered (one in /usr/share/plasma/plasmoids/, one in ~/.local/share/plasma/plasmoids/) and will load whichever comes first in its discovery order — usually leaving you on the old version. Remove first with: sudo pacman -R plasma6-applets-appgrid (Arch), sudo dnf remove plasma-applet-appgrid (Fedora), sudo apt remove plasma-applet-appgrid (Debian/Ubuntu), sudo zypper remove plasma6-applet-appgrid (openSUSE), or sudo emerge -C kde-misc/plasma6-applet-appgrid (Gentoo). Then run ./install.sh from the universal tarball and log out + back in once.",
+    a: "Yes, but uninstall the system-wide copy first. Otherwise Plasma will see two AppGrid plasmoids registered (one in /usr/share/plasma/plasmoids/, one in ~/.local/share/plasma/plasmoids/) and will load whichever comes first in its discovery order — usually leaving you on the old version. Remove first with: sudo pacman -R plasma6-applets-appgrid (Arch), sudo dnf remove plasma-applet-appgrid (Fedora), sudo apt remove plasma-applet-appgrid (Debian/Ubuntu), sudo zypper remove plasma6-applet-appgrid (openSUSE), or sudo emerge -C kde-misc/plasma6-applet-appgrid (Gentoo). Then run ./install.sh from the Universal Package and log out + back in once.",
   },
   {
     q: "Does the in-app update checker phone home?",
