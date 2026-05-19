@@ -30,21 +30,20 @@ const sources = [
 
 const items = await Promise.all(
   sources.map(async (s) => {
-    const thumb = await getImage({
-      src: s.img,
-      width: 800,
-      format: "webp",
-      quality: 75,
-    });
-    const full = await getImage({
-      src: s.img,
-      width: Math.min(s.img.width, 1920),
-      format: "webp",
-      quality: 88,
-    });
+    const fullW = Math.min(s.img.width, 1920);
+    // Encode each image as both AVIF (preferred — ~30-50% smaller)
+    // and WebP (fallback). The Gallery React island picks via <picture>.
+    const [thumbAvif, thumbWebp, fullAvif, fullWebp] = await Promise.all([
+      getImage({ src: s.img, width: 800, format: "avif", quality: 60 }),
+      getImage({ src: s.img, width: 800, format: "webp", quality: 75 }),
+      getImage({ src: s.img, width: fullW, format: "avif", quality: 70 }),
+      getImage({ src: s.img, width: fullW, format: "webp", quality: 88 }),
+    ]);
     return {
-      thumb: thumb.src,
-      full: full.src,
+      thumbAvif: thumbAvif.src,
+      thumb: thumbWebp.src,
+      fullAvif: fullAvif.src,
+      full: fullWebp.src,
       alt: s.alt,
       width: s.img.width,
       height: s.img.height,

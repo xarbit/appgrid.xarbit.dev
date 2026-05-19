@@ -2,7 +2,9 @@ import { useEffect, useState, useCallback } from "react";
 
 export interface GalleryItem {
   full: string;
+  fullAvif?: string;
   thumb: string;
+  thumbAvif?: string;
   alt: string;
   width: number;
   height: number;
@@ -49,12 +51,15 @@ export default function Gallery({ items }: Props) {
             onClick={() => setActive(i)}
             className="group relative overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--elevated)] aspect-video focus:outline-none focus:ring-2 focus:ring-[#3daee9] cursor-zoom-in"
           >
-            <img
-              src={item.thumb}
-              alt={item.alt}
-              loading="lazy"
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
+            <picture>
+              {item.thumbAvif && <source srcSet={item.thumbAvif} type="image/avif" />}
+              <img
+                src={item.thumb}
+                alt={item.alt}
+                loading="lazy"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+            </picture>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
               <span className="text-sm font-medium text-white">{item.alt}</span>
             </div>
@@ -108,11 +113,16 @@ export default function Gallery({ items }: Props) {
             className="max-w-6xl max-h-full flex flex-col items-center gap-3"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={items[active].full}
-              alt={items[active].alt}
-              className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
-            />
+            <picture>
+              {items[active].fullAvif && (
+                <source srcSet={items[active].fullAvif} type="image/avif" />
+              )}
+              <img
+                src={items[active].full}
+                alt={items[active].alt}
+                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+              />
+            </picture>
             <figcaption className="text-sm text-[var(--fg-muted)]">
               {items[active].alt} · {active + 1} / {items.length}
             </figcaption>
