@@ -2,6 +2,7 @@
 import { Image } from "astro:assets";
 import heroLight from "../assets/screenshots/launcher-main.png";
 import heroDark from "../assets/screenshots/launcher-main-dark.png";
+import BrandIcon from "./BrandIcon.astro";
 import {
   primary,
   mirrors,
@@ -54,10 +55,26 @@ const distrosImmutable = 6; // KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, Steam
         class="text-5xl md:text-7xl font-bold tracking-tight leading-[1.05] mb-6"
       >
         Application launcher
-        <span
-          class="block bg-gradient-to-r from-[#3daee9] to-[#9b59b6] bg-clip-text text-transparent"
-        >
-          built for KDE Plasma 6
+        <span class="block">
+          <span
+            class="bg-gradient-to-r from-[#3daee9] to-[#9b59b6] bg-clip-text text-transparent"
+          >
+            built for
+          </span>
+          <span class="inline-flex items-center gap-3 align-middle">
+            <BrandIcon
+              slug="kdeplasma"
+              size={56}
+              brandColor
+              title="KDE Plasma"
+              class="hero-kde-mark"
+            />
+            <span
+              class="bg-gradient-to-r from-[#3daee9] to-[#9b59b6] bg-clip-text text-transparent"
+            >
+              KDE Plasma 6
+            </span>
+          </span>
         </span>
       </h1>
 
@@ -197,6 +214,19 @@ const distrosImmutable = 6; // KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, Steam
 </section>
 
 <style>
+  /* H1 KDE Plasma brand mark — scale down on small viewports so it
+     visually balances the smaller H1 font size. */
+  .hero-kde-mark {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  @media (min-width: 768px) {
+    .hero-kde-mark {
+      width: 3.5rem;
+      height: 3.5rem;
+    }
+  }
+
   /* Default (no theme attr) — show dark, swap based on system pref */
   .hero-image--light {
     display: none;

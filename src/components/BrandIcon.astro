@@ -1,0 +1,46 @@
+---
+import * as icons from "simple-icons";
+
+interface Props {
+  /** simple-icons slug, e.g. "kdeplasma", "kde", "qt", "linux",
+   *  "github", "codeberg", "ubuntu". */
+  slug: string;
+  size?: number;
+  /** When true, render in the brand's official hex colour. Default
+   *  uses currentColor so the icon picks up the surrounding text tint. */
+  brandColor?: boolean;
+  class?: string;
+  /** Override the accessible label (defaults to the icon's official title). */
+  title?: string;
+}
+
+const {
+  slug,
+  size = 16,
+  brandColor = false,
+  class: className = "",
+  title,
+} = Astro.props;
+
+const key = "si" + slug.charAt(0).toUpperCase() + slug.slice(1);
+const icon = (icons as Record<string, { path: string; hex: string; title: string }>)[key];
+if (!icon) {
+  throw new Error(`BrandIcon: simple-icons has no slug "${slug}" (expected export "${key}")`);
+}
+
+const fill = brandColor ? `#${icon.hex}` : "currentColor";
+const label = title ?? icon.title;
+---
+
+<svg
+  role="img"
+  aria-label={label}
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill={fill}
+  class:list={[className]}
+>
+  <title>{label}</title>
+  <path d={icon.path} />
+</svg>

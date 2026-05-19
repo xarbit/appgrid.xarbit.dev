@@ -1,4 +1,6 @@
 ---
+import BrandIcon from "./BrandIcon.astro";
+
 const features = [
   {
     title: "Unified search",
@@ -60,7 +62,7 @@ const features = [
   {
     title: "Plasma-native",
     desc: "Respects system animation speed, font size, accent colour and Plasma theme corner radius. Built on KDE Frameworks (Kirigami, KIO, KRunner, Plasma, KWindowSystem, LayerShellQt) — same building blocks the rest of your desktop uses.",
-    icon: "paintbrush",
+    icon: "brand:kdeplasma",
   },
   {
     title: "Drop-in replacement",
@@ -131,17 +133,21 @@ const icons: Record<string, string> = {
         features.map((f) => (
           <div class="breeze-card p-6 group transition-transform duration-300 hover:-translate-y-0.5 hover:border-[var(--color-breeze-blue)]/40">
             <div class="w-10 h-10 rounded-lg bg-[#3daee9]/15 border border-[#3daee9]/30 grid place-items-center text-[#3daee9] mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                set:html={icons[f.icon]}
-              />
+              {f.icon.startsWith("brand:") ? (
+                <BrandIcon slug={f.icon.slice("brand:".length)} size={20} />
+              ) : (
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  set:html={icons[f.icon]}
+                />
+              )}
             </div>
             <h3 class="text-lg font-semibold mb-1.5 flex items-center gap-2">
               {f.title}
