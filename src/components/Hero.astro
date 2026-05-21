@@ -32,10 +32,53 @@ const starsLabel = starsCount !== null ? formatStars(starsCount) : null;
 // Distros we package for (count by hand to match install section).
 const distrosPackaged = 6; // Arch, Fedora, Ubuntu, Debian, openSUSE, Gentoo
 const distrosImmutable = 6; // KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, SteamOS
+
+// Decorative scattered KDE app icons behind the headline — a launcher
+// is a grid of apps, so this reinforces the concept. Breeze app icons
+// (LGPL, KDE). `s` is px size, x/y are %, `rot` degrees. Biased to the
+// sides so the headline stays readable; masked + faded so it never
+// competes with the text.
+const heroIcons = [
+  { f: "dolphin", x: "4%", y: "16%", s: 76, rot: -10 },
+  { f: "kate", x: "92%", y: "10%", s: 64, rot: 9 },
+  { f: "juk", x: "16%", y: "60%", s: 58, rot: 7 },
+  { f: "gwenview", x: "85%", y: "54%", s: 70, rot: -8 },
+  { f: "okular", x: "10%", y: "38%", s: 52, rot: 6 },
+  { f: "spectacle", x: "95%", y: "30%", s: 56, rot: -6 },
+  { f: "kdenlive", x: "2%", y: "70%", s: 60, rot: 11 },
+  { f: "elisa", x: "78%", y: "78%", s: 50, rot: 8 },
+  { f: "systemsettings", x: "23%", y: "12%", s: 48, rot: -7 },
+  { f: "plasmadiscover", x: "70%", y: "14%", s: 46, rot: 6 },
+  { f: "ark", x: "88%", y: "84%", s: 44, rot: -9 },
+  { f: "kcalc", x: "12%", y: "86%", s: 46, rot: 5 },
+  { f: "kmail", x: "30%", y: "82%", s: 42, rot: -6 },
+  { f: "kontact", x: "63%", y: "62%", s: 44, rot: 7 },
+  { f: "kdevelop", x: "37%", y: "8%", s: 40, rot: -5 },
+  { f: "filelight", x: "60%", y: "86%", s: 40, rot: 9 },
+  { f: "digikam", x: "47%", y: "64%", s: 42, rot: -8 },
+  { f: "kwrite", x: "52%", y: "10%", s: 38, rot: 6 },
+];
 ---
 
 <section class="relative overflow-hidden">
-  <div class="max-w-6xl mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24">
+  <!-- Decorative scattered KDE app icons behind the headline. Purely
+       visual — masked + faded so it never reduces headline legibility. -->
+  <div class="hero-icons" aria-hidden="true">
+    {
+      heroIcons.map((i) => (
+        <img
+          src={`/kde-icons/${i.f}.svg`}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          class="hero-icons__app"
+          style={`left:${i.x};top:${i.y};width:${i.s}px;height:${i.s}px;--rot:${i.rot}deg;`}
+        />
+      ))
+    }
+  </div>
+
+  <div class="relative z-10 max-w-6xl mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24">
     <div class="text-center max-w-3xl mx-auto">
       <div class="inline-flex flex-wrap items-center justify-center gap-2 mb-6">
         {
@@ -70,7 +113,7 @@ const distrosImmutable = 6; // KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, Steam
           <span
             class="bg-gradient-to-r from-[#3daee9] to-[#9b59b6] bg-clip-text text-transparent"
           >
-            built for
+            made for
           </span>
           <span class="inline-flex items-center gap-3 align-middle">
             <BrandIcon
@@ -254,6 +297,52 @@ const distrosImmutable = 6; // KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, Steam
     .hero-kde-mark {
       width: 3.5rem;
       height: 3.5rem;
+    }
+  }
+
+  /* Scattered KDE app-icon decoration behind the headline. Covers the
+     top text band only; a vertical mask fades it out before the demo
+     image so nothing competes with the launcher screenshot. */
+  .hero-icons {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 480px;
+    z-index: 0;
+    pointer-events: none;
+    /* Two masks composited with `intersect`: the vertical fade keeps
+       icons in the top band only; the centred radial punches a clear
+       hole so no icon ever renders behind the headline text. */
+    -webkit-mask-image:
+      linear-gradient(to bottom, #000 0%, #000 52%, transparent 88%),
+      radial-gradient(ellipse 44% 34% at 50% 33%, transparent 32%, #000 78%);
+    mask-image:
+      linear-gradient(to bottom, #000 0%, #000 52%, transparent 88%),
+      radial-gradient(ellipse 44% 34% at 50% 33%, transparent 32%, #000 78%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+  @media (min-width: 768px) {
+    .hero-icons {
+      height: 620px;
+    }
+  }
+
+  .hero-icons__app {
+    position: absolute;
+    transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+    opacity: 0.16;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
+    user-select: none;
+  }
+  @media (min-width: 768px) {
+    .hero-icons__app {
+      opacity: 0.2;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    /* Static already — nothing to disable; kept for parity. */
+    .hero-icons {
+      height: 480px;
     }
   }
 
