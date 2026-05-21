@@ -38,10 +38,49 @@ const commands = [
   { trigger: "h:", desc: "Hidden apps manager" },
   { trigger: "?", desc: "Show quick commands help" },
 ];
+
+// Decorative scattered keycaps behind the section heading (Raycast-style).
+// `w` is a width multiplier (1 = square keycap); x/y are % positions;
+// `rot` is degrees. Kept out of the centre band so heading text stays
+// crisp; the layer is masked + faded so it never competes with the cards.
+const decoKeys = [
+  { label: "Super", x: "6%", y: "14%", w: 1.9, rot: -9 },
+  { label: "Esc", x: "84%", y: "9%", w: 1.4, rot: 8 },
+  { label: "Tab", x: "17%", y: "58%", w: 1.5, rot: -6 },
+  { label: "↵", x: "92%", y: "44%", w: 1, rot: 5 },
+  { label: "Ctrl", x: "73%", y: "70%", w: 1.6, rot: -7 },
+  { label: "↑", x: "44%", y: "6%", w: 1, rot: -4 },
+  { label: "Alt", x: "30%", y: "22%", w: 1.4, rot: 7 },
+  { label: "Shift", x: "60%", y: "20%", w: 1.8, rot: -5 },
+  { label: "Space", x: "47%", y: "76%", w: 2.4, rot: 4 },
+  { label: "←", x: "3%", y: "62%", w: 1, rot: 10 },
+  { label: "→", x: "95%", y: "76%", w: 1, rot: -8 },
+  { label: "↓", x: "38%", y: "46%", w: 1, rot: 6 },
+  { label: "A", x: "88%", y: "26%", w: 1, rot: -10 },
+  { label: "?", x: "12%", y: "36%", w: 1, rot: 5 },
+];
 ---
 
-<section id="shortcuts" class="py-20 md:py-28 border-t border-[var(--border)]/50">
-  <div class="max-w-6xl mx-auto px-6">
+<section
+  id="shortcuts"
+  class="relative overflow-hidden py-20 md:py-28 border-t border-[var(--border)]/50"
+>
+  <!-- Decorative scattered keycaps behind the heading. Purely visual —
+       masked + faded so it never reduces card legibility. -->
+  <div class="kbd-deco" aria-hidden="true">
+    {
+      decoKeys.map((k) => (
+        <span
+          class="kbd-deco__key"
+          style={`left:${k.x};top:${k.y};--kw:${k.w};--rot:${k.rot}deg;`}
+        >
+          {k.label}
+        </span>
+      ))
+    }
+  </div>
+
+  <div class="relative z-10 max-w-6xl mx-auto px-6">
     <div class="text-center mb-12 max-w-2xl mx-auto">
       <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">
         Made for the keyboard too
@@ -173,3 +212,64 @@ const commands = [
     </div>
   </div>
 </section>
+
+<style>
+  /* Scattered-keycap decoration behind the section heading. Covers the
+     top band only; a vertical mask fades it out before the cards so
+     legibility is never affected. Colours come from theme tokens, so
+     it adapts to light/dark automatically. */
+  .kbd-deco {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 440px;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(0, 0, 0, 0.85) 48%,
+      transparent 90%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(0, 0, 0, 0.85) 48%,
+      transparent 90%
+    );
+  }
+
+  .kbd-deco__key {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    height: 2.6rem;
+    width: calc(2.6rem * var(--kw, 1));
+    padding: 0 0.5rem;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--fg-muted);
+    font:
+      600 0.9rem/1 "Noto Sans",
+      system-ui,
+      sans-serif;
+    white-space: nowrap;
+    /* Keycap depth — a hard lower edge plus a soft cast shadow. */
+    box-shadow:
+      0 3px 0 0 color-mix(in srgb, var(--border) 75%, transparent),
+      0 5px 10px rgba(0, 0, 0, 0.18);
+    transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+    opacity: 0.5;
+    user-select: none;
+  }
+
+  @media (min-width: 768px) {
+    .kbd-deco {
+      height: 480px;
+    }
+    .kbd-deco__key {
+      height: 3rem;
+      width: calc(3rem * var(--kw, 1));
+      font-size: 1rem;
+    }
+  }
+</style>
