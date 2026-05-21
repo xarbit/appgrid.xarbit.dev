@@ -4,12 +4,17 @@ const navigation = [
   { keys: ["Esc"], desc: "Close" },
   { keys: ["↑", "↓", "←", "→"], desc: "Navigate results", separator: " " },
   { keys: ["Enter"], desc: "Launch top result" },
-  { keys: ["Tab"], desc: "Cycle apps + KRunner results" },
-  { keys: ["Alt", "1-9"], desc: "Launch numbered result" },
-  { keys: ["Alt", "letter"], desc: "Jump to category by mnemonic" },
+  { keys: ["Tab"], desc: "Cycle apps + runners" },
+  { keys: ["Alt", "1-9"], desc: "Launch by number" },
+  { keys: ["Alt", "letter"], desc: "Jump to category" },
+  {
+    keys: ["Alt", "←→"],
+    desc: "Step through categories",
+    badge: "New in 1.8.0",
+  },
   {
     keys: ["Ctrl", "Shift", "↑↓←→"],
-    desc: "Reorder highlighted favorite by one cell",
+    desc: "Move favorite by one cell",
     badge: "New in 1.8.0",
   },
 ];
@@ -36,7 +41,7 @@ const commands = [
 ---
 
 <section id="shortcuts" class="py-20 md:py-28 border-t border-[var(--border)]/50">
-  <div class="max-w-5xl mx-auto px-6">
+  <div class="max-w-6xl mx-auto px-6">
     <div class="text-center mb-12 max-w-2xl mx-auto">
       <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">
         Made for the keyboard too
