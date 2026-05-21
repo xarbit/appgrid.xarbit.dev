@@ -5,7 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    - cron: "0 6 * * *"
+    # Odd minute, off the hour — GitHub silently drops schedule runs
+    # queued at round hours (e.g. "0 6") when Actions is under load.
+    - cron: "43 5 * * *"
   # Fired by the AppGrid repo's "Notify website of release" workflow when
   # a new release is published, so the site rebuilds with the new version
   # data immediately instead of waiting up to 24h for the cron.
