@@ -224,9 +224,18 @@ const distrosImmutable = 6; // KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, Steam
           <span class="hero-pulse hero-pulse--search"></span>
           <span class="hero-pulse hero-pulse--ghostty"></span>
 
-          <!-- Synthetic cursor — white fill + black stroke for both themes. -->
-          <svg class="hero-cursor" viewBox="0 0 24 24" width="22" height="22">
-            <path d="M3 2 L3 18 L7 14 L10 21 L13 19.5 L10 13 L16 13 Z" fill="#fff" stroke="#111" stroke-width="1.4" stroke-linejoin="round" />
+          <!-- KDE Breeze cursor (breeze_cursors default pointer, LGPL):
+               white body + dark interior. Drop shadow comes from the
+               CSS filter on .hero-cursor. -->
+          <svg class="hero-cursor" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
+            <path
+              d="m3.93 2.75a.9.9 0 0 0 -.362.072.93.93 0 0 0 -.568.73l.002 16.497a1 1 0 0 0 1.299.865l3.076-1.273 1.697 2.27a2.265 2.265 0 0 0 4.092-1.696l-.402-2.805 3.074-1.275q.135-.068.248-.18a1 1 0 0 0 .059-1.35l-11.663-11.665a.92.92 0 0 0 -.552-.189"
+              fill="#fff"
+            />
+            <path
+              d="m4 3.873-.004 15.977 3.352-1.766 2.271 2.73a1.402 1.402 0 0 0 2.389-.988l-.326-3.539 3.619-1.119z"
+              fill="#232629"
+            />
           </svg>
         </div>
       </div>
@@ -335,8 +344,12 @@ const distrosImmutable = 6; // KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, Steam
     position: absolute;
     top: var(--start-y);
     left: var(--start-x);
-    width: clamp(18px, 3cqw, 44px);
-    height: clamp(18px, 3cqw, 44px);
+    /* cqw tracks the .hero-demo width (= the launcher screenshot's
+       render width), so the cursor scales with the app on screen.
+       Floor keeps it tappable-size on mobile; ceiling caps it on
+       very wide layouts. */
+    width: clamp(24px, 5.5cqw, 64px);
+    height: clamp(24px, 5.5cqw, 64px);
     filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
     animation: hero-cursor-path 9s cubic-bezier(0.6, 0.05, 0.4, 1) infinite;
   }
