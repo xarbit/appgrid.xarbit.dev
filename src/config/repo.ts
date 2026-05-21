@@ -428,6 +428,155 @@ function isVersionNewer(a: string, b: string): boolean {
   return aPre > bPre;
 }
 
+/* === openSUSE Build Service (OBS) target discovery === */
+
+const OBS_OWNER = "home:JMarcosHP01";
+const OBS_BASE =
+  "https://download.opensuse.org/repositories/home:/JMarcosHP01";
+const OBS_PACKAGE = "plasma6-applet-appgrid";
+const OBS_CACHE_FILE = ".astro/obs-cache.json";
+const OBS_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+export interface ObsTarget {
+  /** OBS directory name, e.g. "openSUSE_Tumbleweed" or "16.1". */
+  id: string;
+  /** Human label, e.g. "Tumbleweed", "Leap 16.1". */
+  label: string;
+  /** Full `.repo` file URL for `zypper addrepo`. */
+  repoFile: string;
+  /** OBS package version, e.g. "1.7.10". null when not parseable. */
+  version: string | null;
+}
+
+interface ObsCacheEntry {
+  targets: ObsTarget[];
+  fetchedAt: number;
+}
+
+let obsMemo: Promise<ObsTarget[]> | null = null;
+let obsDiskCache: ObsCacheEntry | null = null;
+
+// Hardcoded fallback when OBS is unreachable at build time. Mirrors the
+// targets the home:JMarcosHP01 project currently publishes.
+const OBS_FALLBACK: ObsTarget[] = [
+  "openSUSE_Tumbleweed",
+  "openSUSE_Slowroll",
+  "16.1",
+  "16.0",
+].map((id) => ({
+  id,
+  label: obsLabel(id),
+  repoFile: `${OBS_BASE}/${id}/${OBS_OWNER}.repo`,
+  version: null,
+}));
+
+/** Map an OBS directory name to a human-readable distro label. */
+function obsLabel(id: string): string {
+  if (id === "openSUSE_Tumbleweed") return "Tumbleweed";
+  if (id === "openSUSE_Slowroll") return "Slowroll";
+  if (id === "openSUSE_Factory") return "Factory";
+  // Bare "16.0" / "15.6" → Leap point releases.
+  if (/^\d+\.\d+$/.test(id)) return `Leap ${id}`;
+  // "openSUSE_Leap_15.6" → "Leap 15.6".
+  return id.replace(/^openSUSE_/, "").replace(/_/g, " ");
+}
+
+/** Sort: Tumbleweed first, then Slowroll, then Leap newest-first. */
+function obsSort(a: ObsTarget, b: ObsTarget): number {
+  const rank = (t: ObsTarget): number =>
+    t.id === "openSUSE_Tumbleweed" ? 0 : t.id === "openSUSE_Slowroll" ? 1 : 2;
+  const ra = rank(a);
+  const rb = rank(b);
+  if (ra !== rb) return ra - rb;
+  return b.id.localeCompare(a.id, undefined, { numeric: true });
+}
+
+/** Scrape one target's x86_64 listing for the AppGrid package version. */
+async function fetchObsVersion(targetId: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${OBS_BASE}/${targetId}/x86_64/`, {
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return null;
+    const html = await res.text();
+    // e.g. plasma6-applet-appgrid-1.7.10-1.1.x86_64.rpm → "1.7.10"
+    const m = html.match(
+      new RegExp(`${OBS_PACKAGE}-(\\d[\\w.]*)-[^"'/]*\\.x86_64\\.rpm`),
+    );
+    return m ? m[1] : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Discover the openSUSE Build Service targets (and their package versions)
+ * the home:JMarcosHP01 project publishes. Memo + 1h disk cache; falls back
+ * to a hardcoded target list when OBS is unreachable at build time.
+ */
+export async function fetchObsTargets(): Promise<ObsTarget[]> {
+  if (obsMemo) return obsMemo;
+
+  obsMemo = (async (): Promise<ObsTarget[]> => {
+    if (!obsDiskCache) {
+      try {
+        obsDiskCache = JSON.parse(
+          await readFile(OBS_CACHE_FILE, "utf8"),
+        ) as ObsCacheEntry;
+      } catch {
+        obsDiskCache = null;
+      }
+    }
+    const now = Date.now();
+    if (obsDiskCache && now - obsDiskCache.fetchedAt < OBS_CACHE_TTL_MS) {
+      return obsDiskCache.targets;
+    }
+
+    try {
+      const res = await fetch(`${OBS_BASE}/`, {
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!res.ok) {
+        console.warn(`[obs] index HTTP ${res.status} (using fallback)`);
+        return obsDiskCache?.targets ?? OBS_FALLBACK;
+      }
+      const html = await res.text();
+      // Directory links look like: <a href="./openSUSE_Tumbleweed/">
+      const ids = [...html.matchAll(/href="\.\/([^"/]+)\/"/g)]
+        .map((m) => m[1])
+        .filter((id) => id !== "..");
+      if (ids.length === 0) {
+        console.warn("[obs] no targets parsed (using fallback)");
+        return obsDiskCache?.targets ?? OBS_FALLBACK;
+      }
+
+      const targets: ObsTarget[] = await Promise.all(
+        ids.map(async (id) => ({
+          id,
+          label: obsLabel(id),
+          repoFile: `${OBS_BASE}/${id}/${OBS_OWNER}.repo`,
+          version: await fetchObsVersion(id),
+        })),
+      );
+      targets.sort(obsSort);
+
+      obsDiskCache = { targets, fetchedAt: now };
+      try {
+        await mkdir(dirname(OBS_CACHE_FILE), { recursive: true });
+        await writeFile(OBS_CACHE_FILE, JSON.stringify(obsDiskCache, null, 2));
+      } catch (err) {
+        console.warn("[obs] cache write failed:", err);
+      }
+      return targets;
+    } catch (err) {
+      console.warn("[obs] fetch failed (using fallback):", err);
+      return obsDiskCache?.targets ?? OBS_FALLBACK;
+    }
+  })();
+
+  return obsMemo;
+}
+
 /** Fetch latest release tag with memo + 1h disk cache. Returns normalized tag (no leading v). */
 export async function fetchLatestVersion(r: RepoConfig): Promise<string | null> {
   const key = cacheKey(r);

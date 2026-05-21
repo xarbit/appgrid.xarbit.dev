@@ -7,6 +7,7 @@ import {
   releasesUrl,
   fetchLatestRelease,
   fetchLatestPrerelease,
+  fetchObsTargets,
   pickAsset,
   fetchSha256Sidecar,
   type LatestRelease,
@@ -15,6 +16,7 @@ import {
 
 const stable = await fetchLatestRelease(primary);
 const prerelease = await fetchLatestPrerelease(primary);
+const obsTargets = await fetchObsTargets();
 
 const fallbackUrl = stable?.htmlUrl ?? releasesUrl(primary);
 
@@ -27,28 +29,12 @@ async function archAsset(assets: ReleaseAsset[], pattern: RegExp) {
 
 async function bundleFor(release: LatestRelease | null): Promise<ChannelBundle | null> {
   if (!release) return null;
+  // Distro packages now come from the Launchpad PPA / Fedora Copr / AUR —
+  // the universal tarball is the only asset still attached to a GitHub
+  // release, so it is the only thing resolved here.
   return {
     tag: release.tag,
     htmlUrl: release.htmlUrl,
-    arch: {
-      // Exclude -debug- variant; pacman emits it as a sibling .pkg.tar.zst.
-      // Lookahead handles the exclusion; .* allows letters in the version
-      // segment (e.g. "1.8.0_rc.1").
-      x86_64: await archAsset(release.assets, /^plasma6-applets-appgrid-(?!debug-).+-1-x86_64\.pkg\.tar\.zst$/),
-      aarch64: null,
-    },
-    fedora: {
-      x86_64: await archAsset(release.assets, /fc\d+\.x86_64\.rpm$/),
-      aarch64: await archAsset(release.assets, /fc\d+\.aarch64\.rpm$/),
-    },
-    ubuntu: {
-      x86_64: await archAsset(release.assets, /ubuntu[\d.]+_[a-z]+_amd64\.deb$/),
-      aarch64: await archAsset(release.assets, /ubuntu[\d.]+_[a-z]+_arm64\.deb$/),
-    },
-    debian: {
-      x86_64: await archAsset(release.assets, /debian[\d.]+_[a-z]+_amd64\.deb$/),
-      aarch64: await archAsset(release.assets, /debian[\d.]+_[a-z]+_arm64\.deb$/),
-    },
     universal: {
       x86_64: await archAsset(release.assets, /^appgrid-universal-.*-x86_64\.tar\.gz$/),
       aarch64: await archAsset(release.assets, /^appgrid-universal-.*-aarch64\.tar\.gz$/),
@@ -72,9 +58,9 @@ const releaseDownloadBase = `${repoUrl(primary)}/releases/download`;
         Install AppGrid
       </h2>
       <p class="text-lg text-[var(--fg-muted)]">
-        Pre-built packages for the major distros, or a universal
-        <code>~/.local/</code> Universal Package that runs anywhere Plasma 6.4 does.
-        Source builds work too.
+        Install straight from your distro's package manager — a PPA, Copr, or
+        the AUR — or grab the universal <code>~/.local/</code> package that runs
+        anywhere Plasma 6.4 does. Source builds work too.
       </p>
     </div>
 
@@ -148,6 +134,7 @@ const releaseDownloadBase = `${repoUrl(primary)}/releases/download`;
         prerelease={prereleaseBundle}
         releasesUrl={fallbackUrl}
         releaseDownloadBase={releaseDownloadBase}
+        obsTargets={obsTargets}
       />
 
       <BuildFromSource client:visible cloneUrl={`${repoUrl(primary)}.git`} />

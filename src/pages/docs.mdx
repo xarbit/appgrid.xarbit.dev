@@ -22,13 +22,41 @@ Pass `-DAPPGRID_UNIVERSAL_BUILD=ON` to compile in the opt-in update checker (onl
 
 **Arch users:** a `PKGBUILD` ships at the repo root. Build a proper pacman package with `makepkg -sf`, install via `sudo pacman -U`.
 
+## Development builds
+
+Every push to `main` is published to a separate **`-dev`** channel — bleeding-edge, rebuilt on every commit. Expect breakage; it's for testing fixes before they land in a release, not for daily use.
+
+**Arch (AUR):**
+
+```bash
+yay -S plasma6-applets-appgrid-git
+```
+
+A `-git` VCS package — it builds the latest `main`. Plain `yay -Syu` won't detect new commits; rebuild with `yay -Syu --devel` to pull updates.
+
+**Fedora (Copr):**
+
+```bash
+sudo dnf copr enable scujas/plasma-applet-appgrid-dev
+sudo dnf install plasma-applet-appgrid
+```
+
+**Ubuntu (Launchpad PPA):**
+
+```bash
+sudo add-apt-repository ppa:xarbit/plasma-applet-appgrid-dev
+sudo apt install plasma-applet-appgrid
+```
+
+There's no `-dev` channel for the universal tarball — [build from source](#build-from-source) for that. To leave the dev channel, remove the `-dev` repo (or the `-git` package) and switch to the stable Copr / PPA / AUR.
+
 ## Dependencies (per distro)
 
 Authoritative dep lists live alongside their packaging spec — keep these in sync with what you actually install.
 
 - **Arch:** see [PKGBUILD](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/PKGBUILD) (`depends=` + `makedepends=`)
-- **Fedora:** see [packages/rpm/fedora.spec.in](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/rpm/fedora.spec.in) + CI dnf install list in [.github/workflows/build.yml](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/.github/workflows/build.yml)
-- **Debian / Ubuntu:** see [packages/deb/control.in](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/deb/control.in) + CI apt install list
+- **Fedora:** see [packages/rpm/appgrid.spec.in](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/rpm/appgrid.spec.in) (`BuildRequires:` + `Requires:`)
+- **Ubuntu:** see [packages/deb/debian/control](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/deb/debian/control) (`Build-Depends:` + `Depends:`)
 - **Universal Package runtime:** see [packages/universal/distros.toml](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/universal/distros.toml) — per-distro runtime packages, `install.py` verifies via `ldd` before placing any files
 
 Core runtime: `plasma-workspace`, `libplasma`, `kservice`, `ki18n`, `kio`, `kpackage`, `kcoreaddons`, `kwindowsystem`, `krunner`, `kirigami`, `layer-shell-qt`, `plasma-activities`, `qt6-base`, `qt6-declarative`.

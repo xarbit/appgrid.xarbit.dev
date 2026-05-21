@@ -1,14 +1,11 @@
 import { useState } from "react";
 import InstallTabs, { type ArchPair } from "./InstallTabs";
 import UniversalInstall from "./UniversalInstall";
+import type { ObsTarget } from "../config/repo";
 
 export interface ChannelBundle {
   tag: string;
   htmlUrl: string;
-  arch: ArchPair;
-  fedora: ArchPair;
-  ubuntu: ArchPair;
-  debian: ArchPair;
   universal: ArchPair;
 }
 
@@ -20,11 +17,13 @@ interface Props {
    * "https://github.com/<owner>/<repo>/releases/download". Threaded through to
    * the download children so mock fallback URLs follow the repo config. */
   releaseDownloadBase: string;
+  /** OBS targets discovered at build time, threaded to the openSUSE tab. */
+  obsTargets: ObsTarget[];
 }
 
 type Channel = "stable" | "prerelease";
 
-export default function InstallChannel({ stable, prerelease, releasesUrl, releaseDownloadBase }: Props) {
+export default function InstallChannel({ stable, prerelease, releasesUrl, releaseDownloadBase, obsTargets }: Props) {
   // Start the user on whichever channel is available; defaults to stable.
   const initialChannel: Channel = stable ? "stable" : prerelease ? "prerelease" : "stable";
   const [channel, setChannel] = useState<Channel>(initialChannel);
@@ -148,56 +147,18 @@ export default function InstallChannel({ stable, prerelease, releasesUrl, releas
       {/* Key on the active tag so React remounts this subtree when the
           channel switches, re-triggering the fade-in animation. */}
       <div key={active.tag} className="install-channel-fade">
-        <div className="mb-3 flex items-baseline gap-3">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] uppercase tracking-wider rounded bg-[var(--color-breeze-blue)]/15 text-[#3daee9] border border-[var(--color-breeze-blue)]/30 font-semibold">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M16.5 9.4 7.5 4.21" />
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-            </svg>
-            System package
-          </span>
-          <span className="text-xs text-[var(--fg-muted)]">
-            Installed system-wide via your package manager
-          </span>
-        </div>
-
         <InstallTabs
-          releasesUrl={releasesUrl}
-          releaseHtmlUrl={fallbackUrl}
-          arch={active.arch}
-          fedora={active.fedora}
-          ubuntu={active.ubuntu}
-          debian={active.debian}
-          channelTag={active.tag}
-          releaseDownloadBase={releaseDownloadBase}
-        />
-
-        <div className="my-10 flex items-center gap-4">
-          <span className="flex-1 h-px bg-[var(--border)]" />
-          <span className="text-xs uppercase tracking-wider text-[var(--fg-subtle)] font-medium">
-            or
-          </span>
-          <span className="flex-1 h-px bg-[var(--border)]" />
-        </div>
-
-        <div className="mb-3 flex items-baseline gap-3">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] uppercase tracking-wider rounded bg-[#e67e22]/15 text-[#f5a35e] border border-[#e67e22]/40 font-semibold">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M12 2l9 4v6c0 5-3.5 9.5-9 10-5.5-.5-9-5-9-10V6l9-4z" />
-            </svg>
-            User-local install
-          </span>
-          <span className="text-xs text-[var(--fg-muted)]">
-            Drops into <code className="px-1 rounded bg-[var(--canvas-deep)] border border-[var(--border)] text-[var(--fg)]">~/.local/</code> — no root, no repo
-          </span>
-        </div>
-
-        <UniversalInstall
-          releasesUrl={releasesUrl}
-          releaseHtmlUrl={fallbackUrl}
-          universal={active.universal}
-          channelTag={active.tag}
-          releaseDownloadBase={releaseDownloadBase}
+          prerelease={channel === "prerelease"}
+          obsTargets={obsTargets}
+          universalSlot={
+            <UniversalInstall
+              releasesUrl={releasesUrl}
+              releaseHtmlUrl={fallbackUrl}
+              universal={active.universal}
+              channelTag={active.tag}
+              releaseDownloadBase={releaseDownloadBase}
+            />
+          }
         />
       </div>
 
