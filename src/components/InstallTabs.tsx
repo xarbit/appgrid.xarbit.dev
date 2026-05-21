@@ -237,7 +237,11 @@ export default function InstallTabs({ prerelease, obsTargets, universalSlot }: P
 
   return (
     <div className="breeze-card overflow-hidden">
-      <div className="flex border-b border-[var(--border)] overflow-x-auto">
+      <div
+        role="tablist"
+        aria-label="Installation method"
+        className="flex border-b border-[var(--border)] overflow-x-auto"
+      >
         {tabs.map((t) => {
           const disabled = prerelease && !!t.stableOnly;
           const isActive = current.id === t.id;

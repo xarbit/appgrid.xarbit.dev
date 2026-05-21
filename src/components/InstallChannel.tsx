@@ -80,7 +80,7 @@ export default function InstallChannel({ stable, prerelease, releasesUrl, releas
         aria-hidden="true"
       />
       <span>
-        <span className="opacity-70 font-normal">Stable</span>{" "}
+        <span className="font-normal">Stable</span>{" "}
         <span className="tabular-nums">{stable ? `v${stable.tag}` : "—"}</span>
       </span>
     </button>
@@ -113,7 +113,7 @@ export default function InstallChannel({ stable, prerelease, releasesUrl, releas
         aria-hidden="true"
       />
       <span>
-        <span className="opacity-70 font-normal">Pre-release</span>{" "}
+        <span className="font-normal">Pre-release</span>{" "}
         <span className="tabular-nums">{prerelease ? `v${prerelease.tag}` : "none"}</span>
       </span>
     </button>
