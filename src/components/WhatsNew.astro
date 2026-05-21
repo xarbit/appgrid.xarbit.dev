@@ -10,8 +10,16 @@ const linkUrl = featured?.htmlUrl ?? releasesUrl(primary);
 const isPrerelease = !!prerelease;
 ---
 
-<section id="whats-new" class="py-16 md:py-20 border-t border-[var(--border)]/50">
-  <div class="max-w-3xl mx-auto px-6 text-center">
+<section
+  id="whats-new"
+  class="relative overflow-hidden py-16 md:py-20 border-t border-[var(--border)]/50"
+>
+  <!-- Faint grid pattern — echoes AppGrid's grid identity. Radially
+       masked so it pools behind the content and fades before the
+       section borders. Purely decorative. -->
+  <div class="wn-grid" aria-hidden="true"></div>
+
+  <div class="relative z-10 max-w-3xl mx-auto px-6 text-center">
     <div class="inline-flex items-center gap-2 px-3 py-1 mb-4 rounded-full bg-[#e67e22]/10 border border-[#e67e22]/40 text-[#f5a35e] text-xs font-medium uppercase tracking-wide">
       <span class="w-1.5 h-1.5 rounded-full bg-[#e67e22]" />
       {isPrerelease ? "Pre-release" : "Release"}
@@ -36,3 +44,32 @@ const isPrerelease = !!prerelease;
     </a>
   </div>
 </section>
+
+<style>
+  /* Graph-paper grid — breeze-blue lines, very low opacity. The radial
+     mask keeps it strongest behind the content and fades it out toward
+     the section edges so it never collides with the section borders. */
+  .wn-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, var(--color-breeze-blue) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-breeze-blue) 1px, transparent 1px);
+    background-size: 38px 38px;
+    opacity: 0.18;
+    -webkit-mask-image: radial-gradient(
+      ellipse 72% 86% at 50% 50%,
+      #000 0%,
+      #000 34%,
+      transparent 82%
+    );
+    mask-image: radial-gradient(
+      ellipse 72% 86% at 50% 50%,
+      #000 0%,
+      #000 34%,
+      transparent 82%
+    );
+  }
+</style>
