@@ -118,8 +118,8 @@ function buildTabs(prerelease: boolean, obsTargets: ObsTarget[]): Tab[] {
         { label: "2 — Install", code: "sudo apt install plasma-applet-appgrid" },
       ],
       note: prerelease
-        ? "Pre-release PPA — testing builds for Ubuntu 24.04 through 26.10, expect rough edges. The stable PPA is ppa:xarbit/plasma-applet-appgrid."
-        : "Builds for Ubuntu 24.04, 25.10, 26.04 and 26.10. add-apt-repository refreshes the package list for you. Pre-release builds live in the plasma-applet-appgrid-rc PPA.",
+        ? "Pre-release PPA — testing builds for Ubuntu 25.10, 26.04 and 26.10, expect rough edges. The stable PPA is ppa:xarbit/plasma-applet-appgrid."
+        : "Builds for Ubuntu 25.10, 26.04 and 26.10. add-apt-repository refreshes the package list for you. Pre-release builds live in the plasma-applet-appgrid-rc PPA.",
     },
     {
       id: "universal",
