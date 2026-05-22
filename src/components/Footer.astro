@@ -5,11 +5,17 @@ import {
   repoUrl,
   issuesUrl,
   releasesUrl,
+  fetchContributorCount,
 } from "../config/repo";
 import Logo from "./Logo.astro";
 
 const year = new Date().getFullYear();
 const allRepos = [primary, ...mirrors];
+
+// Contributors beyond the author, from the GitHub API at build time.
+const contributorCount = await fetchContributorCount(primary);
+const otherContributors =
+  contributorCount && contributorCount > 1 ? contributorCount - 1 : 0;
 ---
 
 <footer class="border-t border-[var(--border)]/50 py-12 mt-10">
@@ -90,7 +96,20 @@ const allRepos = [primary, ...mirrors];
 
   <div class="max-w-6xl mx-auto px-6 mt-10 pt-6 border-t border-[var(--border)]/30 text-xs text-[var(--fg-muted)] flex flex-wrap gap-x-4 gap-y-2 justify-between items-center">
     <span class="flex items-center gap-1.5 flex-wrap">
-      © {year} Jason Scurtu · Non-commercial open-source project · made with
+      © {year} Jason Scurtu{
+        otherContributors > 0 && (
+          <Fragment>
+            {" and "}
+            <a
+              href={`${repoUrl(primary)}/graphs/contributors`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="underline hover:text-[var(--fg)]"
+              >{otherContributors} contributor{otherContributors === 1 ? "" : "s"}</a
+            >
+          </Fragment>
+        )
+      } · Non-commercial open-source project · made with
       <svg
         width="13"
         height="13"

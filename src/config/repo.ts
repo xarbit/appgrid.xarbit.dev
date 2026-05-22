@@ -158,6 +158,93 @@ export function formatStars(n: number): string {
   return String(n);
 }
 
+/* === Contributor count with memo + disk cache === */
+
+const CONTRIB_CACHE_FILE = ".astro/contributors-cache.json";
+const CONTRIB_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+type ContribCache = Record<string, { count: number; fetchedAt: number }>;
+
+const contribMemoryCache: Map<string, Promise<number | null>> = new Map();
+let contribDiskCache: ContribCache | null = null;
+
+async function loadContribCache(): Promise<ContribCache> {
+  if (contribDiskCache) return contribDiskCache;
+  try {
+    contribDiskCache = JSON.parse(
+      await readFile(CONTRIB_CACHE_FILE, "utf8"),
+    ) as ContribCache;
+  } catch {
+    contribDiskCache = {};
+  }
+  return contribDiskCache;
+}
+
+async function saveContribCache(cache: ContribCache): Promise<void> {
+  try {
+    await mkdir(dirname(CONTRIB_CACHE_FILE), { recursive: true });
+    await writeFile(CONTRIB_CACHE_FILE, JSON.stringify(cache, null, 2));
+  } catch (err) {
+    console.warn("[contributors] cache write failed:", err);
+  }
+}
+
+/**
+ * Number of GitHub contributors — same memo + 1h disk-cache + stale-fallback
+ * pattern as fetchStars. Counts one API page (100); the project is well below
+ * that. Non-GitHub platforms return null.
+ */
+export async function fetchContributorCount(
+  r: RepoConfig,
+): Promise<number | null> {
+  if (r.platform !== "github") return null;
+
+  const key = cacheKey(r);
+  const memo = contribMemoryCache.get(key);
+  if (memo) return memo;
+
+  const promise = (async (): Promise<number | null> => {
+    const cache = await loadContribCache();
+    const cached = cache[key];
+    const now = Date.now();
+    if (cached && now - cached.fetchedAt < CONTRIB_CACHE_TTL_MS) {
+      return cached.count;
+    }
+
+    try {
+      const headers: Record<string, string> = {
+        "User-Agent": "appgrid-website-build",
+        Accept: "application/vnd.github+json",
+      };
+      if (import.meta.env.GITHUB_TOKEN) {
+        headers.Authorization = `Bearer ${import.meta.env.GITHUB_TOKEN}`;
+      }
+      const res = await fetch(
+        `https://api.github.com/repos/${r.owner}/${r.repo}/contributors?per_page=100`,
+        { headers, signal: AbortSignal.timeout(5000) },
+      );
+      if (!res.ok) {
+        console.warn(
+          `[contributors] HTTP ${res.status} (using cache fallback)`,
+        );
+        return cached?.count ?? null;
+      }
+      const data = await res.json();
+      const count = Array.isArray(data) ? data.length : null;
+      if (count !== null) {
+        cache[key] = { count, fetchedAt: now };
+        await saveContribCache(cache);
+      }
+      return count;
+    } catch (err) {
+      console.warn("[contributors] fetch failed (using cache fallback):", err);
+      return cached?.count ?? null;
+    }
+  })();
+
+  contribMemoryCache.set(key, promise);
+  return promise;
+}
+
 /* === Latest release version fetch === */
 
 const VERSION_CACHE_FILE = ".astro/version-cache.json";
