@@ -47,10 +47,16 @@ interface TerminalStep {
   code: string;
 }
 
+type TabGroup = "official" | "community";
+
 interface Tab {
   id: DistroKey;
   label: string;
   color: string;
+  /** Which install bucket this tab belongs to. Filtered by the `group`
+   *  prop so the Install section can render an "official" strip and a
+   *  separate "community" strip from the same source of truth. */
+  group: TabGroup;
   /** Optional pill badge after the label (e.g. "Beta" on Universal). */
   badge?: string;
   /** Green callout — first-party build, published by the project's author. */
@@ -80,6 +86,7 @@ function buildTabs(prerelease: boolean, obsTargets: ObsTarget[]): Tab[] {
       id: "arch",
       label: "Arch",
       color: "#1793d1",
+      group: "official",
       official: true,
       steps: [
         { label: "Via yay", code: `yay -S plasma6-applets-appgrid${sfx}` },
@@ -93,6 +100,7 @@ function buildTabs(prerelease: boolean, obsTargets: ObsTarget[]): Tab[] {
       id: "fedora",
       label: "Fedora",
       color: "#3c6eb4",
+      group: "official",
       official: true,
       steps: [
         {
@@ -109,6 +117,7 @@ function buildTabs(prerelease: boolean, obsTargets: ObsTarget[]): Tab[] {
       id: "ubuntu",
       label: "Ubuntu",
       color: "#e95420",
+      group: "official",
       official: true,
       steps: [
         {
@@ -125,6 +134,7 @@ function buildTabs(prerelease: boolean, obsTargets: ObsTarget[]): Tab[] {
       id: "universal",
       label: "Universal",
       color: "#e67e22",
+      group: "official",
       badge: "Beta",
       isUniversal: true,
       // Panel content is the UniversalInstall widget passed in as a slot.
@@ -134,6 +144,7 @@ function buildTabs(prerelease: boolean, obsTargets: ObsTarget[]): Tab[] {
       id: "opensuse",
       label: "openSUSE",
       color: "#73ba25",
+      group: "community",
       stableOnly: true,
       topWarning:
         "Community-maintained on the openSUSE Build Service by @JMarcosHP01. Not an official AppGrid release — please report packaging issues to the OBS package page first.",
@@ -147,6 +158,7 @@ function buildTabs(prerelease: boolean, obsTargets: ObsTarget[]): Tab[] {
       id: "gentoo",
       label: "Gentoo",
       color: "#54487a",
+      group: "community",
       stableOnly: true,
       topWarning:
         "Community-maintained overlay by @mnalmahmud. Not an official AppGrid release — please report packaging issues to the overlay first.",
@@ -172,13 +184,19 @@ interface Props {
   prerelease: boolean;
   /** OBS targets discovered at build time for the openSUSE tab. */
   obsTargets: ObsTarget[];
-  /** UniversalInstall widget — rendered as the panel of the Universal tab. */
-  universalSlot: ReactNode;
+  /** UniversalInstall widget — rendered as the panel of the Universal tab.
+   *  Optional because the community group has no Universal tab. */
+  universalSlot?: ReactNode;
+  /** Which tab bucket to render. Omit to render every tab in one strip
+   *  (legacy behaviour). The Install section renders "official" and
+   *  "community" as two separate widgets. */
+  group?: TabGroup;
 }
 
-export default function InstallTabs({ prerelease, obsTargets, universalSlot }: Props) {
-  const tabs = buildTabs(prerelease, obsTargets);
-  const [active, setActive] = useState<DistroKey>("arch");
+export default function InstallTabs({ prerelease, obsTargets, universalSlot, group }: Props) {
+  const allTabs = buildTabs(prerelease, obsTargets);
+  const tabs = group ? allTabs.filter((t) => t.group === group) : allTabs;
+  const [active, setActive] = useState<DistroKey>(tabs[0]?.id ?? "arch");
   const [copied, setCopied] = useState<string | null>(null);
   // Selected openSUSE Build Service target — defaults to the first
   // (Tumbleweed when present).

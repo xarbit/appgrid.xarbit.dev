@@ -148,6 +148,7 @@ export default function InstallChannel({ stable, prerelease, releasesUrl, releas
           channel switches, re-triggering the fade-in animation. */}
       <div key={active.tag} className="install-channel-fade">
         <InstallTabs
+          group="official"
           prerelease={channel === "prerelease"}
           obsTargets={obsTargets}
           universalSlot={

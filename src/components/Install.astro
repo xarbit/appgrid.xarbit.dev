@@ -1,5 +1,6 @@
 ---
 import InstallChannel, { type ChannelBundle } from "./InstallChannel";
+import InstallTabs from "./InstallTabs";
 import BuildFromSource from "./BuildFromSource";
 import {
   primary,
@@ -136,6 +137,28 @@ const releaseDownloadBase = `${repoUrl(primary)}/releases/download`;
         releaseDownloadBase={releaseDownloadBase}
         obsTargets={obsTargets}
       />
+
+      <div id="community-packages" class="mt-16">
+        <div class="text-center mb-6">
+          <h3 class="text-2xl md:text-3xl font-bold tracking-tight mb-3">
+            Community packages
+          </h3>
+          <p class="text-sm text-[var(--fg-muted)] max-w-2xl mx-auto leading-relaxed">
+            Maintained by third-party contributors, <strong class="text-[var(--fg)]">not</strong>
+            by the AppGrid project. Listed here as a convenience for users of those
+            distros — we do not build, sign, audit, or vet these packages and cannot
+            vouch for what each maintainer ships. Please report packaging issues
+            against the linked overlay or package page first.
+          </p>
+        </div>
+
+        <InstallTabs
+          client:visible
+          group="community"
+          prerelease={false}
+          obsTargets={obsTargets}
+        />
+      </div>
 
       <BuildFromSource client:visible cloneUrl={`${repoUrl(primary)}.git`} />
     </div>
