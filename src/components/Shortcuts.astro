@@ -3,6 +3,18 @@ const navigation = [
   { keys: ["Super"], desc: "Toggle AppGrid" },
   { keys: ["Esc"], desc: "Close" },
   { keys: ["↑", "↓", "←", "→"], desc: "Navigate results", separator: " " },
+  {
+    keys: ["PgUp", "PgDn"],
+    desc: "Page through results",
+    separator: " ",
+    badge: "New in 1.8.0",
+  },
+  {
+    keys: ["Home", "End"],
+    desc: "Jump to first / last result",
+    separator: " ",
+    badge: "New in 1.8.0",
+  },
   { keys: ["Enter"], desc: "Launch top result" },
   { keys: ["Tab"], desc: "Cycle apps + runners" },
   { keys: ["Alt", "1-9"], desc: "Launch by number" },
