@@ -135,6 +135,7 @@ function buildTabs(prerelease: boolean, obsTargets: ObsTarget[]): Tab[] {
       label: "Universal",
       color: "#e67e22",
       group: "official",
+      official: true,
       badge: "Beta",
       isUniversal: true,
       // Panel content is the UniversalInstall widget passed in as a slot.
@@ -317,7 +318,32 @@ export default function InstallTabs({ prerelease, obsTargets, universalSlot, gro
       </div>
 
       {isUniversal ? (
-        <div className="p-4 md:p-5">{universalSlot}</div>
+        <div className="p-4 md:p-5 space-y-5">
+          {current.official && (
+            <div className="rounded-lg border border-[#27ae60]/40 bg-[#27ae60]/10 p-3">
+              <p className="text-sm text-[var(--fg-body)] flex items-start gap-2.5 leading-relaxed">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="mt-0.5 flex-shrink-0 text-[#5fd48a]"
+                  aria-hidden="true"
+                >
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+                <span>
+                  Official build — published by AppGrid's author and rebuilt
+                  from the project's own CI on every release.
+                </span>
+              </p>
+            </div>
+          )}
+          {universalSlot}
+        </div>
       ) : (
       <div className="p-5 md:p-6 space-y-5">
         {current.official && (
