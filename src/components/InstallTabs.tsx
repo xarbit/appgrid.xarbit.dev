@@ -2,7 +2,7 @@ import { useState, useEffect, type ReactNode } from "react";
 import DistroLogo from "./DistroLogo";
 import type { ObsTarget } from "../config/repo";
 
-type DistroKey =
+export type DistroKey =
   | "arch"
   | "fedora"
   | "ubuntu"
@@ -192,12 +192,27 @@ interface Props {
    *  (legacy behaviour). The Install section renders "official" and
    *  "community" as two separate widgets. */
   group?: TabGroup;
+  /** Optional controlled selection. When provided, the active tab lives
+   *  in the parent — needed so the channel toggle in InstallChannel can
+   *  remount this subtree for the fade animation without losing the
+   *  user's distro pick. */
+  active?: DistroKey;
+  onActiveChange?: (id: DistroKey) => void;
 }
 
-export default function InstallTabs({ prerelease, obsTargets, universalSlot, group }: Props) {
+export default function InstallTabs({
+  prerelease,
+  obsTargets,
+  universalSlot,
+  group,
+  active: activeProp,
+  onActiveChange,
+}: Props) {
   const allTabs = buildTabs(prerelease, obsTargets);
   const tabs = group ? allTabs.filter((t) => t.group === group) : allTabs;
-  const [active, setActive] = useState<DistroKey>(tabs[0]?.id ?? "arch");
+  const [activeState, setActiveState] = useState<DistroKey>(tabs[0]?.id ?? "arch");
+  const active = activeProp ?? activeState;
+  const setActive = onActiveChange ?? setActiveState;
   const [copied, setCopied] = useState<string | null>(null);
   // Selected openSUSE Build Service target — defaults to the first
   // (Tumbleweed when present).

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import InstallTabs, { type ArchPair } from "./InstallTabs";
+import InstallTabs, { type ArchPair, type DistroKey } from "./InstallTabs";
 import UniversalInstall from "./UniversalInstall";
 import type { ObsTarget } from "../config/repo";
 
@@ -27,6 +27,9 @@ export default function InstallChannel({ stable, prerelease, releasesUrl, releas
   // Start the user on whichever channel is available; defaults to stable.
   const initialChannel: Channel = stable ? "stable" : prerelease ? "prerelease" : "stable";
   const [channel, setChannel] = useState<Channel>(initialChannel);
+  // Hoisted above the keyed remount below so the user's distro pick
+  // survives a channel toggle (issue #116).
+  const [activeTab, setActiveTab] = useState<DistroKey>("arch");
 
   // If the chosen channel went away (build-time fetch failure, race) fall
   // back to whichever bundle we actually have.
@@ -151,6 +154,8 @@ export default function InstallChannel({ stable, prerelease, releasesUrl, releas
           group="official"
           prerelease={channel === "prerelease"}
           obsTargets={obsTargets}
+          active={activeTab}
+          onActiveChange={setActiveTab}
           universalSlot={
             <UniversalInstall
               releasesUrl={releasesUrl}
