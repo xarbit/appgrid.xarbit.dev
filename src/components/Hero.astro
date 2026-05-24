@@ -18,13 +18,13 @@ import {
   primary,
   mirrors,
   repoUrl,
-  fetchLatestVersion,
+  fetchLatestRelease,
   fetchLatestPrerelease,
   fetchStars,
   formatStars,
 } from "../config/repo";
 
-const stable = await fetchLatestVersion(primary);
+const stable = await fetchLatestRelease(primary);
 const prerelease = await fetchLatestPrerelease(primary);
 const starsCount = await fetchStars(primary);
 const starsLabel = starsCount !== null ? formatStars(starsCount) : null;
@@ -83,10 +83,16 @@ const heroIcons = [
       <div class="inline-flex flex-wrap items-center justify-center gap-2 mb-6">
         {
           stable && (
-            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3daee9]/10 border border-[#3daee9]/30 text-[#93cee9] text-xs font-medium">
+            <a
+              href={stable.htmlUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3daee9]/10 border border-[#3daee9]/30 text-[#93cee9] text-xs font-medium hover:bg-[#3daee9]/20 transition-colors"
+              title="Latest stable — click for release notes"
+            >
               <span class="w-2 h-2 rounded-full bg-[#3daee9] animate-pulse" />
-              stable: v{stable}
-            </span>
+              stable: v{stable.tag}
+            </a>
           )
         }
         {
@@ -214,14 +220,16 @@ const heroIcons = [
 
         {stable && (
           <a
-            href="#whats-new"
+            href={stable.htmlUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             class="flex flex-col items-center gap-1 p-3 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:border-[var(--color-breeze-blue)]/40 transition-colors"
           >
             <div class="flex items-center gap-1.5 text-[#5fd48a]">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
-              <span class="font-semibold text-[var(--fg)] tabular-nums">v{stable}</span>
+              <span class="font-semibold text-[var(--fg)] tabular-nums">v{stable.tag}</span>
             </div>
             <span class="text-xs text-[var(--fg-muted)] uppercase tracking-wide">latest stable</span>
           </a>
