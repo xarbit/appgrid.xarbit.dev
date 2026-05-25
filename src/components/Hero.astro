@@ -396,18 +396,23 @@ const heroIcons = [
     animation: hero-sprite 9s steps(1, end) infinite;
   }
 
-  .hero-sprite--dark { background-image: var(--sprite-dark); }
-  .hero-sprite--light { background-image: var(--sprite-light); display: none; }
+  /* Both sprites are always laid out and animating; the theme just
+     toggles which one is visible via opacity. display: none would
+     reset the animation on theme switch, so the newly-revealed
+     sprite would jump back to frame 0 instead of picking up where
+     the hidden one left off. */
+  .hero-sprite--dark { background-image: var(--sprite-dark); opacity: 1; }
+  .hero-sprite--light { background-image: var(--sprite-light); opacity: 0; }
 
   /* Default to dark; system pref toggles when no explicit theme set. */
   @media (prefers-color-scheme: light) {
-    html:not([data-theme]) .hero-sprite--dark { display: none; }
-    html:not([data-theme]) .hero-sprite--light { display: block; }
+    html:not([data-theme]) .hero-sprite--dark { opacity: 0; }
+    html:not([data-theme]) .hero-sprite--light { opacity: 1; }
   }
-  html[data-theme="dark"] .hero-sprite--dark { display: block; }
-  html[data-theme="dark"] .hero-sprite--light { display: none; }
-  html[data-theme="light"] .hero-sprite--dark { display: none; }
-  html[data-theme="light"] .hero-sprite--light { display: block; }
+  html[data-theme="dark"] .hero-sprite--dark { opacity: 1; }
+  html[data-theme="dark"] .hero-sprite--light { opacity: 0; }
+  html[data-theme="light"] .hero-sprite--dark { opacity: 0; }
+  html[data-theme="light"] .hero-sprite--light { opacity: 1; }
 
   /* background-position-y in % maps over (bg-height - container-height).
      With bg-height = 5×, container = 1×, range = 4×. So:

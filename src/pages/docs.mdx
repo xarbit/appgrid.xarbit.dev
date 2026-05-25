@@ -80,7 +80,8 @@ Right-click the AppGrid panel icon → **Configure AppGrid**. Settings marked *(
 
 | Setting | Description | Default |
 |---|---|---|
-| Icon | Panel icon or custom image | start-here-kde-symbolic |
+| Icon | Panel icon or custom image | dev.xarbit.appgrid (existing 1.7.x installs keep their prior icon) |
+| Text label | Optional text next to the panel icon | (empty) |
 | Icons per row *(Center)* | Columns in the grid | 7 |
 | Visible rows *(Center)* | Rows visible before scrolling | 4 |
 | Icon size | Small (32 px), medium (48 px), large (64 px) | Large |
@@ -89,22 +90,29 @@ Right-click the AppGrid panel icon → **Configure AppGrid**. Settings marked *(
 | Show category bar | Show or hide the category filter bar | On |
 | Search all apps | Search across categories regardless of active tab | On |
 | Start with favorites | Open showing favorites instead of all apps | Off |
+| Show recently used | Recently launched apps row at the top of the grid | On |
 | Use system categories | Use KDE Menu Editor categories | Off |
-| Terminal shell | Shell for `t:` commands | /bin/sh |
 | Hide empty categories | Hide categories with no apps | On |
+| KRunner plugins | Search bookmarks, files, websites via KRunner | On |
+| Terminal shell | Shell for `t:` commands | /bin/sh |
 | Show divider lines | Dividers between UI sections | On |
 | Show scrollbars | Scrollbars in grid and search | Off |
 | Show tooltips on hover | App description + install source on hover | On |
-| Open/close animation *(Center)* | None, Fade, Scale, Pop, Slide Up/Down, Glide, Buzz, Twist, Slam | Scale |
+| Show new app badge | Green badge on newly installed apps | On |
+| Drop shadow behind app icons | Soft drop shadow under each app icon in the grid | On |
+| Hide labels on favorites tab | Render the Favorites tab as icons only (no app names) | Off |
+| Sort favorites alphabetically | Auto-sort favorites by name instead of manual order | Off |
+| Open/close animation *(Center)* | None, Fade, Scale, Pop, Slide Up/Down, Glide, Buzz, Twist, Slam, Grow Up | Scale |
 | Background blur *(Center)* | Blur behind the launcher | On |
 | Dim background *(Center)* | Darken the screen behind the launcher | Off |
+| Vertical position *(Center)* | Offset the centered launcher up or down within the free space (−100 % = top, 0 % = centered, +100 % = bottom) | 0 % |
 | Icon animation | None, Shake, Grow, Bounce, Spin, Shuffle | Shake |
 | Animate icons on open | Play icon animation when launcher opens | On |
-| Show session buttons | Power / session buttons in the bottom row | On |
-| Show button labels | Text labels on session buttons | Off |
-| KRunner plugins | Search bookmarks, files, websites via KRunner | On |
-| Background opacity *(Center)* | Launcher background opacity | 85% |
+| Power & session buttons | Per-button show / hide and drag-reorder for sleep, restart, shutdown, session, lock, logout, switch user | All shown in default order |
+| Show button labels | Text labels on power / session buttons | Off |
+| Background opacity *(Center)* | Launcher background opacity | 85 % |
 | Corner radius *(Center)* | Custom corner radius | Off (uses Plasma theme) |
+| Check for updates *(Universal build only)* | Opt-in once-per-day check against the AppGrid release feed | Off |
 
 ## Favorites storage
 

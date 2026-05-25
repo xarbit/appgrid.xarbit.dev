@@ -120,6 +120,37 @@ const pullsUrl = `${repo}/pulls`;
       </a>
     </div>
 
+    <div class="mt-14">
+      <div class="text-center mb-6 max-w-2xl mx-auto">
+        <h3 class="text-2xl md:text-3xl font-bold tracking-tight mb-2">Discuss</h3>
+        <p class="text-[var(--fg-muted)]">
+          Casual chat, design ideas, configs, screenshots — anything that doesn't fit an issue.
+        </p>
+      </div>
+
+      <div class="max-w-xl mx-auto">
+        <a
+          href={`${repo}/discussions`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="breeze-card p-6 flex flex-col items-start gap-3 hover:border-[var(--color-breeze-blue)]/50 transition-colors group"
+        >
+          <div class="w-10 h-10 rounded-lg bg-[#3daee9]/15 border border-[#3daee9]/30 grid place-items-center text-[#3daee9]">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold text-base mb-1">GitHub Discussions</h3>
+            <p class="text-sm text-[var(--fg-muted)] leading-relaxed">
+              Feature ideas, Q&amp;A, show your setup. Discussions stay tied to the repo so they're searchable next to issues and code.
+            </p>
+          </div>
+          <span class="text-xs text-[var(--color-breeze-blue)] mt-auto group-hover:underline">Open discussions →</span>
+        </a>
+      </div>
+    </div>
+
     <p class="text-center text-sm text-[var(--fg-muted)] mt-8">
       Code contributions? <a href={pullsUrl} target="_blank" rel="noopener noreferrer" class="text-[var(--color-breeze-blue)] hover:underline">Open a pull request</a> — keep changes focused and include a short rationale.
     </p>
