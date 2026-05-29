@@ -9,6 +9,7 @@ import {
   fetchLatestRelease,
   fetchLatestPrerelease,
   fetchObsTargets,
+  fetchCommunityVersions,
   pickAsset,
   fetchSha256Sidecar,
   type LatestRelease,
@@ -18,6 +19,7 @@ import {
 const stable = await fetchLatestRelease(primary);
 const prerelease = await fetchLatestPrerelease(primary);
 const obsTargets = await fetchObsTargets();
+const communityVersions = await fetchCommunityVersions();
 
 const fallbackUrl = stable?.htmlUrl ?? releasesUrl(primary);
 
@@ -157,6 +159,8 @@ const releaseDownloadBase = `${repoUrl(primary)}/releases/download`;
           group="community"
           prerelease={false}
           obsTargets={obsTargets}
+          communityVersions={communityVersions}
+          stableVersion={stable?.tag ?? null}
         />
       </div>
 

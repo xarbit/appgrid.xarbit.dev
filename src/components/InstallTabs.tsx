@@ -1,6 +1,6 @@
 import { useState, useEffect, type ReactNode } from "react";
 import DistroLogo from "./DistroLogo";
-import type { ObsTarget } from "../config/repo";
+import type { ObsTarget, CommunityVersions } from "../config/repo";
 
 /** Render a note string with any http(s) URLs turned into clickable links.
  *  Trailing sentence punctuation (".,;:!?)") is kept as plain text, not
@@ -32,6 +32,19 @@ function linkify(text: string): ReactNode[] {
   }
   if (last < text.length) parts.push(text.slice(last));
   return parts;
+}
+
+/** True when `version` trails `stable` by a major or minor release. Patch
+ *  differences are ignored — a community build one patch behind isn't worth
+ *  flagging. Both are dotted versions with no leading "v". */
+function isOutdatedVersion(version: string, stable: string): boolean {
+  const mm = (v: string): [number, number] => {
+    const p = v.split(".");
+    return [parseInt(p[0] ?? "", 10) || 0, parseInt(p[1] ?? "", 10) || 0];
+  };
+  const [vMaj, vMin] = mm(version);
+  const [sMaj, sMin] = mm(stable);
+  return vMaj < sMaj || (vMaj === sMaj && vMin < sMin);
 }
 
 export type DistroKey =
@@ -107,12 +120,19 @@ interface Tab {
   /** Universal tab only: when true the panel renders the supplied
    *  `universalSlot` (the UniversalInstall widget) instead of steps. */
   isUniversal?: boolean;
+  /** Community tabs: build-time-discovered packaged version, shown so users
+   *  can spot a stale third-party build. null when discovery failed. */
+  version?: string | null;
 }
 
 // Tabs depend on the selected release channel: the PPA and Copr projects
 // gain a "-rc" suffix on the pre-release channel. The AUR has no
 // pre-release channel — that note changes instead.
-function buildTabs(prerelease: boolean, obsTargets: ObsTarget[]): Tab[] {
+function buildTabs(
+  prerelease: boolean,
+  obsTargets: ObsTarget[],
+  communityVersions: CommunityVersions,
+): Tab[] {
   const sfx = prerelease ? "-rc" : "";
   return [
     {
@@ -196,6 +216,7 @@ function buildTabs(prerelease: boolean, obsTargets: ObsTarget[]): Tab[] {
       stableOnly: true,
       topWarning:
         "Community-maintained overlay by @mnalmahmud. Not an official AppGrid release — please report packaging issues to the overlay first.",
+      version: communityVersions.gentoo,
       steps: [
         {
           label: "1 — Add the overlay",
@@ -217,6 +238,7 @@ function buildTabs(prerelease: boolean, obsTargets: ObsTarget[]): Tab[] {
       stableOnly: true,
       topWarning:
         "Community-maintained in the Terra repo by @hilltty. Not an official AppGrid release — please report packaging issues to Terra first.",
+      version: communityVersions.terra,
       steps: [
         {
           label: "1 — Enable Terra",
@@ -238,6 +260,12 @@ interface Props {
   prerelease: boolean;
   /** OBS targets discovered at build time for the openSUSE tab. */
   obsTargets: ObsTarget[];
+  /** Build-time-discovered packaged versions for community tabs (Terra, Gentoo).
+   *  Optional — the official strip has no community tabs to annotate. */
+  communityVersions?: CommunityVersions;
+  /** Advertised stable release version (no leading v). A community package
+   *  below this gets an "Outdated" badge. */
+  stableVersion?: string | null;
   /** UniversalInstall widget — rendered as the panel of the Universal tab.
    *  Optional because the community group has no Universal tab. */
   universalSlot?: ReactNode;
@@ -256,12 +284,14 @@ interface Props {
 export default function InstallTabs({
   prerelease,
   obsTargets,
+  communityVersions = { terra: null, gentoo: null },
+  stableVersion = null,
   universalSlot,
   group,
   active: activeProp,
   onActiveChange,
 }: Props) {
-  const allTabs = buildTabs(prerelease, obsTargets);
+  const allTabs = buildTabs(prerelease, obsTargets, communityVersions);
   const tabs = group ? allTabs.filter((t) => t.group === group) : allTabs;
   const [activeState, setActiveState] = useState<DistroKey>(tabs[0]?.id ?? "arch");
   const active = activeProp ?? activeState;
@@ -305,6 +335,10 @@ export default function InstallTabs({
        current.obsTargets![0])
     : undefined;
   const displaySteps = isObs ? obsSteps(obsTarget) : current.steps;
+  // OBS version is per selected target; other tabs carry it on the tab.
+  const effectiveVersion = isObs
+    ? (obsTarget?.version ?? null)
+    : (current.version ?? null);
 
   const copy = async (key: string, text: string) => {
     const stripped = text
@@ -458,6 +492,35 @@ export default function InstallTabs({
               <span>{current.topWarning}</span>
             </p>
           </div>
+        )}
+
+        {effectiveVersion && (
+          <p className="text-sm text-[var(--fg-muted)] flex items-center gap-2">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="flex-shrink-0"
+              aria-hidden="true"
+            >
+              <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+              <path d="m3.3 7 8.7 5 8.7-5" />
+              <path d="M12 22V12" />
+            </svg>
+            <span>
+              Packaged version{" "}
+              <span className="font-mono text-[var(--fg)]">v{effectiveVersion}</span>
+            </span>
+            {stableVersion &&
+              isOutdatedVersion(effectiveVersion, stableVersion) && (
+                <span className="px-1.5 py-0.5 text-[9px] rounded uppercase tracking-wide bg-[#e74c3c]/20 text-[#f17a6e] border border-[#e74c3c]/40 leading-none whitespace-nowrap">
+                  Outdated · latest v{stableVersion}
+                </span>
+              )}
+          </p>
         )}
 
         {isObs && (

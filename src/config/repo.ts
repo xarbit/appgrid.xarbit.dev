@@ -664,6 +664,109 @@ export async function fetchObsTargets(): Promise<ObsTarget[]> {
   return obsMemo;
 }
 
+/* === Community package version discovery (Terra + Gentoo) === */
+
+const COMMUNITY_CACHE_FILE = ".astro/community-versions.json";
+const COMMUNITY_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+export interface CommunityVersions {
+  terra: string | null;
+  gentoo: string | null;
+}
+
+interface CommunityCacheEntry {
+  versions: CommunityVersions;
+  fetchedAt: number;
+}
+
+let communityMemo: Promise<CommunityVersions> | null = null;
+let communityDiskCache: CommunityCacheEntry | null = null;
+
+const TERRA_SPEC_URL =
+  "https://raw.githubusercontent.com/terrapkg/packages/frawhide/anda/desktops/kde/plasma6-applet-appgrid/plasma6-applet-appgrid.spec";
+const GENTOO_CONTENTS_URL =
+  "https://api.github.com/repos/mnalmahmud/mnalmahmud-overlay/contents/kde-misc/plasma6-applet-appgrid";
+
+/** Terra packaged version from the spec's `Version:` field. */
+async function fetchTerraVersion(): Promise<string | null> {
+  try {
+    const res = await fetch(TERRA_SPEC_URL, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) return null;
+    const m = (await res.text()).match(/^Version:\s*(\S+)/m);
+    return m ? m[1] : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Gentoo packaged version — highest plasma6-applet-appgrid-*.ebuild in the overlay. */
+async function fetchGentooVersion(): Promise<string | null> {
+  try {
+    const res = await fetch(GENTOO_CONTENTS_URL, {
+      headers: { Accept: "application/vnd.github+json" },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return null;
+    const files = (await res.json()) as Array<{ name: string }>;
+    const versions = files
+      .map((f) => f.name.match(/^plasma6-applet-appgrid-(.+)\.ebuild$/)?.[1])
+      .filter((v): v is string => Boolean(v));
+    if (versions.length === 0) return null;
+    versions.sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+    return versions[0];
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Discover community package versions (Terra, Gentoo) at build time. Memo +
+ * 1h disk cache; each source falls back to null independently when
+ * unreachable, so a flaky GitHub never breaks the build.
+ */
+export async function fetchCommunityVersions(): Promise<CommunityVersions> {
+  if (communityMemo) return communityMemo;
+
+  communityMemo = (async (): Promise<CommunityVersions> => {
+    if (!communityDiskCache) {
+      try {
+        communityDiskCache = JSON.parse(
+          await readFile(COMMUNITY_CACHE_FILE, "utf8"),
+        ) as CommunityCacheEntry;
+      } catch {
+        communityDiskCache = null;
+      }
+    }
+    const now = Date.now();
+    if (
+      communityDiskCache &&
+      now - communityDiskCache.fetchedAt < COMMUNITY_CACHE_TTL_MS
+    ) {
+      return communityDiskCache.versions;
+    }
+
+    const [terra, gentoo] = await Promise.all([
+      fetchTerraVersion(),
+      fetchGentooVersion(),
+    ]);
+    const versions: CommunityVersions = { terra, gentoo };
+
+    communityDiskCache = { versions, fetchedAt: now };
+    try {
+      await mkdir(dirname(COMMUNITY_CACHE_FILE), { recursive: true });
+      await writeFile(
+        COMMUNITY_CACHE_FILE,
+        JSON.stringify(communityDiskCache, null, 2),
+      );
+    } catch (err) {
+      console.warn("[community] cache write failed:", err);
+    }
+    return versions;
+  })();
+
+  return communityMemo;
+}
+
 /** Fetch latest release tag with memo + 1h disk cache. Returns normalized tag (no leading v). */
 export async function fetchLatestVersion(r: RepoConfig): Promise<string | null> {
   const key = cacheKey(r);
