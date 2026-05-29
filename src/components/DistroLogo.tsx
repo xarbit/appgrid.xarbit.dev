@@ -7,7 +7,7 @@ import {
   siGentoo,
 } from "simple-icons";
 
-type DistroKey = "arch" | "fedora" | "ubuntu" | "debian" | "opensuse" | "gentoo";
+type DistroKey = "arch" | "fedora" | "ubuntu" | "debian" | "opensuse" | "gentoo" | "terra";
 
 interface Props {
   distro: DistroKey;
@@ -26,6 +26,8 @@ const ICONS = {
   debian: siDebian,
   opensuse: siOpensuse,
   gentoo: siGentoo,
+  // Terra ships Fedora packages — reuse the Fedora glyph.
+  terra: siFedora,
 } as const satisfies Record<DistroKey, { path: string; hex: string; title: string }>;
 
 export default function DistroLogo({

@@ -2,13 +2,46 @@ import { useState, useEffect, type ReactNode } from "react";
 import DistroLogo from "./DistroLogo";
 import type { ObsTarget } from "../config/repo";
 
+/** Render a note string with any http(s) URLs turned into clickable links.
+ *  Trailing sentence punctuation (".,;:!?)") is kept as plain text, not
+ *  swallowed into the href. */
+function linkify(text: string): ReactNode[] {
+  const parts: ReactNode[] = [];
+  const re = /(https?:\/\/[^\s]+)/g;
+  let last = 0;
+  let key = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+    let url = m[1];
+    const trailing = url.match(/[).,;:!?]+$/)?.[0] ?? "";
+    if (trailing) url = url.slice(0, -trailing.length);
+    parts.push(
+      <a
+        key={key++}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-[#3daee9] hover:underline break-all"
+      >
+        {url}
+      </a>,
+    );
+    if (trailing) parts.push(trailing);
+    last = m.index + m[1].length;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return parts;
+}
+
 export type DistroKey =
   | "arch"
   | "fedora"
   | "ubuntu"
   | "universal"
   | "opensuse"
-  | "gentoo";
+  | "gentoo"
+  | "terra";
 
 /** Distro-brand tab ids — everything except the synthetic "universal" tab. */
 type DistroBrandKey = Exclude<DistroKey, "universal">;
@@ -175,6 +208,26 @@ function buildTabs(prerelease: boolean, obsTargets: ObsTarget[]): Tab[] {
         },
       ],
       note: "Requires eselect-repository. Overlay source: https://github.com/mnalmahmud/mnalmahmud-overlay",
+    },
+    {
+      id: "terra",
+      label: "Terrapkg",
+      color: "#51a2da",
+      group: "community",
+      stableOnly: true,
+      topWarning:
+        "Community-maintained in the Terra repo by @hilltty. Not an official AppGrid release — please report packaging issues to Terra first.",
+      steps: [
+        {
+          label: "1 — Enable Terra",
+          code: "sudo dnf install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release terra-gpg-keys",
+        },
+        {
+          label: "2 — Install",
+          code: "sudo dnf install plasma6-applet-appgrid",
+        },
+      ],
+      note: "Also supports Fedora Atomic and derivatives (Silverblue, Kinoite, Bazzite, Aurora, Bluefin, …) — layer with rpm-ostree install after enabling Terra; see https://docs.terrapkg.com/usage/installing/. Package source: https://github.com/terrapkg/packages/blob/frawhide/anda/desktops/kde/plasma6-applet-appgrid/plasma6-applet-appgrid.spec",
     },
   ];
 }
@@ -488,7 +541,7 @@ export default function InstallTabs({
               <line x1="12" y1="16" x2="12" y2="12" />
               <line x1="12" y1="8" x2="12.01" y2="8" />
             </svg>
-            <span>{current.note}</span>
+            <span>{linkify(current.note)}</span>
           </p>
         )}
       </div>
