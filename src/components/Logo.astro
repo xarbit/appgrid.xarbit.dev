@@ -4,13 +4,15 @@ interface Props {
   class?: string;
 }
 const { size = 28, class: className = "" } = Astro.props;
-// One per-instance suffix; each gradient appends its role so multiple Logos
-// on the same page never collide on URL fragment ids.
+// One per-instance suffix; each gradient/mask appends its role so multiple
+// Logos on the same page never collide on URL fragment ids.
 const base = `appgrid-logo-${Math.random().toString(36).slice(2, 9)}`;
 const idBody = `${base}-body`;
 const idGloss = `${base}-gloss`;
 const idEdge = `${base}-edge`;
 const idTile = `${base}-tile`;
+const idShadow = `${base}-shadow`;
+const idMask = `${base}-mask`;
 ---
 
 <svg
@@ -38,6 +40,19 @@ const idTile = `${base}-tile`;
       <stop offset="0%" stop-color="#ffffff" stop-opacity="1"></stop>
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0.88"></stop>
     </linearGradient>
+    <linearGradient id={idShadow} x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#000" stop-opacity="0.20"></stop>
+      <stop offset="80%" stop-color="#000" stop-opacity="0"></stop>
+    </linearGradient>
+    <mask id={idMask} maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+      <rect width="64" height="64" fill="#000"></rect>
+      <g fill="#fff">
+        <polygon points="12,28 28,28 28,12 108,92 108,108 92,108"></polygon>
+        <polygon points="36,28 52,28 52,12 132,92 132,108 116,108"></polygon>
+        <polygon points="12,52 28,52 28,36 108,116 108,132 92,132"></polygon>
+        <polygon points="36,52 52,52 52,36 132,116 132,132 116,132"></polygon>
+      </g>
+    </mask>
   </defs>
   <rect width="64" height="64" rx="8" fill={`url(#${idBody})`}></rect>
   <rect width="64" height="64" rx="8" fill={`url(#${idGloss})`}></rect>
@@ -50,6 +65,13 @@ const idTile = `${base}-tile`;
     fill="none"
     stroke={`url(#${idEdge})`}
     stroke-width="1"
+  ></rect>
+  <rect
+    width="64"
+    height="64"
+    rx="8"
+    fill={`url(#${idShadow})`}
+    mask={`url(#${idMask})`}
   ></rect>
   <g fill={`url(#${idTile})`}>
     <rect x="12" y="12" width="16" height="16" rx="2"></rect>
