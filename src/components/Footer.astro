@@ -7,6 +7,7 @@ import {
   releasesUrl,
   fetchContributorCount,
 } from "../config/repo";
+import { matrixSpace } from "../config/matrix";
 import Logo from "./Logo.astro";
 
 const year = new Date().getFullYear();
@@ -19,7 +20,7 @@ const otherContributors =
 ---
 
 <footer class="border-t border-[var(--border)]/50 py-12 mt-10">
-  <div class="max-w-6xl mx-auto px-6 grid gap-8 md:grid-cols-3">
+  <div class="max-w-6xl mx-auto px-6 grid gap-8 md:grid-cols-4">
     <div>
       <div class="flex items-center gap-2.5 font-semibold text-lg mb-2 tracking-tight">
         <Logo size={28} />
@@ -73,6 +74,31 @@ const otherContributors =
             rel="noopener noreferrer"
             class="hover:text-[var(--fg)]">KDE Store</a
           >
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="text-sm font-semibold mb-3">Community</h3>
+      <ul class="space-y-2 text-sm text-[var(--fg-muted)]">
+        <li>
+          <a
+            href={matrixSpace.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-[var(--fg)]">Matrix chat</a
+          >
+        </li>
+        <li>
+          <a
+            href={`${repoUrl(primary)}/discussions`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-[var(--fg)]">GitHub Discussions</a
+          >
+        </li>
+        <li>
+          <a href="/#contribute" class="hover:text-[var(--fg)]">Help out</a>
         </li>
       </ul>
     </div>

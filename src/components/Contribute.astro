@@ -1,5 +1,6 @@
 ---
 import { primary, repoUrl, issuesUrl, fetchStars, formatStars } from "../config/repo";
+import { matrixSpace } from "../config/matrix";
 
 const stars = await fetchStars(primary);
 const starsLabel = stars !== null ? formatStars(stars) : null;
@@ -128,7 +129,27 @@ const pullsUrl = `${repo}/pulls`;
         </p>
       </div>
 
-      <div class="max-w-xl mx-auto">
+      <div class="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+        <a
+          href={matrixSpace.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="breeze-card p-6 flex flex-col items-start gap-3 hover:border-[#0dbd8b]/50 transition-colors group"
+        >
+          <div class="w-10 h-10 rounded-lg bg-[#0dbd8b]/15 border border-[#0dbd8b]/30 grid place-items-center text-[#0dbd8b]">
+            <svg width="20" height="20" viewBox="0 0 27.9 32" fill="currentColor" aria-hidden="true">
+              <path d="M27.1 31.2v-2.4h-.8V3.2h.8V.8h-7.2v.8h1.6c1.3 0 2.4 1.1 2.4 2.4v23.9c0 1.3-1.1 2.4-2.4 2.4h-1.6v.8h7.2v.1zM.8 31.2v-2.4h.8V3.2H.8V.8h7.2v2.4H6.4C5.1 3.2 4 4.3 4 5.6v20.8c0 1.3 1.1 2.4 2.4 2.4h1.6v.8H.8v.8zM10.4 22.6V9.7H12l2 3.8 1.7-3.8h1.6v12.9h-1.6v-9.4l-1.7 3.7-1.7-3.7v9.4z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-semibold text-base mb-1">Matrix chat</h3>
+            <p class="text-sm text-[var(--fg-muted)] leading-relaxed">
+              Real-time questions and casual chat. Public space with rooms for general, random, and contributors. Open with Element or any Matrix client.
+            </p>
+          </div>
+          <span class="text-xs text-[#0dbd8b] mt-auto group-hover:underline">Join the space →</span>
+        </a>
+
         <a
           href={`${repo}/discussions`}
           target="_blank"
@@ -143,7 +164,7 @@ const pullsUrl = `${repo}/pulls`;
           <div>
             <h3 class="font-semibold text-base mb-1">GitHub Discussions</h3>
             <p class="text-sm text-[var(--fg-muted)] leading-relaxed">
-              Feature ideas, Q&amp;A, show your setup. Discussions stay tied to the repo so they're searchable next to issues and code.
+              Long-form ideas, Q&amp;A, show your setup. Discussions stay tied to the repo so they're searchable next to issues and code.
             </p>
           </div>
           <span class="text-xs text-[var(--color-breeze-blue)] mt-auto group-hover:underline">Open discussions →</span>
