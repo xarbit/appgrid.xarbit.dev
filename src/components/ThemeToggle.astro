@@ -5,7 +5,7 @@
   id="theme-toggle"
   type="button"
   aria-label="Toggle color theme"
-  class="w-9 h-9 rounded-md grid place-items-center text-fg-muted hover:text-fg hover:bg-canvas-deep transition-colors"
+  class="btn-icon"
 >
   <svg
     id="theme-icon-sun"
@@ -76,19 +76,31 @@
     btn.addEventListener("click", function () {
       var next = effectiveTheme() === "dark" ? "light" : "dark";
       document.documentElement.setAttribute("data-theme", next);
+      // Persist the override together with the OS scheme it was made
+      // against, so it can be retired once the OS theme next changes.
       try {
+        var os = window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
         localStorage.setItem("theme", next);
+        localStorage.setItem("theme-os", os);
       } catch (e) {}
       syncIcons();
     });
 
-    // React to OS theme change when user hasn't explicitly chosen
+    // When the OS theme changes, drop any override and follow the OS.
     window
-      .matchMedia("(prefers-color-scheme: light)")
-      .addEventListener("change", function () {
-        if (!document.documentElement.hasAttribute("data-theme")) {
-          syncIcons();
-        }
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", function (e) {
+        try {
+          localStorage.removeItem("theme");
+          localStorage.removeItem("theme-os");
+        } catch (_) {}
+        document.documentElement.setAttribute(
+          "data-theme",
+          e.matches ? "dark" : "light",
+        );
+        syncIcons();
       });
   })();
 </script>

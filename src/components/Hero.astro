@@ -14,24 +14,6 @@ const [spriteLightAvif, spriteLightWebp, spriteDarkAvif, spriteDarkWebp] =
     getImage({ src: heroSpriteDark, format: "webp", quality: 85, width: 1208 }),
   ]);
 import BrandIcon from "./BrandIcon.astro";
-import {
-  primary,
-  mirrors,
-  repoUrl,
-  fetchLatestRelease,
-  fetchLatestPrerelease,
-  fetchStars,
-  formatStars,
-} from "../config/repo";
-
-const stable = await fetchLatestRelease(primary);
-const prerelease = await fetchLatestPrerelease(primary);
-const starsCount = await fetchStars(primary);
-const starsLabel = starsCount !== null ? formatStars(starsCount) : null;
-
-// Distros we package for (count by hand to match install section).
-const distrosPackaged = 6; // Arch, Fedora, Ubuntu, Debian, openSUSE, Gentoo
-const distrosImmutable = 6; // KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, SteamOS
 
 // Decorative scattered KDE app icons behind the headline — a launcher
 // is a grid of apps, so this reinforces the concept. Breeze app icons
@@ -72,6 +54,7 @@ const heroIcons = [
           loading="lazy"
           decoding="async"
           class="hero-icons__app"
+          data-depth={(i.s / 76) * 0.55}
           style={`left:${i.x};top:${i.y};width:${i.s}px;height:${i.s}px;--rot:${i.rot}deg;`}
         />
       ))
@@ -80,46 +63,15 @@ const heroIcons = [
 
   <div class="relative z-10 max-w-6xl mx-auto px-6 pt-20 pb-16 md:pt-28 md:pb-24">
     <div class="text-center max-w-3xl mx-auto">
-      <div class="inline-flex flex-wrap items-center justify-center gap-2 mb-6">
-        {
-          stable && (
-            <a
-              href={stable.htmlUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#3daee9]/10 border border-[#3daee9]/30 text-[#93cee9] text-xs font-medium hover:bg-[#3daee9]/20 transition-colors"
-              title="Latest stable — click for release notes"
-            >
-              <span class="w-2 h-2 rounded-full bg-[#3daee9] animate-pulse" />
-              stable: v{stable.tag}
-            </a>
-          )
-        }
-        {
-          prerelease && (
-            <a
-              href={prerelease.htmlUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e67e22]/10 border border-[#e67e22]/40 text-[#f5a35e] text-xs font-medium hover:bg-[#e67e22]/20 transition-colors"
-              title="Pre-release available — click for release notes"
-            >
-              <span class="w-2 h-2 rounded-full bg-[#e67e22] animate-pulse" />
-              pre-release: v{prerelease.tag}
-            </a>
-          )
-        }
-      </div>
-
       <h1
         class="text-5xl md:text-7xl font-bold tracking-tight leading-[1.05] mb-6"
       >
-        Application launcher,
+        Launch anything.
         <span class="block">
           <span
             class="bg-gradient-to-r from-[#3daee9] to-[#9b59b6] bg-clip-text text-transparent"
           >
-            native to
+            Native to
           </span>
           <span class="inline-flex items-center gap-3 align-middle">
             <BrandIcon
@@ -132,125 +84,22 @@ const heroIcons = [
             <span
               class="bg-gradient-to-r from-[#3daee9] to-[#9b59b6] bg-clip-text text-transparent"
             >
-              KDE Plasma 6
+              Plasma.
             </span>
           </span>
         </span>
       </h1>
 
       <p class="text-lg md:text-xl text-[var(--fg-muted)] mb-10 max-w-2xl mx-auto leading-relaxed">
-        Not an app bolted onto your desktop — a native Plasma plasmoid, an
-        alternative to Kickoff and Kicker. Every app on a searchable grid,
-        KRunner built in. Open source, no account, no telemetry.
+        Lightning-fast, focused &amp; beautiful<br />application launcher — for everyone.
       </p>
 
-      <div class="flex flex-wrap items-center justify-center gap-3">
-        <a href="#install" class="btn-primary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          Install AppGrid
-        </a>
-        <a
-          href={repoUrl(primary)}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn-secondary"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.17c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.41 1.02.01 2.04.14 3 .41 2.29-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.83.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z" />
-          </svg>
-          View on {primary.label}
-        </a>
-      </div>
-
-      {
-        mirrors.length > 0 && (
-          <div class="mt-3 text-xs text-[var(--fg-muted)]">
-            Also on{" "}
-            {mirrors.map((m, i) => (
-              <>
-                {i > 0 && ", "}
-                <a
-                  href={repoUrl(m)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="underline hover:text-[var(--fg)]"
-                >
-                  {m.label}
-                </a>
-              </>
-            ))}
-          </div>
-        )
-      }
-
-      <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl mx-auto">
-        {starsLabel && (
-          <a
-            href={repoUrl(primary)}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex flex-col items-center gap-1 p-3 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:border-[#f1c40f]/40 transition-colors group"
-          >
-            <div class="flex items-center gap-1.5 text-[#f4d03f]">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-              </svg>
-              <span class="font-semibold text-[var(--fg)] tabular-nums">{starsLabel}</span>
-            </div>
-            <span class="text-xs text-[var(--fg-muted)] uppercase tracking-wide">{primary.label} stars</span>
-          </a>
-        )}
-
-        <div class="flex flex-col items-center gap-1 p-3 rounded-lg border border-[var(--border)] bg-[var(--card)]">
-          <div class="flex items-center gap-1.5 text-[#3daee9]">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M16.5 9.4 7.5 4.21" />
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-              <line x1="12" y1="22.08" x2="12" y2="12" />
-            </svg>
-            <span class="font-semibold text-[var(--fg)] tabular-nums">{distrosPackaged + distrosImmutable}+</span>
-          </div>
-          <span class="text-xs text-[var(--fg-muted)] uppercase tracking-wide">distros supported</span>
-        </div>
-
-        {stable && (
-          <a
-            href={stable.htmlUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex flex-col items-center gap-1 p-3 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:border-[var(--color-breeze-blue)]/40 transition-colors"
-          >
-            <div class="flex items-center gap-1.5 text-[#5fd48a]">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span class="font-semibold text-[var(--fg)] tabular-nums">v{stable.tag}</span>
-            </div>
-            <span class="text-xs text-[var(--fg-muted)] uppercase tracking-wide">latest stable</span>
-          </a>
-        )}
-
-        <div class="flex flex-col items-center gap-1 p-3 rounded-lg border border-[var(--border)] bg-[var(--card)]">
-          <div class="flex items-center gap-1.5 text-[#c084d6]">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M9 12l2 2 4-4" />
-              <circle cx="12" cy="12" r="10" />
-            </svg>
-            <span class="font-semibold text-[var(--fg)]">GPL-2.0</span>
-          </div>
-          <span class="text-xs text-[var(--fg-muted)] uppercase tracking-wide">free &amp; open</span>
-        </div>
-      </div>
     </div>
 
     <div class="mt-16 md:mt-20 relative">
       <div
-        class="absolute -inset-x-10 -inset-y-6 bg-gradient-to-b from-[#3daee9]/20 via-[#9b59b6]/10 to-transparent blur-3xl -z-10"
+        class="hero-glow absolute -inset-x-10 -inset-y-6 bg-gradient-to-b from-[#3daee9]/20 via-[#9b59b6]/10 to-transparent blur-3xl -z-10"
+        data-depth="-0.14"
       >
       </div>
       <div
@@ -264,29 +113,6 @@ const heroIcons = [
              five frames stacked vertically in one source image. -->
         <div class="hero-sprite hero-sprite--dark"></div>
         <div class="hero-sprite hero-sprite--light"></div>
-
-        <!-- Animation overlay. All coordinates are % of the rendered
-             image bounds so they scale. Tune --search-* and --ghostty-*
-             if the underlying screenshots change. -->
-        <div class="hero-overlay" aria-hidden="true">
-          <!-- Click pulse over Ghostty (first result row, Alt+1). -->
-          <span class="hero-pulse hero-pulse--search"></span>
-          <span class="hero-pulse hero-pulse--ghostty"></span>
-
-          <!-- KDE Breeze cursor (breeze_cursors default pointer, LGPL):
-               white body + dark interior. Drop shadow comes from the
-               CSS filter on .hero-cursor. -->
-          <svg class="hero-cursor" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true">
-            <path
-              d="m3.93 2.75a.9.9 0 0 0 -.362.072.93.93 0 0 0 -.568.73l.002 16.497a1 1 0 0 0 1.299.865l3.076-1.273 1.697 2.27a2.265 2.265 0 0 0 4.092-1.696l-.402-2.805 3.074-1.275q.135-.068.248-.18a1 1 0 0 0 .059-1.35l-11.663-11.665a.92.92 0 0 0 -.552-.189"
-              fill="#fff"
-            />
-            <path
-              d="m4 3.873-.004 15.977 3.352-1.766 2.271 2.73a1.402 1.402 0 0 0 2.389-.988l-.326-3.539 3.619-1.119z"
-              fill="#232629"
-            />
-          </svg>
-        </div>
       </div>
     </div>
   </div>
@@ -335,10 +161,19 @@ const heroIcons = [
 
   .hero-icons__app {
     position: absolute;
-    transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
+    /* --py is the scroll-parallax offset set per icon by the script
+       below; composes with the centring + rotation. */
+    transform: translate(-50%, calc(-50% + var(--py, 0px))) rotate(var(--rot, 0deg));
     opacity: 0.16;
     filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
     user-select: none;
+    will-change: transform;
+  }
+
+  /* Hero glow drifts opposite the icons for a touch of depth. */
+  .hero-glow {
+    transform: translateY(var(--py, 0px));
+    will-change: transform;
   }
   @media (min-width: 768px) {
     .hero-icons__app {
@@ -354,27 +189,13 @@ const heroIcons = [
 
   /* ─────────────────────── Scripted hero demo ─────────────────────── */
   /* The five frames per theme are stacked inside .hero-demo and shown
-     in sequence via per-frame opacity keyframes. Coordinates of the
-     synthetic cursor + click pulses are % of the container so they
-     scale at every responsive width. Tune --search-* / --ghostty-* if
-     the underlying screenshots change. */
+     in sequence by stepping background-position-y, scaling at every
+     responsive width. */
   .hero-demo {
     position: relative;
     width: 100%;
-    max-width: 1208px;
+    max-width: 820px;
     aspect-ratio: 1208 / 966;
-    /* Container queries so child elements (cursor, pulses) can size
-       in cqw — % of the demo's own width — and scale on every viewport. */
-    container-type: inline-size;
-    /* Search bar click target. */
-    --search-x: 50%;
-    --search-y: 3.5%;
-    /* First result row centre (Ghostty after typing "term"). */
-    --ghostty-x: 50%;
-    --ghostty-y: 11%;
-    /* Cursor offscreen start. */
-    --start-x: 108%;
-    --start-y: -8%;
   }
 
   /* Single-element CSS sprite. One sprite image per theme — five
@@ -430,116 +251,51 @@ const heroIcons = [
     94% { background-position: 0% 0%; }
   }
 
-  .hero-overlay {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-
-  /* Synthetic cursor — animate top/left so % resolves against the
-     container, not the cursor itself. Size in cqw so the cursor
-     scales with the demo width (so it doesn't look tiny in fullscreen
-     and oversized on mobile). Clamp keeps it in a sane range. */
-  .hero-cursor {
-    position: absolute;
-    top: var(--start-y);
-    left: var(--start-x);
-    /* cqw tracks the .hero-demo width (= the launcher screenshot's
-       render width), so the cursor scales with the app on screen.
-       Floor keeps it tappable-size on mobile; ceiling caps it on
-       very wide layouts. */
-    width: clamp(24px, 5.5cqw, 64px);
-    height: clamp(24px, 5.5cqw, 64px);
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
-    animation: hero-cursor-path 9s cubic-bezier(0.6, 0.05, 0.4, 1) infinite;
-  }
-
-  @keyframes hero-cursor-path {
-    /* Hold offscreen for the initial dwell (0–8%) */
-    0%, 8% {
-      top: var(--start-y);
-      left: var(--start-x);
-    }
-    /* Enter and arrive at search bar by 22% — frame 1 (t) shows at 24% */
-    22% {
-      top: var(--search-y);
-      left: var(--search-x);
-    }
-    /* Dwell at search bar while typing (22–55%) */
-    55% {
-      top: var(--search-y);
-      left: var(--search-x);
-    }
-    /* Move down to Ghostty result row (arrives ~70%) */
-    70% {
-      top: var(--ghostty-y);
-      left: var(--ghostty-x);
-    }
-    /* Click + dwell on Ghostty (70–86%) */
-    86% {
-      top: var(--ghostty-y);
-      left: var(--ghostty-x);
-    }
-    /* Cursor exits the window (must complete BEFORE frame reset at 94%) */
-    93%, 100% {
-      top: var(--start-y);
-      left: var(--start-x);
-    }
-  }
-
-  /* Click pulse — two independent rings firing at search-bar click
-     and at Ghostty click. */
-  .hero-pulse {
-    position: absolute;
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
-    border: 2px solid var(--color-breeze-blue, #3daee9);
-    background: rgba(61, 174, 233, 0.18);
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0;
-  }
-
-  .hero-pulse--search {
-    left: var(--search-x);
-    top: var(--search-y);
-    width: 5%;
-    animation: hero-pulse-anim 9s linear infinite;
-    animation-delay: 1.98s;  /* fires at search-bar click (~22% of 9s) */
-  }
-
-  .hero-pulse--ghostty {
-    left: var(--ghostty-x);
-    top: var(--ghostty-y);
-    width: 8%;
-    animation: hero-pulse-anim 9s linear infinite;
-    animation-delay: 6.3s;   /* fires at Ghostty click (~70% of 9s) */
-  }
-
-  @keyframes hero-pulse-anim {
-    0% {
-      transform: translate(-50%, -50%) scale(0.4);
-      opacity: 0.9;
-    }
-    50% {
-      transform: translate(-50%, -50%) scale(1.6);
-      opacity: 0;
-    }
-    100% {
-      transform: translate(-50%, -50%) scale(1.6);
-      opacity: 0;
-    }
-  }
-
-  /* Reduced motion — freeze on the empty state, hide cursor + pulses. */
+  /* Reduced motion — freeze on the empty state. */
   @media (prefers-reduced-motion: reduce) {
-    .hero-sprite, .hero-cursor, .hero-pulse {
+    .hero-sprite {
       animation: none !important;
-    }
-    .hero-sprite { background-position: 0% 0%; }
-    .hero-pulse { opacity: 0; }
-    .hero-cursor {
-      top: var(--start-y);
-      left: var(--start-x);
+      background-position: 0% 0%;
     }
   }
 </style>
+
+<script>
+  // Scroll parallax for the decorative hero layer. Each element carries a
+  // data-depth factor (bigger icons sit "closer" and move more; the glow
+  // gets a small negative depth so it drifts the other way). We only touch
+  // a CSS custom property per frame — the transform composition lives in
+  // CSS — and throttle to one update per animation frame. Disabled wholesale
+  // for users who prefer reduced motion.
+  (function () {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const nodes = Array.from(
+      document.querySelectorAll<HTMLElement>(".hero-icons__app, .hero-glow"),
+    );
+    if (!nodes.length) return;
+
+    const items = nodes.map((el) => ({
+      el,
+      depth: parseFloat(el.dataset.depth || "0"),
+    }));
+
+    let ticking = false;
+    function apply() {
+      const y = window.scrollY;
+      for (const { el, depth } of items) {
+        el.style.setProperty("--py", `${(y * depth).toFixed(1)}px`);
+      }
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(apply);
+      }
+    }
+
+    apply();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  })();
+</script>

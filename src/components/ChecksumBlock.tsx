@@ -64,7 +64,7 @@ export default function ChecksumBlock({ hash, fileName }: Props) {
               </code>
               <button
                 onClick={() => copy("hash", hash)}
-                className="flex-shrink-0 px-2 py-1 text-[10px] rounded bg-[var(--card)] hover:bg-[var(--border)] border border-[var(--border)] text-[var(--fg-muted)] hover:text-[var(--fg)] transition-colors"
+                className="flex-shrink-0 px-2 py-1 text-[10px] btn-secondary"
               >
                 {copied === "hash" ? "Copied!" : "Copy"}
               </button>
@@ -81,7 +81,7 @@ export default function ChecksumBlock({ hash, fileName }: Props) {
               </pre>
               <button
                 onClick={() => copy("cmd", verifyCmd)}
-                className="absolute top-1.5 right-1.5 px-2 py-0.5 text-[10px] rounded bg-[var(--card)] hover:bg-[var(--border)] border border-[var(--border)] text-[var(--fg-muted)] hover:text-[var(--fg)] transition-colors"
+                className="absolute top-1.5 right-1.5 px-2 py-0.5 text-[10px] btn-secondary"
               >
                 {copied === "cmd" ? "Copied!" : "Copy"}
               </button>

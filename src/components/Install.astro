@@ -123,14 +123,6 @@ const releaseDownloadBase = `${repoUrl(primary)}/releases/download`;
     </div>
 
     <div class="max-w-4xl mx-auto relative">
-      <!-- Soft cloud behind the distro tabs (blue) + universal box (orange).
-           Sits behind both widgets, masked by overflow-hidden on the section. -->
-      <div
-        class="absolute -inset-x-10 -top-10 -bottom-32 bg-gradient-to-b from-[#3daee9]/8 via-[#9b59b6]/4 to-[#e67e22]/8 blur-3xl -z-10 pointer-events-none"
-        aria-hidden="true"
-      >
-      </div>
-
       <InstallChannel
         client:visible
         stable={stableBundle}

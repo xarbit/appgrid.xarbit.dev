@@ -579,7 +579,7 @@ export default function InstallTabs({
                 </pre>
                 <button
                   onClick={() => copy(key, step.code)}
-                  className="absolute top-2 right-2 px-2.5 py-1.5 text-xs rounded bg-[var(--card)] hover:bg-[var(--border)] border border-[var(--border)] text-[var(--fg-muted)] hover:text-[var(--fg)] transition-colors"
+                  className="absolute top-2 right-2 px-2.5 py-1.5 text-xs btn-secondary"
                   aria-label="Copy"
                 >
                   {copied === key ? "Copied!" : "Copy"}

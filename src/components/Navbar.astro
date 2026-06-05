@@ -17,14 +17,15 @@ const starsCount = await fetchStars(primary);
 const stars = starsCount !== null ? formatStars(starsCount) : null;
 ---
 
-<nav class="sticky top-0 z-50 backdrop-blur-md nav-bg border-b border-border-soft">
-  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
-    <a href="/" class="flex items-center gap-2.5 font-semibold text-lg tracking-tight text-fg">
+<nav class="sticky top-0 z-50 px-6 pt-3 md:pt-4">
+  <div class="max-w-6xl mx-auto">
+    <div class="px-4 md:px-5 h-14 flex items-center justify-between gap-4 rounded-lg border border-[var(--border)] nav-bg backdrop-blur-md shadow-lg">
+    <a href="/" class="flex items-center gap-2.5 font-semibold text-lg tracking-tight text-fg shrink-0 whitespace-nowrap">
       <Logo size={28} />
-      <span>AppGrid <span class="text-fg-muted font-normal">for Plasma</span></span>
+      <span>AppGrid <span class="hidden sm:inline text-fg-muted font-normal">for Plasma</span></span>
     </a>
 
-    <div class="hidden md:flex items-center gap-7 text-sm text-fg-muted">
+    <div class="hidden lg:flex items-center gap-6 text-sm text-fg-muted">
       {
         links.map((link) => (
           <a
@@ -45,7 +46,7 @@ const stars = starsCount !== null ? formatStars(starsCount) : null;
       <button
         id="nav-hamburger"
         type="button"
-        class="md:hidden flex items-center justify-center w-9 h-9 rounded-md border border-[var(--border)] text-[var(--fg-muted)] hover:text-[var(--fg)] hover:border-[var(--color-breeze-blue)]/40 transition-colors"
+        class="btn-icon lg:hidden"
         aria-label="Open menu"
         aria-controls="nav-drawer"
         aria-expanded="false"
@@ -98,25 +99,26 @@ const stars = starsCount !== null ? formatStars(starsCount) : null;
     </div>
   </div>
 
-  <!-- Mobile drawer (collapsible under nav bar) -->
-  <div
-    id="nav-drawer"
-    class="md:hidden hidden border-t border-[var(--border)] nav-bg backdrop-blur-md"
-  >
-    <ul class="max-w-6xl mx-auto px-6 py-3 flex flex-col">
-      {
-        links.map((link) => (
-          <li>
-            <a
-              href={link.href}
-              class="nav-drawer-link block py-2.5 text-sm text-[var(--fg-body)] hover:text-[var(--color-breeze-blue)] transition-colors"
-            >
-              {link.label}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    <!-- Mobile drawer — floats just under the pill, same width + radius. -->
+    <div
+      id="nav-drawer"
+      class="lg:hidden hidden mt-2 rounded-lg border border-[var(--border)] nav-bg backdrop-blur-md shadow-lg overflow-hidden"
+    >
+      <ul class="px-4 py-2 flex flex-col">
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="nav-drawer-link block py-2.5 text-sm text-[var(--fg-body)] hover:text-[var(--color-breeze-blue)] transition-colors"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </div>
 </nav>
 
@@ -145,8 +147,8 @@ const stars = starsCount !== null ? formatStars(starsCount) : null;
       a.addEventListener("click", function () { setOpen(false); });
     });
 
-    // Auto-close if the viewport grows past the md breakpoint (768px) while open.
-    window.matchMedia("(min-width: 768px)").addEventListener("change", function (e) {
+    // Auto-close if the viewport grows past the lg breakpoint (1024px) while open.
+    window.matchMedia("(min-width: 1024px)").addEventListener("change", function (e) {
       if (e.matches) setOpen(false);
     });
 

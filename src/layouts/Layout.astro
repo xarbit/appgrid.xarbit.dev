@@ -133,14 +133,34 @@ const softwareSchema = {
       )
     }
 
+    <!-- Resolve the theme before first paint (no flash). Default is to
+         follow the OS (dark color scheme → dark variant). A manual toggle
+         stores an override *plus* the OS scheme at that moment; the
+         override is honoured only while the OS hasn't changed since. As
+         soon as the OS theme moves, the override is dropped and we follow
+         the OS again ("override until the OS next changes"). -->
     <script is:inline>
       (function () {
         try {
+          var os = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
           var stored = localStorage.getItem("theme");
-          if (stored === "light" || stored === "dark") {
-            document.documentElement.setAttribute("data-theme", stored);
+          var storedOs = localStorage.getItem("theme-os");
+          var theme;
+          if ((stored === "light" || stored === "dark") && storedOs === os) {
+            theme = stored; // override still valid — OS unchanged since
+          } else {
+            if (stored) {
+              localStorage.removeItem("theme");
+              localStorage.removeItem("theme-os");
+            }
+            theme = os; // no override, or OS moved since → follow OS
           }
-        } catch (e) {}
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
       })();
     </script>
   </head>
