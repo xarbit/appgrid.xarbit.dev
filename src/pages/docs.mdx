@@ -1,7 +1,7 @@
 ---
 layout: ../layouts/DocsLayout.astro
 title: Docs
-description: Everything beyond install — build, configure, internals, troubleshooting, contributing. Install + screenshots + FAQ live on the home page.
+description: Everything beyond install — build, configure, internals, troubleshooting, contributing. Install and FAQ live on the home page.
 editPath: src/pages/docs.mdx
 ---
 
@@ -59,7 +59,7 @@ Authoritative dep lists live alongside their packaging spec — keep these in sy
 - **Ubuntu:** see [packages/deb/debian/control](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/deb/debian/control) (`Build-Depends:` + `Depends:`)
 - **Universal Package runtime:** see [packages/universal/distros.toml](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/packages/universal/distros.toml) — per-distro runtime packages, `install.py` verifies via `ldd` before placing any files
 
-Core runtime: `plasma-workspace`, `libplasma`, `kservice`, `ki18n`, `kio`, `kpackage`, `kcoreaddons`, `kwindowsystem`, `krunner`, `kirigami`, `layer-shell-qt`, `plasma-activities`, `qt6-base`, `qt6-declarative`.
+Core runtime: `plasma-workspace`, `libplasma`, `kservice`, `ki18n`, `kio`, `kpackage`, `kcoreaddons`, `kconfig`, `kwindowsystem`, `krunner`, `kirigami`, `layer-shell-qt`, `plasma-activities`, `plasma-activities-stats`, `qt6-base`, `qt6-declarative`.
 
 ## CMake build options
 
@@ -82,18 +82,24 @@ Right-click the AppGrid panel icon → **Configure AppGrid**. Settings marked *(
 |---|---|---|
 | Icon | Panel icon or custom image | dev.xarbit.appgrid (existing 1.7.x installs keep their prior icon) |
 | Text label | Optional text next to the panel icon | (empty) |
-| Icons per row *(Center)* | Columns in the grid | 7 |
+| Icons per row *(Center)* | Columns in the grid | 5 |
 | Visible rows *(Center)* | Rows visible before scrolling | 4 |
 | Icon size | Small (32 px), medium (48 px), large (64 px) | Large |
 | Sort order | Alphabetical, Most Used, By Category | Most Used |
 | Open on active screen | Open on mouse focus screen or panel screen | On |
 | Show category bar | Show or hide the category filter bar | On |
+| Category tab style | Category bar tabs: Default (text), Icon and text, or Icon only | Default |
+| Open categories on hover | Dwell on a category tab to select it without clicking | Off |
 | Search all apps | Search across categories regardless of active tab | On |
 | Start with favorites | Open showing favorites instead of all apps | Off |
 | Show recently used | Recently launched apps row at the top of the grid | On |
 | Use system categories | Use KDE Menu Editor categories | Off |
 | Hide empty categories | Hide categories with no apps | On |
 | KRunner plugins | Search bookmarks, files, websites via KRunner | On |
+| Inline completion | Greyed completion of the best match in the search field, accepted with Tab | On |
+| Prefer frequently-used apps | Bias ranking with KActivities frecency (frequency + recency) | On |
+| Show Alt+1–9 badge | Launch-shortcut badge on each result (shortcuts still work when off) | On |
+| Show hidden apps in search | Keep deliberately-hidden apps findable by name | Off |
 | Terminal shell | Shell for `t:` commands | /bin/sh |
 | Show divider lines | Dividers between UI sections | On |
 | Show scrollbars | Scrollbars in grid and search | Off |
@@ -102,9 +108,15 @@ Right-click the AppGrid panel icon → **Configure AppGrid**. Settings marked *(
 | Drop shadow behind app icons | Soft drop shadow under each app icon in the grid | On |
 | Hide labels on favorites tab | Render the Favorites tab as icons only (no app names) | Off |
 | Sort favorites alphabetically | Auto-sort favorites by name instead of manual order | Off |
+| Reduce grid spacing *(Center)* | Narrower cells for a tighter layout (the pre-1.9 width) instead of square cells | Off |
+| Apply Size to app icons only | Size changes only the icons; labels, secondary icons and spacing stay at the default | Off |
+| Highlight icons on hover | Soft highlight behind an app icon on mouse hover | On |
 | Open/close animation *(Center)* | None, Fade, Scale, Pop, Slide Up/Down, Glide, Buzz, Twist, Slam, Grow Up | Scale |
 | Background blur *(Center)* | Blur behind the launcher | On |
+| Background contrast *(Center)* | Plasma theme-tuned contrast filter behind the launcher | On |
+| Use Plasma theme background *(Center)* | Draw the panel using the active Plasma theme's dialog SVG (matches the Panel variant) | Off |
 | Dim background *(Center)* | Darken the screen behind the launcher | Off |
+| Compact mode *(Center)* | Hide the grid and category bar until you start typing (Down arrow reveals) | Off |
 | Vertical position *(Center)* | Offset the centered launcher up or down within the free space (−100 % = top, 0 % = centered, +100 % = bottom) | 0 % |
 | Icon animation | None, Shake, Grow, Bounce, Spin, Shuffle | Shake |
 | Animate icons on open | Play icon animation when launcher opens | On |
@@ -116,19 +128,20 @@ Right-click the AppGrid panel icon → **Configure AppGrid**. Settings marked *(
 
 ## Favorites storage
 
-AppGrid stores favorites in KDE's activity-aware favorites backend (`KAStatsFavoritesModel`, backed by `KActivitiesStats` from KDE Frameworks). Each AppGrid instance writes to its own client namespace (`dev.xarbit.appgrid.favorites.instance-<id>`).
+AppGrid stores favorites in KDE's activity-aware favorites backend (`KAStatsFavoritesModel`, backed by `KActivitiesStats` from KDE Frameworks). It uses a single stable client id, `dev.xarbit.appgrid.favorites`.
 
 What that means in practice:
 
 - Favorites are activity-aware and sync via standard KDE sync mechanisms if configured.
-- AppGrid does **not** share favorites with Kickoff or Kicker — each launcher uses its own client namespace (the convention KDE-shipped launchers already follow).
+- The Center and Panel variants **share one favorites list** (same client id), and it survives removing and re-adding the widget.
+- AppGrid does **not** share favorites with Kickoff or Kicker — those use their own client id (`org.kde.plasma.favorites`).
 - AppGrid does **not** override or modify Kickoff / Kicker settings.
 
 Upgrading from an earlier version? See the [migration notes](#help--troubleshooting).
 
 ## Plasmoid variants & IDs
 
-AppGrid ships as two plasmoids sharing a common C++ codebase but with separate metadata + applet IDs so they can be installed and configured independently.
+AppGrid ships as two plasmoids sharing a common C++ codebase but with separate metadata + applet IDs so they can be installed and configured independently. As of 1.9 each variant is a single compiled `.so` with its QML interface and metadata compiled in (no loose QML package), so after an update Plasma must be restarted to drop the old `.so` (see [Restart Plasma after updating](#restart-plasma-after-updating)).
 
 - **AppGrid (Center)** — applet ID `dev.xarbit.appgrid`. Standalone window with its own blur, opacity, corner radius, animations.
 - **AppGrid (Panel)** — applet ID `dev.xarbit.appgrid.panel`. Native Plasma popup anchored to the panel icon (Kickoff-style).
@@ -139,8 +152,7 @@ Both share the same grid, search, categories, quick commands, and favorite stora
 
 The Universal Package (`appgrid-universal-<version>-<arch>.tar.gz`) is built once per release against Fedora 42 (oldest mainstream distro shipping Plasma libs at SONAME 7) and runs on any Plasma 6.4+ system with matching SONAMEs. Install layout:
 
-- `~/.local/lib/qt6/plugins/plasma/applets/dev.xarbit.appgrid.so` + `…appgrid.panel.so` — compiled plasmoid plugins
-- `~/.local/share/plasma/plasmoids/dev.xarbit.appgrid/` + `…appgrid.panel/` — QML + metadata
+- `~/.local/lib/qt6/plugins/plasma/applets/dev.xarbit.appgrid.so` + `…appgrid.panel.so` — the compiled plasmoid plugins. As of 1.9 the QML interface and metadata are compiled **into** each `.so`; there is no loose `plasmoids/` QML directory anymore.
 - `~/.local/share/applications/` + `~/.local/share/icons/` — desktop integration
 - `~/.local/share/locale/<lang>/LC_MESSAGES/dev.xarbit.appgrid.mo` — translations
 - `~/.config/plasma-workspace/env/appgrid-user-local.sh` — one-off env script that adds `~/.local/lib/qt6/plugins/` to `QT_PLUGIN_PATH` at session start (this is why first install needs one log-out / log-in)
@@ -168,7 +180,7 @@ Test coverage: 62 cases in [tests/test_updatechecker.cpp](https://github.com/xar
 The binary's self-reported version (shown in the `i:` system-info view) is computed at build time by [CMakeLists.txt](https://github.com/xarbit/plasma6-applet-appgrid/blob/main/CMakeLists.txt) in three priority tiers:
 
 1. If `-DAPPGRID_VERSION_OVERRIDE=<ver>` was passed, that wins. CI passes this for every release so the binary string matches the tarball filename + release tag exactly.
-2. Otherwise, if `HEAD` is exactly a release tag, use `CMAKE_PROJECT_VERSION` unchanged (e.g. `"1.8.0"`).
+2. Otherwise, if `HEAD` is exactly a release tag, use `CMAKE_PROJECT_VERSION` unchanged (e.g. `"1.9.0"`).
 3. Otherwise it's a local dev build between releases — derive `{BASE}-dev.{N}+self.g{SHA}` (where `N` is commits since the last tag and `SHA` is the 7-char short hash). The `+self.g…` build-metadata suffix flags the binary as hand-built (not a CI artifact). Per semver, build metadata is ignored for ordering — so update behaviour matches the equivalent CI build of the same git state. Useful in bug reports for telling local vs CI binaries apart at a glance.
 
 ## Translations
@@ -212,13 +224,25 @@ Covered:
 - `test_appmodel_helpers.cpp` — model helpers (storage ID normalization, app entry parsing)
 - `test_filter.cpp` — filter predicates (hidden apps, recents exclusion)
 - `test_search_ranking.cpp` — relevance tiers + most-used boost (see [search ranking FAQ](/#faq))
+- `test_frecency_scoring.cpp` — KActivities frecency tiebreak in search ranking
 - `test_sort.cpp` — sort modes (alphabetical, most used, by category)
+- `test_category_mapping.cpp` — built-in category grouping
+- `test_pluginhelpers.cpp` — KRunner plugin/favorites helpers
+- `test_discoverbackends.cpp` — "Manage in Discover" backend resolution
 - `test_updatechecker.cpp` — version comparison, URL scheme validation, response-size cap, ETag rotation, state persistence (62 cases)
 - `qml/` — QML behaviour tests via QtQuickTest
 
 Open a PR with new tests when you fix a bug — CI runs `ctest` on every push.
 
 ## Help & troubleshooting
+
+### Restart Plasma after updating
+
+AppGrid's QML is compiled into its `.so`, so a running plasmashell keeps the old version loaded until it restarts. After updating (any install method), log out and back in, or run:
+
+```bash
+kquitapp6 plasmashell && kstart plasmashell
+```
 
 ### Upgrading from AppGrid 1.7.x
 
@@ -280,11 +304,7 @@ For QML import errors specifically, add `QML_IMPORT_TRACE=1` too. Both env vars 
 
 **Update checker:** inspect the cache file directly to see what the last check stored: `cat ~/.cache/plasmashell/dev.xarbit.appgrid.update-checker.json`. Force an immediate check by toggling the setting off and on (Configure AppGrid → Check the AppGrid website for new releases).
 
-**Test the plasmoid in isolation** without restarting your whole Plasma session — useful for QML-only changes:
-
-```bash
-plasmoidviewer -a dev.xarbit.appgrid
-```
+**Iterating on the UI:** because the QML is compiled into the `.so`, `plasmoidviewer -a dev.xarbit.appgrid` can't load it from a loose package. Rebuild and restart plasmashell instead (`cmake --build build && sudo cmake --install build && kquitapp6 plasmashell && kstart plasmashell`). The QtQuickTest suite (see [Running the test suite](#running-the-test-suite)) is the fastest way to exercise QML logic without a full session.
 
 ### Reporting a bug
 

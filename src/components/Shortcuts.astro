@@ -3,32 +3,15 @@ const navigation = [
   { keys: ["Super"], desc: "Toggle AppGrid" },
   { keys: ["Esc"], desc: "Close" },
   { keys: ["↑", "↓", "←", "→"], desc: "Navigate results", separator: " " },
-  {
-    keys: ["PgUp", "PgDn"],
-    desc: "Page through results",
-    separator: " ",
-    badge: "New in 1.8.0",
-  },
-  {
-    keys: ["Home", "End"],
-    desc: "Jump to first / last result",
-    separator: " ",
-    badge: "New in 1.8.0",
-  },
+  { keys: ["PgUp", "PgDn"], desc: "Page through results", separator: " " },
+  { keys: ["Home", "End"], desc: "Jump to first / last result", separator: " " },
   { keys: ["Enter"], desc: "Launch top result" },
   { keys: ["Tab"], desc: "Cycle apps + runners" },
+  { keys: ["Shift", "Tab"], desc: "Cycle backwards" },
   { keys: ["Alt", "1-9"], desc: "Launch by number" },
   { keys: ["Alt", "letter"], desc: "Jump to category" },
-  {
-    keys: ["Alt", "←→"],
-    desc: "Step through categories",
-    badge: "New in 1.8.0",
-  },
-  {
-    keys: ["Ctrl", "Shift", "↑↓←→"],
-    desc: "Move favorite by one cell",
-    badge: "New in 1.8.0",
-  },
+  { keys: ["Alt", "←→"], desc: "Step through categories" },
+  { keys: ["Ctrl", "Shift", "↑↓←→"], desc: "Move favorite by one cell" },
 ];
 
 const selection = [
@@ -112,7 +95,7 @@ const decoKeys = [
         At your fingertips
       </h2>
       <p class="text-lg text-[var(--fg-muted)]">
-        Search, switch tabs, reorder favorites, launch — all keyable.
+        Search, switch tabs, reorder favorites, launch. All keyable.
       </p>
     </div>
 
@@ -137,14 +120,7 @@ const decoKeys = [
           {
             navigation.map((row) => (
               <li class="flex items-center justify-between gap-4 text-sm">
-                <span class="text-[var(--fg-body)] flex items-center gap-2 flex-wrap">
-                  {row.desc}
-                  {row.badge && (
-                    <span class="px-1.5 py-0.5 text-[10px] rounded uppercase tracking-wide bg-[#e67e22]/20 text-[#f5a35e] border border-[#e67e22]/40">
-                      {row.badge}
-                    </span>
-                  )}
-                </span>
+                <span class="text-[var(--fg-body)]">{row.desc}</span>
                 <span class="flex items-center gap-1 flex-shrink-0">
                   {row.keys.map((k, i) => (
                     <>
@@ -177,12 +153,9 @@ const decoKeys = [
             <path d="M7 7h4v4H7zM13 7h4v4h-4zM7 13h4v4H7zM13 13h4v4h-4z"></path>
           </svg>
           Multi-select
-          <span class="px-1.5 py-0.5 text-[10px] rounded uppercase tracking-wide bg-[#e67e22]/20 text-[#f5a35e] border border-[#e67e22]/40 font-normal">
-            New in 1.8.0
-          </span>
         </h3>
         <p class="text-xs text-[var(--fg-muted)] mb-4">
-          Build a selection in Favorites, All, or by-Category — then drag, pin, launch, or remove the whole batch at once.
+          Build a selection in Favorites, All, or by-Category, then drag, pin, launch, or remove the whole batch at once.
         </p>
         <ul class="space-y-3">
           {

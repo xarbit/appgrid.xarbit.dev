@@ -32,8 +32,8 @@ fi
 
 # Frames stacked top→bottom in the sprite. Order must match the keyframe
 # percentages in Hero.astro (.hero-sprite background-position-y).
-LIGHT_FRAMES=(launcher-empty launcher-t launcher-te launcher-ter launcher-term)
-DARK_FRAMES=(launcher-dark-empty launcher-dark-t launcher-dark-te launcher-dark-ter launcher-dark-term)
+LIGHT_FRAMES=(launcher-empty launcher-t launcher-te launcher-term)
+DARK_FRAMES=(launcher-dark-empty launcher-dark-t launcher-dark-te launcher-dark-term)
 
 # Files trim() should NOT touch — the sprites are rebuilt below from their
 # already-trimmed source frames, and trimming the stacked sprite separately

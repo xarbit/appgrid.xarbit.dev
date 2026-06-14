@@ -1,138 +1,316 @@
 ---
-import BrandIcon from "./BrandIcon.astro";
+import { Image } from "astro:assets";
 
+import search from "../assets/screenshots/search.png";
+import searchPlugins from "../assets/screenshots/search-plugins.png";
+import quickCommands from "../assets/screenshots/quick-commands.png";
+import categoryText from "../assets/screenshots/launcher-category-default.png";
+import categoryIcon from "../assets/screenshots/launcher-category-icon.png";
+import categoryIconText from "../assets/screenshots/launcher-category-icon-text.png";
+import contextMenu from "../assets/screenshots/launcher-context-menu.png";
+import centerVariant from "../assets/screenshots/launcher-center-default.png";
+import nativePopup from "../assets/screenshots/launcher-native-popup.png";
+import compactLight from "../assets/screenshots/launcher-compactmode-default.png";
+import compactDark from "../assets/screenshots/launcher-compactmode-dark.png";
+import settings from "../assets/screenshots/settings.png";
+import settings2 from "../assets/screenshots/settings-2.png";
+import settings3 from "../assets/screenshots/settings-3.png";
+import settings4 from "../assets/screenshots/settings-4.png";
+import settings5 from "../assets/screenshots/settings-5.png";
+
+// Drag & drop demo: two short screencasts that crossfade (see video-swap).
+import dragPoster from "../assets/screenshots/drag-n-drop.png";
+import dragMp4 from "../assets/videos/drag-drop.mp4";
+import dragWebm from "../assets/videos/drag-drop.webm";
+import favoritesMp4 from "../assets/videos/favorites.mp4";
+import favoritesWebm from "../assets/videos/favorites.webm";
+
+import favorites from "../assets/screenshots/launcher-favorites.png";
+
+// Best-features highlight. Rendered as alternating image / copy rows: even
+// rows put the image on the left, odd rows flip it to the right (md+).
 const features = [
   {
-    title: "Unified search",
-    desc: "App results and KRunner results in one list. Alt+1–9 to launch by position. Search by keyword (\"browser\" finds Firefox) or install source (\"flatpak\", \"snap\", \"web app\").",
-    icon: "search",
+    title: "Two variants, one launcher",
+    desc: "AppGrid (Center) is a standalone window with its own blur, opacity and corner radius. AppGrid (Panel) is a native Plasma popup anchored to the panel icon, the way Kickoff sits. Same grid, same search. Both ship together, so pick whichever suits you.",
+    img: centerVariant,
+    alt: "AppGrid Center variant, a standalone window",
+    imgB: nativePopup,
+    altB: "AppGrid Panel variant, a native Plasma popup",
+  },
+  {
+    title: "Compact mode",
+    desc: "Like to search first? Compact mode keeps the grid hidden until you type, leaving just a search bar in the KRunner style. Press Down any time to bring the full grid back. Run it as the Center variant and bind a shortcut like Alt+Space to open it from anywhere, a clean drop-in for KRunner.",
+    img: compactLight,
+    alt: "AppGrid compact mode, light",
+    imgB: compactDark,
+    altB: "AppGrid compact mode, dark",
   },
   {
     title: "Smart ranking",
-    desc: "Best name match wins (prefix > substring > generic > keyword). Your mime defaults — default browser, default editor — rank above peers in the same tier. Most-launched apps bump up.",
-    icon: "ranking",
+    desc: "AppGrid usually knows what you want before you finish typing. A couple of letters and the right app is already on top. Closer name matches rank higher, the apps you open most edge up, and everyday picks like your browser or editor come before the rest. Inline completion fills in the word for you, so it is often a key or two and Enter.",
+    img: search,
+    alt: "Search results ranked best match first in AppGrid",
+  },
+  {
+    title: "KRunner & KDE search plugins",
+    desc: "The search box also runs KDE's own helpers: calculator, unit and currency conversion, dictionary, file search, web shortcuts, bookmarks and more. Do quick maths, convert a value or open a file without leaving the launcher. Their results sit right next to your apps, ready for Alt+1 to 9.",
+    img: searchPlugins,
+    alt: "Apps and KDE search plugin results side by side in AppGrid",
+  },
+  {
+    title: "KActivities & favorites",
+    desc: "AppGrid stores favorites in KDE's activity-aware backend, not a private list of its own. The Center and Panel variants share one list, and it survives removing and re-adding the widget. Every app you launch is logged to Plasma's activity history, so it shows up in the Activity Switcher and recent results across your desktop. That same usage data (KActivities-Stats) feeds search, so the apps you reach for most rise to the top.",
+    img: favorites,
+    alt: "AppGrid favorites shared with Plasma",
   },
   {
     title: "Quick commands",
-    desc: "Terminal (t:), shell (:), file browser (/), system info (i:), hidden apps (h:), help (?). Each prefix opens a focused view.",
-    icon: "terminal",
+    desc: "Switch modes right from the search bar. Type t: for the terminal, : for a shell command, / to browse files, i: for system info, h: for hidden apps, or ? for help. Each prefix opens its own focused view.",
+    img: quickCommands,
+    alt: "Quick command prefixes in AppGrid",
   },
   {
-    title: "Application actions",
-    desc: "Right-click any app for jumplist actions (e.g., New Private Window, New Document) sourced from its .desktop file.",
-    icon: "actions",
+    title: "Categories",
+    desc: "Browse your apps by category: Development, Graphics, Internet and the rest. Alt plus a letter jumps straight to one. Use AppGrid's built-in grouping, or read your live categories from the KDE Menu Editor. You can style the bar too, showing categories as plain text, icons only, or icons with text.",
+    imgs: [categoryText, categoryIcon, categoryIconText],
+    alt: "Category bar styles in AppGrid",
   },
   {
-    title: "Hide apps you don't want",
-    desc: "Right-click → Hide Application to remove anything you never launch from the grid. Type h: to see the hidden list and unhide with one click. Per-user, never touches system .desktop files.",
-    icon: "hide",
+    title: "Drag, drop & multi-select",
+    desc: "Drag any app onto your panel to pin it, onto the desktop to make a launcher, or onto the Favorites strip to favorite it. Drag favorites around to reorder them. Want several at once? Ctrl or Shift click to build a selection, then pin, launch, hide or remove the whole batch together.",
+    poster: dragPoster,
+    videoWebm: dragWebm,
+    videoMp4: dragMp4,
+    videoWebmB: favoritesWebm,
+    videoMp4B: favoritesMp4,
+    alt: "Dragging apps and selecting several at once in AppGrid",
   },
   {
-    title: "Two variants",
-    desc: "AppGrid (Center) — standalone window with its own blur, opacity, corner radius. AppGrid (Panel) — native Plasma popup anchored to the panel icon, Kickoff-style.",
-    icon: "variants",
+    title: "Application actions & discovery",
+    desc: "Right-click any app to reach its jumplist, the New Private Window or New Document style entries that come from its .desktop file. Pin it, add it to the desktop or hide it from there too. AppGrid shows where each app came from, whether that is Flatpak, Snap or your repos, marks freshly installed apps with a badge, and can open it in Discover to update or remove it through KDE's software centre.",
+    img: contextMenu,
+    alt: "Right-click jumplist and Discover actions in AppGrid",
   },
   {
-    title: "Favorites & categories",
-    desc: "Reorder favorites by drag-and-drop or Ctrl+Shift+arrow. By-category view with Alt+key mnemonics, backed by either AppGrid's built-in mapping or KDE Menu Editor.",
-    icon: "favorites",
-  },
-  {
-    title: "Drag & drop everywhere",
-    desc: "Drag apps from any view (All, Favorites, By Category) onto your panel, desktop, or the Favorites strip. Drag within Favorites to reorder them.",
-    icon: "drag",
-    badge: "New in 1.8.0",
-  },
-  {
-    title: "Recent activity",
-    desc: "Launches are broadcast to KActivities so apps you start through AppGrid show up in Plasma's system-wide recent activity (Activity Switcher, KRunner).",
-    icon: "recent",
-    badge: "New in 1.8.0",
-  },
-  {
-    title: "Animations",
-    desc: "Open/close: Fade, Scale, Pop, Slide Up/Down, Glide, Buzz, Twist, Slam, Grow Up. On-hover icon: Shake, Grow, Bounce, Spin, Shuffle. Respects your system animation speed.",
-    icon: "animations",
-  },
-  {
-    title: "Customizable",
-    desc: "Grid size, icon size, blur, opacity, corner radius, dividers, tooltips, session buttons, category bar, recents row, label visibility — all per-variant.",
-    icon: "customize",
-  },
-  {
-    title: "Plasma-native",
-    desc: "Respects your system animation speed, font size and accent colour. Built on KDE Frameworks 6 — the same building blocks as the rest of your desktop.",
-    icon: "brand:kdeplasma",
-  },
-  {
-    title: "Drop-in replacement",
-    desc: "Replace Kickoff or Kicker via Plasma's Show Alternatives.",
-    icon: "replace",
-  },
-  {
-    title: "Universal Package",
-    desc: "User-local ~/.local/ install for any Plasma 6.4+ system. Primary path for immutable distros (KDE Linux, Kinoite, Bazzite, Aurora, Kalpa, SteamOS), available for any other distro too.",
-    icon: "package",
-    badge: "New in 1.8.0",
-  },
-  {
-    title: "Update indicator",
-    desc: "Universal-build only, opt-in: shows a small indicator near the session buttons when a new release is out. One anonymous HTTPS request per day, no telemetry. Distro packages let your package manager handle updates.",
-    icon: "update",
-    badge: "New in 1.8.0",
+    title: "Make it yours",
+    desc: "Tune the grid and icon size, blur, opacity, corner radius, dividers, tooltips, session buttons, the category bar, the recents row and label visibility, all saved per variant. It stays Plasma-native throughout, following your accent colour, fonts and animation speed.",
+    imgs: [settings, settings2, settings3, settings4, settings5],
+    alt: "AppGrid settings panel",
   },
 ];
-
-// Breeze action icons, vendored + sanitized to inherit `currentColor` so
-// they pick up the accent tint and recolour with the light/dark theme.
-// Inlined (not <img>) for exactly that reason — an <img> can't theme.
-const rawIcons = import.meta.glob("../assets/breeze-icons/*.svg", {
-  query: "?raw",
-  import: "default",
-  eager: true,
-}) as Record<string, string>;
-
-const breezeIcons: Record<string, string> = {};
-for (const [path, svg] of Object.entries(rawIcons)) {
-  const name = path.split("/").pop()!.replace(".svg", "");
-  breezeIcons[name] = svg.replace("<svg ", '<svg class="w-5 h-5" ');
-}
 ---
 
-<section id="features" class="py-20 md:py-28">
+<section
+  id="features"
+  class="py-20 md:py-28 border-t border-[var(--border)]/50"
+>
   <div class="max-w-6xl mx-auto px-6">
-    <div class="text-center mb-14 max-w-2xl mx-auto">
-      <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-4">
-        Batteries included
-      </h2>
-      <p class="text-lg text-[var(--fg-muted)]">
-        Search, launch, drag, customize — the things you'll actually touch.
-      </p>
-    </div>
+    <h2 class="sr-only">Features</h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="space-y-20 md:space-y-28">
       {
-        features.map((f) => (
-          <div class="breeze-card p-6">
-            <div class="w-10 h-10 rounded-md bg-[#3daee9]/15 border border-[#3daee9]/30 grid place-items-center text-[#3daee9] mb-4">
-              {f.icon.startsWith("brand:") ? (
-                <BrandIcon slug={f.icon.slice("brand:".length)} size={20} />
+        features.map((f, i) => (
+          <div class="grid md:grid-cols-2 gap-8 md:gap-14 items-start">
+            <div class={i % 2 === 1 ? "md:order-2" : ""}>
+              {f.videoWebm ? (
+                <div class="video-swap relative aspect-[1100/770] overflow-hidden">
+                  <video
+                    class="w-full h-full object-cover block"
+                    autoplay
+                    loop
+                    muted
+                    playsinline
+                    preload="metadata"
+                    poster={f.poster.src}
+                    aria-label={f.alt}
+                  >
+                    <source src={f.videoWebm} type="video/webm" />
+                    <source src={f.videoMp4} type="video/mp4" />
+                  </video>
+                  <video
+                    class="video-swap__top absolute inset-0 w-full h-full object-cover"
+                    autoplay
+                    loop
+                    muted
+                    playsinline
+                    preload="metadata"
+                    aria-hidden="true"
+                  >
+                    <source src={f.videoWebmB} type="video/webm" />
+                    <source src={f.videoMp4B} type="video/mp4" />
+                  </video>
+                </div>
+              ) : f.imgs ? (
+                <div class={`fade-cycle fade-cycle--${f.imgs.length} relative`}>
+                  {f.imgs.map((im, n) => (
+                    <Image
+                      src={im}
+                      alt={n === 0 ? f.alt : ""}
+                      widths={[480, 768, 1100]}
+                      sizes="(min-width: 768px) 46vw, 90vw"
+                      loading="lazy"
+                      class={`fade-cycle__frame ${n === 0 ? "w-full h-auto block" : "absolute inset-0 w-full h-full object-cover"}`}
+                      style={`--i:${n}`}
+                    />
+                  ))}
+                </div>
+              ) : f.imgB ? (
+                <div class="variant-swap relative">
+                  <Image
+                    src={f.img}
+                    alt={f.alt}
+                    widths={[480, 768, 1100]}
+                    sizes="(min-width: 768px) 46vw, 90vw"
+                    loading="lazy"
+                    class="w-full h-auto block"
+                  />
+                  <Image
+                    src={f.imgB}
+                    alt={f.altB}
+                    widths={[480, 768, 1100]}
+                    sizes="(min-width: 768px) 46vw, 90vw"
+                    loading="lazy"
+                    class="variant-swap__top absolute inset-0 w-full h-full object-cover"
+                  />
+                </div>
               ) : (
-                <Fragment set:html={breezeIcons[f.icon]} />
+                <Image
+                  src={f.img}
+                  alt={f.alt}
+                  widths={[480, 768, 1100]}
+                  sizes="(min-width: 768px) 46vw, 90vw"
+                  loading="lazy"
+                  class="w-full h-auto block"
+                />
               )}
             </div>
-            <h3 class="text-lg font-semibold mb-1.5 flex items-center gap-2">
-              {f.title}
-              {f.badge && (
-                <span class="px-1.5 py-0.5 text-[10px] rounded uppercase tracking-wide bg-[var(--color-breeze-blue)]/12 text-[#3daee9] border border-[var(--color-breeze-blue)]/30">
-                  {f.badge}
-                </span>
-              )}
-            </h3>
-            <p class="text-sm text-[var(--fg-muted)] leading-relaxed">{f.desc}</p>
+            <div class={i % 2 === 1 ? "md:order-1" : ""}>
+              <h3 class="text-2xl md:text-3xl font-bold tracking-tight mb-4">
+                {f.title}
+              </h3>
+              <p class="text-base md:text-lg text-[var(--fg-muted)] leading-relaxed">
+                {f.desc}
+              </p>
+            </div>
           </div>
         ))
       }
     </div>
   </div>
 </section>
+
+<style>
+  /* "Two variants" row: the panel screenshot sits on top of the centre one
+     (both 1.5 aspect, so they line up exactly) and crossfades back and forth,
+     holding each long enough to read before swapping. */
+  .variant-swap__top {
+    animation: variant-swap 7s ease-in-out infinite;
+  }
+
+  @keyframes variant-swap {
+    0%,
+    42% {
+      opacity: 0;
+    }
+    50%,
+    92% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .variant-swap__top {
+      animation: none;
+      opacity: 0;
+    }
+  }
+
+  /* Drag & drop row: two screencasts stacked, the second crossfading over the
+     first. Longer cycle than the image swap so each clip plays long enough. */
+  .video-swap__top {
+    animation: video-swap 20s ease-in-out infinite;
+  }
+
+  @keyframes video-swap {
+    0%,
+    44% {
+      opacity: 0;
+    }
+    50%,
+    94% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .video-swap__top {
+      animation: none;
+      opacity: 0;
+    }
+  }
+
+  /* Stacked frames that crossfade through one after another on a loop (the
+     Categories and "Make it yours" rows). Each frame is delayed by one slot so
+     they tile evenly with a short overlap; the keyframe's "on" window is sized
+     to the frame count (~1/N), so there's a variant per supported count. */
+  .fade-cycle__frame {
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-fill-mode: backwards;
+  }
+
+  .fade-cycle--3 .fade-cycle__frame {
+    animation-name: fade-cycle-3;
+    animation-duration: 18s;
+    animation-delay: calc(var(--i) * 6s);
+  }
+  .fade-cycle--5 .fade-cycle__frame {
+    animation-name: fade-cycle-5;
+    animation-duration: 25s;
+    animation-delay: calc(var(--i) * 5s);
+  }
+
+  @keyframes fade-cycle-3 {
+    0% {
+      opacity: 0;
+    }
+    6%,
+    30% {
+      opacity: 1;
+    }
+    36%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-cycle-5 {
+    0% {
+      opacity: 0;
+    }
+    4%,
+    18% {
+      opacity: 1;
+    }
+    22%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-cycle__frame {
+      animation: none;
+    }
+    .fade-cycle__frame:not(:first-child) {
+      opacity: 0;
+    }
+  }
+</style>

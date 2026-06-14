@@ -100,9 +100,6 @@ export default function UniversalInstall({
               <span className="px-1.5 py-0.5 text-[10px] rounded uppercase tracking-wide bg-[#e67e22]/20 text-[#f5a35e] border border-[#e67e22]/40">
                 Beta
               </span>
-              <span className="px-1.5 py-0.5 text-[10px] rounded uppercase tracking-wide bg-[#3daee9]/15 text-[#3daee9] border border-[#3daee9]/30">
-                New in 1.8.0
-              </span>
             </div>
             <p className="text-sm text-[var(--fg-muted)] leading-relaxed">
               User-local <code className="px-1 py-0.5 rounded bg-[var(--canvas-deep)] border border-[var(--border)] text-[var(--fg)] text-xs">~/.local/</code> install. No root, no package manager.
@@ -133,7 +130,7 @@ export default function UniversalInstall({
                 Migrating from a distro package?
               </p>
               <p className="text-[var(--fg-muted)] leading-relaxed">
-                Uninstall the system-wide copy first — otherwise two AppGrid plasmoids
+                Uninstall the system-wide copy first, otherwise two AppGrid plasmoids
                 will register and Plasma will load whichever it finds first.
                 The installer detects this and prints the right uninstall command
                 for your distro before doing anything.
